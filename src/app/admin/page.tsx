@@ -2,9 +2,11 @@ import Link from 'next/link';
 
 export default function AdminHomePage() {
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-10">
-      <h1 className="text-2xl font-semibold tracking-tight">Admin dashboard</h1>
-      <p className="mt-1 text-sm text-neutral-600">Manage catalog and orders.</p>
+    <div className="mc-container max-w-4xl py-10">
+      <h1 className="text-3xl font-semibold tracking-tight">
+        <span className="mc-text-gradient">Admin dashboard</span>
+      </h1>
+      <p className="mt-1 text-sm text-zinc-600">Manage catalog and orders.</p>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         {[{
@@ -30,10 +32,10 @@ export default function AdminHomePage() {
           <Link
             key={c.href}
             href={c.href}
-            className="rounded-2xl border bg-white p-5 hover:bg-neutral-50"
+            className="mc-card-hover group p-5"
           >
             <div className="text-sm font-semibold">{c.title}</div>
-            <div className="mt-1 text-sm text-neutral-600">{c.desc}</div>
+            <div className="mt-1 text-sm text-zinc-600 group-hover:text-zinc-700">{c.desc}</div>
           </Link>
         ))}
       </div>

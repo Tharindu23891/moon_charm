@@ -17,6 +17,11 @@ const ProductSchema = new Schema(
 );
 
 ProductSchema.index({ name: 'text', shortDescription: 'text', description: 'text' });
+ProductSchema.index({ categoryId: 1, popularity: -1 });
+ProductSchema.index({ categoryId: 1, createdAt: -1 });
+ProductSchema.index({ categoryId: 1, price: 1 });
+ProductSchema.index({ categoryId: 1, price: -1 });
+ProductSchema.index({ isFeatured: 1, popularity: -1 });
 
 export type ProductDoc = InferSchemaType<typeof ProductSchema> & {
   _id: mongoose.Types.ObjectId;

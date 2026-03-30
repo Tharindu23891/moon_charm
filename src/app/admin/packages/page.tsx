@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { formatLkr } from '@/lib/money';
 
 type Product = { id: string; name: string };
 
@@ -104,26 +105,28 @@ export default function AdminPackagesPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-10">
+    <div className="mc-container py-10">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Admin · Packages</h1>
-          <p className="mt-1 text-sm text-neutral-600">Create and manage packages.</p>
+          <h1 className="text-3xl font-semibold tracking-tight">
+            <span className="mc-text-gradient">Admin · Packages</span>
+          </h1>
+          <p className="mt-1 text-sm text-zinc-600">Create and manage packages.</p>
         </div>
-        <Link href="/admin" className="text-sm text-neutral-700 hover:text-neutral-900">
+        <Link href="/admin" className="mc-pill hover:bg-white">
           Back to dashboard
         </Link>
       </div>
 
       <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <div className="rounded-2xl border bg-white p-5">
+        <div className="mc-card p-5">
           <div className="text-sm font-medium">Add package</div>
           <div className="mt-4 grid gap-3">
             <input
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               placeholder="Name"
-              className="rounded-lg border px-3 py-2 text-sm"
+              className="mc-input"
             />
             <div className="grid gap-3 sm:grid-cols-2">
               <input
@@ -131,30 +134,30 @@ export default function AdminPackagesPage() {
                 onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
                 placeholder="Price"
                 inputMode="decimal"
-                className="rounded-lg border px-3 py-2 text-sm"
+                className="mc-input"
               />
               <input
                 value={form.discountPercent}
                 onChange={(e) => setForm((f) => ({ ...f, discountPercent: e.target.value }))}
                 placeholder="Discount % (optional)"
                 inputMode="decimal"
-                className="rounded-lg border px-3 py-2 text-sm"
+                className="mc-input"
               />
             </div>
             <input
               value={form.image}
               onChange={(e) => setForm((f) => ({ ...f, image: e.target.value }))}
               placeholder="Image URL (optional)"
-              className="rounded-lg border px-3 py-2 text-sm"
+              className="mc-input"
             />
 
-            <div className="rounded-xl border p-3">
+            <div className="rounded-xl border border-white/60 bg-white/25 p-3">
               <div className="text-sm font-medium">Included items</div>
               <div className="mt-3 flex flex-wrap gap-2">
                 <select
                   value={form.productId}
                   onChange={(e) => setForm((f) => ({ ...f, productId: e.target.value }))}
-                  className="rounded-lg border px-3 py-2 text-sm"
+                  className="mc-input"
                 >
                   <option value="">Select product</option>
                   {products.map((p) => (
@@ -168,19 +171,19 @@ export default function AdminPackagesPage() {
                   onChange={(e) => setForm((f) => ({ ...f, quantity: e.target.value }))}
                   placeholder="Qty"
                   inputMode="numeric"
-                  className="w-24 rounded-lg border px-3 py-2 text-sm"
+                  className="mc-input w-24"
                 />
                 <button
                   type="button"
                   onClick={addItem}
-                  className="rounded-lg border px-3 py-2 text-sm hover:bg-neutral-50"
+                  className="mc-btn-outline"
                 >
                   Add item
                 </button>
               </div>
-              <div className="mt-3 text-sm text-neutral-700">
+              <div className="mt-3 text-sm text-zinc-700">
                 {form.items.length === 0 ? (
-                  <div className="text-neutral-600">No items added.</div>
+                  <div className="text-zinc-600">No items added.</div>
                 ) : (
                   <ul className="space-y-1">
                     {form.items.map((it, idx) => (
@@ -197,33 +200,33 @@ export default function AdminPackagesPage() {
               type="button"
               disabled={!canSubmit}
               onClick={createPackage}
-              className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:bg-neutral-300"
+              className="mc-btn disabled:cursor-not-allowed"
             >
               Create
             </button>
           </div>
         </div>
 
-        <div className="rounded-2xl border bg-white">
-          <div className="border-b p-4 text-sm font-medium">Packages</div>
+        <div className="mc-card overflow-hidden p-0">
+          <div className="border-b border-white/50 p-4 text-sm font-medium">Packages</div>
           {loading ? (
-            <div className="p-4 text-sm text-neutral-600">Loading…</div>
+            <div className="p-4 text-sm text-zinc-600">Loading…</div>
           ) : packages.length === 0 ? (
-            <div className="p-4 text-sm text-neutral-600">No packages.</div>
+            <div className="p-4 text-sm text-zinc-600">No packages.</div>
           ) : (
             <div className="divide-y">
               {packages.map((p) => (
                 <div key={p.id} className="flex items-center justify-between gap-3 p-4">
                   <div>
                     <div className="text-sm font-medium">{p.name}</div>
-                    <div className="mt-1 text-xs text-neutral-600">
-                      ${p.price.toFixed(2)}{p.discountPercent ? ` · ${p.discountPercent}% off` : ''}
+                    <div className="mt-1 text-xs text-zinc-600">
+                      {formatLkr(p.price)}{p.discountPercent ? ` · ${p.discountPercent}% off` : ''}
                     </div>
                   </div>
                   <button
                     type="button"
                     onClick={() => deletePackage(p.id)}
-                    className="rounded-lg border px-3 py-2 text-sm hover:bg-neutral-50"
+                    className="mc-btn-outline"
                   >
                     Delete
                   </button>

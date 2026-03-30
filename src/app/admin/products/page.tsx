@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-
-type Category = { id: string; name: string; slug: string };
+import { formatLkr } from '@/lib/money';
 
 type Product = {
   id: string;
@@ -14,207 +14,117 @@ type Product = {
   category?: { name: string; slug: string } | null;
 };
 
-export default function AdminProductsPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
+export default function AdminProductsListPage() {
+  const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [form, setForm] = useState({
-    name: '',
-    shortDescription: '',
-    description: '',
-    price: '0',
-    stock: '0',
-    categorySlug: '',
-    images: '',
-  });
-
-  const canSubmit = useMemo(() => {
-    return (
-      form.name.trim().length > 0 &&
-      form.shortDescription.trim().length > 0 &&
-      form.description.trim().length > 0 &&
-      Number(form.price) >= 0 &&
-      Number(form.stock) >= 0 &&
-      form.categorySlug.trim().length > 0
-    );
-  }, [form]);
-
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [cats, prods] = await Promise.all([
-        fetch('/api/categories').then((r) => r.json()),
-        fetch('/api/products').then((r) => r.json()),
-      ]);
-      setCategories(cats);
-      setProducts(prods);
-      if (!form.categorySlug && cats?.[0]?.slug) {
-        setForm((f) => ({ ...f, categorySlug: cats[0].slug }));
+      const res = await fetch('/api/products');
+      if (!res.ok) {
+        setProducts([]);
+        const msg = (await res.json().catch(() => null))?.error ?? 'Failed to load products';
+        toast.error(msg);
+        return;
       }
+      const data: unknown = await res.json().catch(() => null);
+      if (!Array.isArray(data)) {
+        setProducts([]);
+        toast.error('Unexpected response from server');
+        return;
+      }
+      setProducts(data as Product[]);
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function createProduct() {
-    if (!canSubmit) return;
-
-    const images = form.images
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean);
-
-    const res = await fetch('/api/products', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: form.name,
-        shortDescription: form.shortDescription,
-        description: form.description,
-        price: Number(form.price),
-        stock: Number(form.stock),
-        categorySlug: form.categorySlug,
-        images,
-      }),
-    });
-
-    if (!res.ok) {
-      const msg = (await res.json().catch(() => null))?.error ?? 'Create failed';
-      toast.error(msg);
-      return;
-    }
-
-    toast.success('Product created');
-    setForm((f) => ({ ...f, name: '', shortDescription: '', description: '', images: '' }));
-    await load();
-  }
+  }, [load]);
 
   async function deleteProduct(id: string) {
     if (!confirm('Delete this product?')) return;
     const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+    if (res.status === 401) {
+      toast.error('Please log in as admin to manage products');
+      router.push('/login?next=/admin/products');
+      return;
+    }
     if (!res.ok) {
-      toast.error('Delete failed');
+      const msg = (await res.json().catch(() => null))?.error ?? 'Delete failed';
+      toast.error(msg);
       return;
     }
     toast.success('Deleted');
     await load();
   }
 
-  return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-10">
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Admin · Products</h1>
-          <p className="mt-1 text-sm text-neutral-600">Create and manage products.</p>
-        </div>
-        <Link href="/admin" className="text-sm text-neutral-700 hover:text-neutral-900">
-          Back to dashboard
-        </Link>
-      </div>
-
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <div className="rounded-2xl border bg-white p-5">
-          <div className="text-sm font-medium">Add product</div>
-          <div className="mt-4 grid gap-3">
-            <input
-              value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              placeholder="Name"
-              className="rounded-lg border px-3 py-2 text-sm"
-            />
-            <input
-              value={form.shortDescription}
-              onChange={(e) => setForm((f) => ({ ...f, shortDescription: e.target.value }))}
-              placeholder="Short description"
-              className="rounded-lg border px-3 py-2 text-sm"
-            />
-            <textarea
-              value={form.description}
-              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-              placeholder="Full description"
-              rows={4}
-              className="rounded-lg border px-3 py-2 text-sm"
-            />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <input
-                value={form.price}
-                onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
-                placeholder="Price"
-                inputMode="decimal"
-                className="rounded-lg border px-3 py-2 text-sm"
-              />
-              <input
-                value={form.stock}
-                onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))}
-                placeholder="Stock"
-                inputMode="numeric"
-                className="rounded-lg border px-3 py-2 text-sm"
-              />
-            </div>
-            <select
-              value={form.categorySlug}
-              onChange={(e) => setForm((f) => ({ ...f, categorySlug: e.target.value }))}
-              className="rounded-lg border px-3 py-2 text-sm"
-            >
-              <option value="">Select category</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.slug}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            <input
-              value={form.images}
-              onChange={(e) => setForm((f) => ({ ...f, images: e.target.value }))}
-              placeholder="Images (comma-separated URLs)"
-              className="rounded-lg border px-3 py-2 text-sm"
-            />
-
-            <button
-              type="button"
-              disabled={!canSubmit}
-              onClick={createProduct}
-              className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:bg-neutral-300"
-            >
-              Create
-            </button>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border bg-white">
-          <div className="border-b p-4 text-sm font-medium">Products</div>
-          {loading ? (
-            <div className="p-4 text-sm text-neutral-600">Loading…</div>
-          ) : products.length === 0 ? (
-            <div className="p-4 text-sm text-neutral-600">No products.</div>
-          ) : (
-            <div className="divide-y">
-              {products.map((p) => (
-                <div key={p.id} className="flex items-center justify-between gap-3 p-4">
-                  <div>
-                    <div className="text-sm font-medium">{p.name}</div>
-                    <div className="mt-1 text-xs text-neutral-600">
-                      {p.category?.name ?? '—'} · ${p.price.toFixed(2)} · Stock {p.stock}
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => deleteProduct(p.id)}
-                    className="rounded-lg border px-3 py-2 text-sm hover:bg-neutral-50"
-                  >
+  let body: React.ReactNode;
+  if (loading) {
+    body = <div className="p-4 text-sm text-zinc-600">Loading…</div>;
+  } else if (products.length === 0) {
+    body = <div className="p-4 text-sm text-zinc-600">No products.</div>;
+  } else {
+    body = (
+      <table className="w-full text-left text-sm">
+        <thead className="border-b border-white/50 bg-white/40 text-xs text-zinc-600">
+          <tr>
+            <th className="px-4 py-3">Name</th>
+            <th className="px-4 py-3">Category</th>
+            <th className="px-4 py-3 text-right">Price</th>
+            <th className="px-4 py-3 text-right">Qty</th>
+            <th className="px-4 py-3 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((p) => (
+            <tr key={p.id} className="border-b border-white/50 last:border-0 hover:bg-white/35">
+              <td className="px-4 py-3 font-medium text-zinc-900">{p.name}</td>
+              <td className="px-4 py-3 text-zinc-700">{p.category?.name ?? '—'}</td>
+              <td className="px-4 py-3 text-right tabular-nums text-zinc-900">{formatLkr(p.price)}</td>
+              <td className="px-4 py-3 text-right tabular-nums text-zinc-900">{p.stock}</td>
+              <td className="px-4 py-3 text-right">
+                <div className="inline-flex items-center justify-end gap-2">
+                  <Link href={`/admin/products/${p.id}`} className="mc-btn-outline">
+                    Edit
+                  </Link>
+                  <button type="button" onClick={() => deleteProduct(p.id)} className="mc-btn-outline">
                     Delete
                   </button>
                 </div>
-              ))}
-            </div>
-          )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  }
+
+  return (
+    <div className="mc-container py-10">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight">
+            <span className="mc-text-gradient">Admin · Products</span>
+          </h1>
+          <p className="mt-1 text-sm text-zinc-600">Create, edit, and delete products.</p>
         </div>
+        <div className="flex items-center gap-2">
+          <Link href="/admin/products/new" className="mc-btn">
+            Add product
+          </Link>
+          <Link href="/admin" className="mc-pill hover:bg-white">
+            Back to dashboard
+          </Link>
+        </div>
+      </div>
+
+      <div className="mc-card mt-6 overflow-hidden p-0">
+        <div className="border-b border-white/50 p-4 text-sm font-medium">Products</div>
+        {body}
       </div>
     </div>
   );

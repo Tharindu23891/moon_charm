@@ -30,10 +30,12 @@ export default async function CategoriesPage() {
   ];
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-10">
+    <div className="mc-container py-10">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Categories</h1>
-        <p className="mt-1 text-sm text-neutral-600">
+        <h1 className="text-3xl font-semibold tracking-tight">
+          <span className="mc-text-gradient">Categories</span>
+        </h1>
+        <p className="mt-1 text-sm text-zinc-600">
           Click a category to filter products.
         </p>
       </div>
@@ -43,10 +45,10 @@ export default async function CategoriesPage() {
           <Link
             key={c.id}
             href={`/products?category=${encodeURIComponent(c.slug)}`}
-            className="rounded-2xl border bg-white p-5 hover:bg-neutral-50"
+            className="mc-card-hover group p-5"
           >
             <div className="text-sm font-medium">{c.name}</div>
-            <div className="mt-1 text-xs text-neutral-600">View products</div>
+            <div className="mt-1 text-xs text-zinc-600 group-hover:text-zinc-700">View products</div>
           </Link>
         ))}
       </div>

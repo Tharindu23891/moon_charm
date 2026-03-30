@@ -38,10 +38,12 @@ export default async function PackagesPage({
   }));
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-10">
+    <div className="mc-container py-10">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Packages</h1>
-        <p className="mt-1 text-sm text-neutral-600">Curated bundles and gift boxes.</p>
+        <h1 className="text-3xl font-semibold tracking-tight">
+          <span className="mc-text-gradient">Packages</span>
+        </h1>
+        <p className="mt-1 text-sm text-zinc-600">Curated bundles and gift boxes.</p>
       </div>
 
       <div className="mt-6 flex items-center justify-end">
@@ -49,7 +51,7 @@ export default async function PackagesPage({
           <select
             name="sort"
             defaultValue={sort}
-            className="rounded-lg border bg-white px-3 py-2 text-sm"
+            className="mc-input"
           >
             <option value="newest">Newest</option>
             <option value="popularity">Popularity</option>
@@ -58,7 +60,7 @@ export default async function PackagesPage({
           </select>
           <button
             type="submit"
-            className="ml-2 rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+            className="mc-btn ml-2"
           >
             Apply
           </button>
@@ -72,7 +74,7 @@ export default async function PackagesPage({
       </div>
 
       {list.length === 0 ? (
-        <div className="mt-10 rounded-2xl border bg-white p-8 text-center text-sm text-neutral-600">
+        <div className="mc-card mt-10 p-8 text-center text-sm text-zinc-600">
           No packages found.
         </div>
       ) : null}

@@ -1,6 +1,7 @@
 'use client';
 
 import { AddToCartButton } from '@/components/cart/add-to-cart-button';
+import { formatLkr } from '@/lib/money';
 
 function discountedPrice(price: number, discountPercent?: number | null) {
   if (!discountPercent) return price;
@@ -21,14 +22,18 @@ export function PackagePurchasePanel({
   const effectivePrice = discountedPrice(pkg.price, pkg.discountPercent);
 
   return (
-    <div className="rounded-2xl border bg-white p-5">
-      <div className="text-sm font-medium">Add package</div>
+    <div className="mc-card mc-card-hover p-5">
+      <div className="text-sm font-semibold">Add package</div>
       <div className="mt-3 flex items-center justify-between">
         <div className="text-sm text-neutral-600">Price</div>
-        <div className="text-lg font-semibold">${effectivePrice.toFixed(2)}</div>
+        <div className="text-lg font-extrabold">
+          <span className="mc-text-gradient">{formatLkr(effectivePrice)}</span>
+        </div>
       </div>
       {pkg.discountPercent ? (
-        <div className="mt-1 text-xs text-neutral-600">{pkg.discountPercent}% off</div>
+        <div className="mt-1 text-xs text-neutral-600">
+          Save {pkg.discountPercent}% — was {formatLkr(pkg.price)}
+        </div>
       ) : null}
       <div className="mt-4">
         <AddToCartButton

@@ -9,15 +9,14 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 
-const registerSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(80),
+const loginSchema = z.object({
   email: z.email({ message: 'Valid email is required' }),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
-type RegisterValues = z.infer<typeof registerSchema>;
+type LoginValues = z.infer<typeof loginSchema>;
 
-export default function RegisterPage() {
+export function LoginClient({ next }: Readonly<{ next: string }>) {
   const router = useRouter();
   const [googleEnabled, setGoogleEnabled] = useState(false);
 
@@ -38,58 +37,44 @@ export default function RegisterPage() {
     };
   }, []);
 
-  const form = useForm<RegisterValues>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: { name: '', email: '', password: '' },
+  const form = useForm<LoginValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' },
   });
 
-  async function onSubmit(values: RegisterValues) {
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(values),
-    });
-
-    if (!res.ok) {
-      const msg = (await res.json().catch(() => null))?.error ?? 'Registration failed';
-      toast.error(msg);
-      return;
-    }
-
-    const login = await signIn('credentials', {
+  async function onSubmit(values: LoginValues) {
+    const res = await signIn('credentials', {
       email: values.email,
       password: values.password,
       redirect: false,
     });
 
-    if (!login || login.error) {
-      toast.success('Account created');
-      router.push('/login');
+    if (!res || res.error) {
+      toast.error('Invalid email or password');
       return;
     }
 
-    toast.success('Welcome');
-    router.push('/');
+    toast.success('Welcome back');
+    router.push(next || '/');
   }
 
   return (
     <div className="mc-container py-12">
       <div className="mx-auto w-full max-w-md">
         <div className="relative overflow-hidden rounded-3xl border border-white/50 bg-white/70 p-7 shadow-xl shadow-violet-200/40 backdrop-blur-xl">
-          <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-rose-200/40 blur-3xl" />
+          <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-fuchsia-200/40 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-12 -left-12 h-44 w-44 rounded-full bg-violet-200/40 blur-3xl" />
 
           <div className="relative">
             <h1 className="text-2xl font-extrabold tracking-tight text-neutral-900">
-              Create your <span className="mc-text-gradient">The Moon Charm</span> account
+              Welcome back to <span className="mc-text-gradient">The Moon Charm</span>
             </h1>
-            <p className="mt-1 text-sm text-neutral-600">Start gifting in style.</p>
+            <p className="mt-1 text-sm text-neutral-600">Access your account.</p>
 
-            <form onSubmit={form.handleSubmit(onSubmit)} className="mt-7 grid gap-3">
-              <Field label="Name" error={form.formState.errors.name?.message}>
-                <input {...form.register('name')} className="mc-input" />
-              </Field>
-
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className={`${googleEnabled ? 'mt-5' : 'mt-7'} grid gap-3`}
+            >
               <Field label="Email" error={form.formState.errors.email?.message}>
                 <input type="email" {...form.register('email')} className="mc-input" />
               </Field>
@@ -99,25 +84,25 @@ export default function RegisterPage() {
               </Field>
 
               <button type="submit" disabled={form.formState.isSubmitting} className="mc-btn mt-2">
-                {form.formState.isSubmitting ? 'Creating…' : 'Create account'}
+                {form.formState.isSubmitting ? 'Signing in…' : 'Login'}
               </button>
 
               {googleEnabled ? (
                 <button
                   type="button"
                   className="mt-3 inline-flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-neutral-200 bg-white px-4 text-sm font-semibold text-neutral-800 shadow-sm transition-all duration-150 hover:bg-neutral-50 hover:shadow-md active:translate-y-px active:scale-[0.99] active:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-200/60"
-                  onClick={() => signIn('google', { callbackUrl: '/' })}
+                  onClick={() => signIn('google', { callbackUrl: next || '/' })}
                 >
                   <GoogleGIcon />
-                  <span>Sign up with Google</span>
+                  <span>Sign in with Google</span>
                 </button>
               ) : null}
             </form>
 
             <div className="mt-5 text-sm text-neutral-600">
-              Already have an account?{' '}
-              <Link href="/login" className="font-semibold text-fuchsia-700 hover:text-fuchsia-800">
-                Login
+              Don’t have an account?{' '}
+              <Link href="/register" className="font-semibold text-fuchsia-700 hover:text-fuchsia-800">
+                Register
               </Link>
             </div>
           </div>
@@ -147,7 +132,11 @@ function Field({
 
 function GoogleGIcon() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 48 48" className="h-5 w-5">
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 48 48"
+      className="h-5 w-5"
+    >
       <path
         className="fill-blue-500"
         d="M47.12 24.53c0-1.64-.15-3.21-.43-4.73H24v8.95h12.98c-.56 2.9-2.18 5.36-4.64 7.01v5.83h7.5c4.39-4.04 7.28-10 7.28-17.06z"

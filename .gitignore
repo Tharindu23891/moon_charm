@@ -30,3 +30,6 @@ Desktop.ini
 # misc
 .vercel/
 .turbo/
+
+# typescript incremental build info
+*.tsbuildinfo

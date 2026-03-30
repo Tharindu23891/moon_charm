@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { AddToCartButton } from '@/components/cart/add-to-cart-button';
+import { formatLkr } from '@/lib/money';
 
 export function ProductPurchasePanel({
   product,
@@ -17,11 +18,13 @@ export function ProductPurchasePanel({
   const [qty, setQty] = useState(1);
 
   return (
-    <div className="rounded-2xl border bg-white p-5">
-      <div className="text-sm font-medium">Purchase</div>
+    <div className="mc-card mc-card-hover p-5">
+      <div className="text-sm font-semibold">Purchase</div>
       <div className="mt-3 flex items-center justify-between">
         <div className="text-sm text-neutral-600">Price</div>
-        <div className="text-lg font-semibold">${product.price.toFixed(2)}</div>
+        <div className="text-lg font-extrabold">
+          <span className="mc-text-gradient">{formatLkr(product.price)}</span>
+        </div>
       </div>
       <div className="mt-4 flex items-center justify-between gap-3">
         <div className="text-sm text-neutral-600">Quantity</div>
@@ -31,7 +34,7 @@ export function ProductPurchasePanel({
           max={Math.max(1, product.stock)}
           value={qty}
           onChange={(e) => setQty(Math.max(1, Number(e.target.value) || 1))}
-          className="w-24 rounded-lg border px-3 py-2 text-sm"
+          className="mc-input w-24"
         />
       </div>
       <div className="mt-4">

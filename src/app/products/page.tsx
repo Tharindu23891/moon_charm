@@ -14,9 +14,9 @@ function getParam(
 
 export default async function ProductsPage({
   searchParams,
-}: {
+}: Readonly<{
   searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
+}>) {
   const sp = await searchParams;
   const q = getParam(sp, 'q') ?? '';
   const category = getParam(sp, 'category') ?? '';
@@ -49,9 +49,10 @@ export default async function ProductsPage({
   };
 
   const products = await Product.find(filter)
+    .select('name shortDescription price images stock categoryId')
     .sort(sortMap[sort] ?? sortMap.newest)
     .limit(200)
-    .populate('categoryId')
+    .populate({ path: 'categoryId', select: 'name slug' })
     .lean();
 
   const list: ProductListItem[] = products.map((p: any) => ({
@@ -65,31 +66,33 @@ export default async function ProductsPage({
   }));
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-10">
+    <div className="mc-container py-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Products</h1>
-          <p className="mt-1 text-sm text-neutral-600">
+          <h1 className="text-3xl font-semibold tracking-tight">
+            <span className="mc-text-gradient">Products</span>
+          </h1>
+          <p className="mt-1 text-sm text-zinc-600">
             Browse individual gift items.
           </p>
         </div>
-        <Link href="/categories" className="text-sm text-neutral-700 hover:text-neutral-900">
+        <Link href="/categories" className="mc-pill hover:bg-white">
           Browse categories
         </Link>
       </div>
 
-      <form className="mt-6 grid gap-3 rounded-2xl border bg-white p-4 md:grid-cols-12">
+      <form className="mc-card mt-6 grid gap-3 p-4 md:grid-cols-12">
         <input
           name="q"
           defaultValue={q}
           placeholder="Search gifts..."
-          className="md:col-span-4 rounded-lg border px-3 py-2 text-sm"
+          className="mc-input md:col-span-4"
         />
 
         <select
           name="category"
           defaultValue={category}
-          className="md:col-span-3 rounded-lg border px-3 py-2 text-sm"
+          className="mc-input md:col-span-3"
         >
           <option value="">All categories</option>
           {categories.map((c: any) => (
@@ -104,20 +107,20 @@ export default async function ProductsPage({
           defaultValue={minPrice}
           placeholder="Min price"
           inputMode="decimal"
-          className="md:col-span-2 rounded-lg border px-3 py-2 text-sm"
+          className="mc-input md:col-span-2"
         />
         <input
           name="maxPrice"
           defaultValue={maxPrice}
           placeholder="Max price"
           inputMode="decimal"
-          className="md:col-span-2 rounded-lg border px-3 py-2 text-sm"
+          className="mc-input md:col-span-2"
         />
 
         <select
           name="sort"
           defaultValue={sort}
-          className="md:col-span-1 rounded-lg border px-3 py-2 text-sm"
+          className="mc-input md:col-span-1"
         >
           <option value="newest">Newest</option>
           <option value="popularity">Popularity</option>
@@ -128,13 +131,13 @@ export default async function ProductsPage({
         <div className="md:col-span-12 flex items-center justify-end gap-2">
           <button
             type="submit"
-            className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+            className="mc-btn"
           >
             Apply
           </button>
           <Link
             href="/products"
-            className="rounded-lg border px-4 py-2 text-sm hover:bg-neutral-50"
+            className="mc-btn-outline"
           >
             Reset
           </Link>
@@ -148,7 +151,7 @@ export default async function ProductsPage({
       </div>
 
       {list.length === 0 ? (
-        <div className="mt-10 rounded-2xl border bg-white p-8 text-center text-sm text-neutral-600">
+        <div className="mc-card mt-10 p-8 text-center text-sm text-zinc-600">
           No products found.
         </div>
       ) : null}

@@ -1,14 +1,19 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from 'sonner';
+import { Inter } from 'next/font/google';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNavbar } from '@/components/site-navbar';
 import { Providers } from '@/app/providers';
 
+const inter = Inter({
+  subsets: ['latin'],
+});
+
 export const metadata: Metadata = {
   title: {
-    default: 'Moon Charm — Gifts & Packages',
-    template: '%s — Moon Charm',
+    default: 'The Moon Charm — Gifts & Packages',
+    template: '%s — The Moon Charm',
   },
   description: 'Shop gifts, bundles, and curated packages for every occasion.',
 };
@@ -17,8 +22,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className="h-full scroll-smooth">
+      <body className={inter.className}>
         <Providers>
           <div className="min-h-dvh flex flex-col">
             <SiteNavbar />

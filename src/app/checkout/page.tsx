@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useCart } from '@/components/cart/cart-context';
+import { formatLkr } from '@/lib/money';
 
 const checkoutSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
@@ -118,10 +119,12 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-10">
+    <div className="mc-container py-10">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Checkout</h1>
-        <p className="mt-1 text-sm text-neutral-600">
+        <h1 className="text-3xl font-semibold tracking-tight">
+          <span className="mc-text-gradient">Checkout</span>
+        </h1>
+        <p className="mt-1 text-sm text-zinc-600">
           Enter delivery details and confirm your order.
         </p>
       </div>
@@ -129,7 +132,7 @@ export default function CheckoutPage() {
       <div className="mt-6 grid gap-6 md:grid-cols-3">
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="md:col-span-2 rounded-2xl border bg-white p-5"
+          className="mc-card md:col-span-2 p-5"
         >
           <div className="text-sm font-medium">Customer details</div>
 
@@ -137,21 +140,21 @@ export default function CheckoutPage() {
             <Field label="Full name" error={form.formState.errors.fullName?.message}>
               <input
                 {...form.register('fullName')}
-                className="w-full rounded-lg border px-3 py-2 text-sm"
+                className="mc-input w-full"
               />
             </Field>
 
             <Field label="Email" error={form.formState.errors.email?.message}>
               <input
                 {...form.register('email')}
-                className="w-full rounded-lg border px-3 py-2 text-sm"
+                className="mc-input w-full"
               />
             </Field>
 
             <Field label="Phone" error={form.formState.errors.phone?.message}>
               <input
                 {...form.register('phone')}
-                className="w-full rounded-lg border px-3 py-2 text-sm"
+                className="mc-input w-full"
               />
             </Field>
           </div>
@@ -161,13 +164,13 @@ export default function CheckoutPage() {
             <Field label="Address line 1" error={form.formState.errors.line1?.message}>
               <input
                 {...form.register('line1')}
-                className="w-full rounded-lg border px-3 py-2 text-sm"
+                className="mc-input w-full"
               />
             </Field>
             <Field label="Address line 2" error={form.formState.errors.line2?.message}>
               <input
                 {...form.register('line2')}
-                className="w-full rounded-lg border px-3 py-2 text-sm"
+                className="mc-input w-full"
               />
             </Field>
 
@@ -175,25 +178,25 @@ export default function CheckoutPage() {
               <Field label="City" error={form.formState.errors.city?.message}>
                 <input
                   {...form.register('city')}
-                  className="w-full rounded-lg border px-3 py-2 text-sm"
+                  className="mc-input w-full"
                 />
               </Field>
               <Field label="State" error={form.formState.errors.state?.message}>
                 <input
                   {...form.register('state')}
-                  className="w-full rounded-lg border px-3 py-2 text-sm"
+                  className="mc-input w-full"
                 />
               </Field>
               <Field label="Postal code" error={form.formState.errors.postalCode?.message}>
                 <input
                   {...form.register('postalCode')}
-                  className="w-full rounded-lg border px-3 py-2 text-sm"
+                  className="mc-input w-full"
                 />
               </Field>
               <Field label="Country" error={form.formState.errors.country?.message}>
                 <input
                   {...form.register('country')}
-                  className="w-full rounded-lg border px-3 py-2 text-sm"
+                  className="mc-input w-full"
                 />
               </Field>
             </div>
@@ -203,7 +206,7 @@ export default function CheckoutPage() {
           <div className="mt-4">
             <select
               {...form.register('paymentMethod')}
-              className="w-full rounded-lg border px-3 py-2 text-sm"
+              className="mc-input w-full"
             >
               <option value="cod">Cash on delivery</option>
               <option value="card">Card</option>
@@ -214,26 +217,26 @@ export default function CheckoutPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="mt-6 inline-flex items-center justify-center rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300"
+            className="mc-btn mt-6 inline-flex items-center justify-center disabled:cursor-not-allowed"
           >
             {submitting ? 'Placing order…' : 'Place order'}
           </button>
         </form>
 
-        <div className="rounded-2xl border bg-white p-5">
+        <div className="mc-card p-5">
           <div className="text-sm font-medium">Order summary</div>
-          <div className="mt-3 space-y-2 text-sm text-neutral-700">
+          <div className="mt-3 space-y-2 text-sm text-zinc-700">
             {items.map((it) => (
               <div key={it.refId} className="flex items-center justify-between gap-3">
                 <span className="truncate">{it.quantity}× {it.name}</span>
-                <span className="font-medium">${(it.unitPrice * it.quantity).toFixed(2)}</span>
+                <span className="font-medium">{formatLkr(it.unitPrice * it.quantity)}</span>
               </div>
             ))}
-            {items.length === 0 ? <div className="text-neutral-600">—</div> : null}
+            {items.length === 0 ? <div className="text-zinc-600">—</div> : null}
           </div>
           <div className="mt-4 flex items-center justify-between text-sm">
-            <span className="text-neutral-600">Total</span>
-            <span className="text-lg font-semibold">${subtotal.toFixed(2)}</span>
+            <span className="text-zinc-600">Total</span>
+            <span className="text-lg font-semibold text-zinc-900">{formatLkr(subtotal)}</span>
           </div>
         </div>
       </div>
@@ -252,9 +255,9 @@ function Field({
 }) {
   return (
     <label className="grid gap-1 text-sm">
-      <span className="text-neutral-700">{label}</span>
+      <span className="text-zinc-700">{label}</span>
       {children}
-      {error ? <span className="text-xs text-red-600">{error}</span> : null}
+      {error ? <span className="text-xs text-rose-700">{error}</span> : null}
     </label>
   );
 }

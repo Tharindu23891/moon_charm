@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { connectToDatabase } from '@/lib/mongoose';
 import { getSessionUser } from '@/lib/server-auth';
 import { Order } from '@/models/Order';
+import { formatLkr } from '@/lib/money';
 
 export default async function OrdersPage() {
   const { userId, role } = await getSessionUser();
@@ -13,23 +14,25 @@ export default async function OrdersPage() {
   const orders = await Order.find(filter).sort({ createdAt: -1 }).limit(200).lean();
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-10">
+    <div className="mc-container py-10">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Orders</h1>
-          <p className="mt-1 text-sm text-neutral-600">Order history and status.</p>
+          <h1 className="text-3xl font-semibold tracking-tight">
+            <span className="mc-text-gradient">Orders</span>
+          </h1>
+          <p className="mt-1 text-sm text-zinc-600">Order history and status.</p>
         </div>
-        <Link href="/products" className="text-sm text-neutral-700 hover:text-neutral-900">
+        <Link href="/products" className="mc-pill hover:bg-white">
           Continue shopping
         </Link>
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-2xl border bg-white">
+      <div className="mc-card mt-6 overflow-hidden p-0">
         {orders.length === 0 ? (
-          <div className="p-8 text-center text-sm text-neutral-600">No orders yet.</div>
+          <div className="p-8 text-center text-sm text-zinc-600">No orders yet.</div>
         ) : (
           <table className="w-full text-left text-sm">
-            <thead className="border-b bg-neutral-50 text-xs text-neutral-600">
+            <thead className="border-b border-white/50 bg-white/40 text-xs text-zinc-600">
               <tr>
                 <th className="px-4 py-3">Order</th>
                 <th className="px-4 py-3">Status</th>
@@ -40,12 +43,12 @@ export default async function OrdersPage() {
             </thead>
             <tbody>
               {orders.map((o: any) => (
-                <tr key={o._id.toString()} className="border-b last:border-0">
+                <tr key={o._id.toString()} className="border-b border-white/50 last:border-0 hover:bg-white/35">
                   <td className="px-4 py-3 font-medium">{o._id.toString().slice(-8)}</td>
                   <td className="px-4 py-3">{o.status}</td>
                   <td className="px-4 py-3">{o.paymentStatus}</td>
-                  <td className="px-4 py-3">${Number(o.total).toFixed(2)}</td>
-                  <td className="px-4 py-3 text-neutral-600">
+                  <td className="px-4 py-3">{formatLkr(Number(o.total))}</td>
+                  <td className="px-4 py-3 text-zinc-600">
                     {new Date(o.createdAt).toLocaleDateString()}
                   </td>
                 </tr>

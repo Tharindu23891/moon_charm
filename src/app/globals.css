@@ -9,3 +9,96 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+@layer base {
+  body {
+    @apply text-neutral-900;
+    @apply bg-linear-to-b from-violet-50 via-rose-50 to-white;
+  }
+
+  ::selection {
+    @apply bg-fuchsia-200 text-neutral-900;
+  }
+}
+
+@layer components {
+  .mc-container {
+    @apply mx-auto w-full max-w-6xl px-4;
+  }
+
+  .mc-card {
+    @apply rounded-2xl border border-white/50 bg-white/70 backdrop-blur-xl;
+    @apply shadow-lg shadow-violet-100/40;
+  }
+
+  .mc-card-hover {
+    @apply transition-all duration-300;
+    @apply hover:-translate-y-1 hover:shadow-xl hover:shadow-violet-200/40;
+  }
+
+  .mc-btn {
+    @apply inline-flex items-center justify-center gap-2;
+    @apply rounded-xl px-4 py-2 text-sm font-semibold;
+    @apply text-white;
+    @apply bg-linear-to-r from-violet-600 via-fuchsia-600 to-rose-500;
+    @apply shadow-md shadow-fuchsia-200/40;
+    @apply transition-all duration-300;
+    @apply hover:brightness-110 hover:shadow-lg hover:shadow-fuchsia-200/60;
+    @apply active:scale-[0.99];
+    @apply disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .mc-btn-outline {
+    @apply inline-flex items-center justify-center gap-2;
+    @apply rounded-xl px-4 py-2 text-sm font-semibold;
+    @apply border border-white/60 bg-white/60 backdrop-blur;
+    @apply text-neutral-800;
+    @apply shadow-sm shadow-violet-100/40;
+    @apply transition-all duration-300;
+    @apply hover:bg-white/80 hover:shadow-md hover:shadow-violet-200/40;
+    @apply active:scale-[0.99];
+  }
+
+  .mc-input {
+    @apply w-full rounded-xl border border-white/60 bg-white/70 backdrop-blur;
+    @apply px-3 py-2 text-sm;
+    @apply shadow-sm shadow-violet-100/40;
+    @apply outline-none transition-all duration-200;
+    @apply focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-200/60;
+    @apply placeholder:text-neutral-400;
+  }
+
+  .mc-pill {
+    @apply inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold;
+    @apply border border-white/60 bg-white/70 backdrop-blur;
+    @apply text-neutral-700;
+  }
+
+  .mc-text-gradient {
+    @apply bg-linear-to-r from-violet-600 via-fuchsia-600 to-rose-500;
+    @apply bg-clip-text text-transparent;
+  }
+}
+
+@layer utilities {
+  @keyframes mc-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes mc-fade-up {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
