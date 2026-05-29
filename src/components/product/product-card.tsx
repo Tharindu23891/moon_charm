@@ -28,6 +28,7 @@ export function ProductCard({ product }: Readonly<{ product: ProductListItem }>)
             src={image}
             alt={product.name}
             fill
+            sizes="400px"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         </Link>

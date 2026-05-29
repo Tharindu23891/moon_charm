@@ -40,7 +40,7 @@ export default async function PackageDetailsPage({
 
       <div className="mt-6 grid gap-6 md:grid-cols-2">
         <div className="mc-card relative aspect-[4/3] overflow-hidden p-0">
-          <Image src={image} alt={(pkg as any).name} fill className="object-cover" />
+          <Image src={image} alt={(pkg as any).name} fill sizes="600px" className="object-cover" />
         </div>
 
         <div className="space-y-4">

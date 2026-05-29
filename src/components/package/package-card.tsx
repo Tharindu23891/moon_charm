@@ -40,6 +40,7 @@ export function PackageCard({ pkg }: { pkg: PackageListItem }) {
             src={image}
             alt={pkg.name}
             fill
+            sizes="400px"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         </div>

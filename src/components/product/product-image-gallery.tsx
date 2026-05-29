@@ -28,7 +28,7 @@ export function ProductImageGallery({ images, productName }: Readonly<ProductIma
   return (
     <div>
       <div className="mc-card relative aspect-4/3 overflow-hidden p-0">
-        <Image src={activeImage} alt={productName} fill className="object-cover" />
+        <Image src={activeImage} alt={productName} fill sizes="600px" className="object-cover" />
 
         {hasMultipleImages && (
           <>
@@ -69,7 +69,7 @@ export function ProductImageGallery({ images, productName }: Readonly<ProductIma
                 }`}
                 aria-label={`Show image ${index + 1}`}
               >
-                <Image src={src} alt={`${productName} thumbnail ${index + 1}`} fill className="object-cover" />
+                <Image src={src} alt={`${productName} thumbnail ${index + 1}`} fill sizes="150px" className="object-cover" />
               </button>
             );
           })}

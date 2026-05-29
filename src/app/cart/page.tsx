@@ -48,6 +48,7 @@ export default function CartPage() {
                       src={it.image || 'https://images.unsplash.com/photo-1513883049090-d0b7439799bf?auto=format&fit=crop&w=400&q=60'}
                       alt={it.name}
                       fill
+                      sizes="80px"
                       className="object-cover"
                     />
                   </div>
