@@ -23,10 +23,30 @@ export async function connectToDatabase() {
     throw new Error('Missing MONGODB_URI in environment variables');
   }
 
-  cached.promise ??= mongoose.connect(mongoUri, {
+  const fallbackUri = 'mongodb://127.0.0.1:27017/moon_charm';
+  const connectionOptions = {
     bufferCommands: false,
+    serverSelectionTimeoutMS: 2000,
+  };
+
+  cached.promise ??= mongoose.connect(mongoUri, {
+    ...connectionOptions,
+  }).catch(async (error) => {
+    if (!mongoUri.startsWith('mongodb+srv://')) {
+      throw error;
+    }
+
+    console.warn('MongoDB Atlas connection failed, falling back to local MongoDB.', error);
+    return mongoose.connect(fallbackUri, {
+      ...connectionOptions,
+    });
   });
 
-  cached.conn = await cached.promise;
-  return cached.conn;
+  try {
+    cached.conn = await cached.promise;
+    return cached.conn;
+  } catch (error) {
+    cached.promise = null;
+    throw error;
+  }
 }

@@ -6,11 +6,11 @@ export function AddToCartButton({
   item,
   quantity = 1,
   disabled,
-}: {
+}: Readonly<{
   item: Omit<CartItem, 'quantity'>;
   quantity?: number;
   disabled?: boolean;
-}) {
+}>) {
   const { addItem } = useCart();
 
   return (

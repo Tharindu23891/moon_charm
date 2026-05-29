@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { BrandName } from '@/components/brand-name';
 
 export function SiteFooter() {
   return (
@@ -6,9 +7,7 @@ export function SiteFooter() {
       <div className="mc-container grid gap-10 py-12 md:grid-cols-3">
         <div>
           <div className="text-base font-extrabold tracking-tight">
-            <span className="bg-gradient-to-r from-violet-200 via-fuchsia-200 to-rose-200 bg-clip-text text-transparent">
-                The Moon Charm
-            </span>
+            <BrandName noWrap />
           </div>
           <p className="mt-3 max-w-sm text-sm text-white/80">
             Premium gifts and curated packages for every occasion — delivered with love and a little moonlit magic.
@@ -69,7 +68,7 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-white/10 py-5 text-center text-xs text-white/60">
-          © {new Date().getFullYear()} The Moon Charm
+          © {new Date().getFullYear()} <BrandName noWrap />
       </div>
     </footer>
   );

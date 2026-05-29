@@ -14,7 +14,7 @@ export type ProductListItem = {
 };
 
 export function ProductCard({ product }: Readonly<{ product: ProductListItem }>) {
-  const image = product.images?.[0] || 'https://images.unsplash.com/photo-1520975958225-2a44e04e0a4b?auto=format&fit=crop&w=800&q=60';
+  const image = product.images?.[0] || 'https://images.unsplash.com/photo-1778084765801-a53bc6dc5f96';
 
   return (
     <div className="mc-card mc-card-hover group p-4">

@@ -24,46 +24,55 @@ export default async function ProductsPage({
   const maxPrice = getParam(sp, 'maxPrice') ?? '';
   const sort = getParam(sp, 'sort') ?? 'newest';
 
-  await connectToDatabase();
+  let categories: any[] = [];
+  let list: ProductListItem[] = [];
+  let databaseUnavailable = false;
 
-  const categories = await Category.find({}).sort({ name: 1 }).lean();
+  try {
+    await connectToDatabase();
 
-  const filter: any = {};
-  if (q) filter.$text = { $search: q };
+    categories = await Category.find({}).sort({ name: 1 }).lean();
 
-  if (category) {
-    const cat = categories.find((c: any) => c.slug === category);
-    if (cat) filter.categoryId = cat._id;
+    const filter: any = {};
+    if (q) filter.$text = { $search: q };
+
+    if (category) {
+      const cat = categories.find((c: any) => c.slug === category);
+      if (cat) filter.categoryId = cat._id;
+    }
+
+    const priceFilter: any = {};
+    if (minPrice) priceFilter.$gte = Number(minPrice);
+    if (maxPrice) priceFilter.$lte = Number(maxPrice);
+    if (Object.keys(priceFilter).length > 0) filter.price = priceFilter;
+
+    const sortMap: Record<string, any> = {
+      newest: { createdAt: -1 },
+      popularity: { popularity: -1 },
+      'price-asc': { price: 1 },
+      'price-desc': { price: -1 },
+    };
+
+    const products = await Product.find(filter)
+      .select('name shortDescription price images stock categoryId')
+      .sort(sortMap[sort] ?? sortMap.newest)
+      .limit(200)
+      .populate({ path: 'categoryId', select: 'name slug' })
+      .lean();
+
+    list = products.map((p: any) => ({
+      id: p._id.toString(),
+      name: p.name,
+      shortDescription: p.shortDescription,
+      price: p.price,
+      images: p.images ?? [],
+      stock: p.stock,
+      category: p.categoryId ? { name: p.categoryId.name, slug: p.categoryId.slug } : null,
+    }));
+  } catch (error) {
+    databaseUnavailable = true;
+    console.error('Failed to load products page data from MongoDB', error);
   }
-
-  const priceFilter: any = {};
-  if (minPrice) priceFilter.$gte = Number(minPrice);
-  if (maxPrice) priceFilter.$lte = Number(maxPrice);
-  if (Object.keys(priceFilter).length > 0) filter.price = priceFilter;
-
-  const sortMap: Record<string, any> = {
-    newest: { createdAt: -1 },
-    popularity: { popularity: -1 },
-    'price-asc': { price: 1 },
-    'price-desc': { price: -1 },
-  };
-
-  const products = await Product.find(filter)
-    .select('name shortDescription price images stock categoryId')
-    .sort(sortMap[sort] ?? sortMap.newest)
-    .limit(200)
-    .populate({ path: 'categoryId', select: 'name slug' })
-    .lean();
-
-  const list: ProductListItem[] = products.map((p: any) => ({
-    id: p._id.toString(),
-    name: p.name,
-    shortDescription: p.shortDescription,
-    price: p.price,
-    images: p.images ?? [],
-    stock: p.stock,
-    category: p.categoryId ? { name: p.categoryId.name, slug: p.categoryId.slug } : null,
-  }));
 
   return (
     <div className="mc-container py-10">
@@ -143,6 +152,13 @@ export default async function ProductsPage({
           </Link>
         </div>
       </form>
+
+      {databaseUnavailable ? (
+        <div className="mc-card mt-6 border-amber-200/60 bg-amber-50/80 p-4 text-sm text-amber-900">
+          Product data is temporarily unavailable because the database connection failed.
+          The page is still loading, but filters and results will be empty until MongoDB is reachable.
+        </div>
+      ) : null}
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {list.map((p) => (

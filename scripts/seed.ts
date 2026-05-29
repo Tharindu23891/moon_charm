@@ -43,7 +43,7 @@ async function main() {
       description:
         'A premium handmade candle perfect for cozy nights and thoughtful gifting. Comes in a reusable glass jar.',
       images: [
-        'https://images.unsplash.com/photo-1603569283847-aa295f0d016a?auto=format&fit=crop&w=1200&q=60',
+        'https://images.unsplash.com/photo-1603569283847-aa295f0d016a',
       ],
       price: 18.99,
       categoryId: bySlug.get('birthday-gifts')!._id,
@@ -58,7 +58,7 @@ async function main() {
       description:
         'A curated collection of gourmet chocolates with a smooth finish and rich flavors. Perfect for celebrations.',
       images: [
-        'https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?auto=format&fit=crop&w=1200&q=60',
+        'https://images.unsplash.com/photo-1541592106381-b31e9677c0e5',
       ],
       price: 24.5,
       categoryId: bySlug.get('valentine-gifts')!._id,
@@ -73,7 +73,7 @@ async function main() {
       description:
         'A minimalist photo frame with a customizable engraving area. Ideal for anniversaries and weddings.',
       images: [
-        'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=60',
+        'https://images.unsplash.com/photo-1524758631624-e2822e304c36',
       ],
       price: 29.99,
       categoryId: bySlug.get('anniversary-gifts')!._id,
@@ -88,7 +88,7 @@ async function main() {
       description:
         'A gentle set of baby essentials made with skin-friendly materials. Great for baby showers and new parents.',
       images: [
-        'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=60',
+        'https://images.unsplash.com/photo-1519681393784-d120267933ba',
       ],
       price: 34,
       categoryId: bySlug.get('baby-gifts')!._id,
@@ -103,7 +103,7 @@ async function main() {
       description:
         'A low-maintenance plant suitable for office desks. A tasteful corporate gift option for teams and clients.',
       images: [
-        'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=1200&q=60',
+        'https://images.unsplash.com/photo-1485955900006-10f4d324d411',
       ],
       price: 21,
       categoryId: bySlug.get('corporate-gifts')!._id,
@@ -118,7 +118,7 @@ async function main() {
       description:
         'A premium hardbound journal designed to capture special moments. A thoughtful wedding gift.',
       images: [
-        'https://images.unsplash.com/photo-1455885666463-8f7e0a14851b?auto=format&fit=crop&w=1200&q=60',
+        'https://images.unsplash.com/photo-1779614026411-d326c9744e8c',
       ],
       price: 27.5,
       categoryId: bySlug.get('wedding-gifts')!._id,
@@ -135,7 +135,7 @@ async function main() {
       name: 'Sweet Celebration Bundle',
       slug: slugify('Sweet Celebration Bundle'),
       image:
-        'https://images.unsplash.com/photo-1513883049090-d0b7439799bf?auto=format&fit=crop&w=1200&q=60',
+        'https://images.unsplash.com/photo-1513883049090-d0b7439799bf',
       items: [
         { productId: productBySlug.get(slugify('Luxury Chocolate Box'))!._id, quantity: 1 },
         { productId: productBySlug.get(slugify('Handmade Scented Candle'))!._id, quantity: 1 },
@@ -149,7 +149,7 @@ async function main() {
       name: 'Memory Maker Set',
       slug: slugify('Memory Maker Set'),
       image:
-        'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=60',
+        'https://images.unsplash.com/photo-1524758631624-e2822e304c36',
       items: [
         { productId: productBySlug.get(slugify('Personalized Photo Frame'))!._id, quantity: 1 },
         { productId: productBySlug.get(slugify('Wedding Keepsake Journal'))!._id, quantity: 1 },

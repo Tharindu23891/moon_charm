@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
+import { BrandName } from '@/components/brand-name';
 
 const HERO_IMAGE_PRIMARY = '/about/hero2.png';
 const LOGO_IMAGE_PRIMARY = '/about/logo.jpeg';
@@ -171,7 +172,7 @@ export function AboutHeroSection() {
               unoptimized
               onError={() => setLogoSrc(LOGO_IMAGE_FALLBACK)}
             />
-            <span className="mc-text-gradient">The Moon Charm</span>
+            <BrandName noWrap />
           </div>
 
           <h1 className="mt-6 text-5xl font-extrabold tracking-tight text-rose-600 md:text-7xl">

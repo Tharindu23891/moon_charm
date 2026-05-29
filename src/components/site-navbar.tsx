@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import { useCart } from '@/components/cart/cart-context';
+import { BrandName } from '@/components/brand-name';
 
 const links = [
   { href: '/', label: 'Home' },
@@ -20,6 +21,7 @@ export function SiteNavbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session, status } = useSession();
+  const isAuthenticated = status === 'authenticated';
   const { count } = useCart();
   const [accountOpen, setAccountOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -34,9 +36,7 @@ export function SiteNavbar() {
     } hover:text-neutral-900 after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-gradient-to-r after:from-violet-500 after:via-fuchsia-500 after:to-rose-500 after:transition-all after:duration-300 hover:after:w-full`;
 
   let accountControls: React.ReactNode;
-  if (status === 'loading') {
-    accountControls = <div className="h-10 w-28 rounded-xl bg-white/60" />;
-  } else if (session?.user) {
+  if (isAuthenticated && session?.user) {
     accountControls = (
       <div className="relative">
         <button
@@ -118,9 +118,7 @@ export function SiteNavbar() {
                 sizes="40px"
               />
             </span>
-            <span className="text-neutral-900">The </span>
-            <span className="mc-text-gradient">Moon</span>{' '}
-            <span className="text-neutral-900">Charm</span>
+            <BrandName noWrap />
           </Link>
 
           <nav className="hidden items-center gap-5 md:flex">

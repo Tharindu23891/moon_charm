@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { connectToDatabase } from '@/lib/mongoose';
 import { Category } from '@/models/Category';
@@ -5,99 +6,64 @@ import { Product } from '@/models/Product';
 import { GiftPackage } from '@/models/GiftPackage';
 import { ProductCard } from '@/components/product/product-card';
 import { PackageCard } from '@/components/package/package-card';
+import { BrandName } from '@/components/brand-name';
+import { Inter, Instrument_Sans } from 'next/font/google';
+
+const instrumentSans = Instrument_Sans({
+  subsets: ['latin'],
+  variable: '--font-instrument-sans',
+  weight: ['400', '500', '600', '700'],
+});
 
 export default async function HomePage() {
-  await connectToDatabase();
+  let featuredProducts: any[] = [];
+  let featuredPackages: any[] = [];
+  let categories: any[] = [];
 
-  const [featuredProducts, featuredPackages, categories, offers] = await Promise.all([
-    Product.find({ isFeatured: true }).sort({ popularity: -1 }).limit(6).populate('categoryId').lean(),
-    GiftPackage.find({ isFeatured: true }).sort({ popularity: -1 }).limit(6).populate('items.productId').lean(),
-    Category.find({}).sort({ name: 1 }).limit(8).lean(),
-    GiftPackage.find({ discountPercent: { $gt: 0 } })
-      .sort({ discountPercent: -1 })
-      .limit(3)
-      .populate('items.productId')
-      .lean(),
-  ]);
+  try {
+    await connectToDatabase();
+
+    [featuredProducts, featuredPackages, categories] = await Promise.all([
+      Product.find({ isFeatured: true }).sort({ popularity: -1 }).limit(6).populate('categoryId').lean(),
+      GiftPackage.find({ isFeatured: true }).sort({ popularity: -1 }).limit(6).populate('items.productId').lean(),
+      Category.find({}).sort({ name: 1 }).limit(8).lean(),
+    ]);
+  } catch (error) {
+    console.error('Failed to load homepage data from MongoDB', error);
+  }
 
   return (
     <div className="mc-container py-10">
-      <section className="relative overflow-hidden rounded-3xl border border-white/50 bg-gradient-to-br from-violet-200/70 via-fuchsia-100/70 to-rose-200/70 p-8 shadow-xl shadow-violet-200/40 md:p-12">
-        <div className="pointer-events-none absolute -left-16 -top-16 h-56 w-56 rounded-full bg-fuchsia-300/30 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-20 -right-24 h-72 w-72 rounded-full bg-violet-300/30 blur-3xl" />
 
-        <div className="relative grid gap-10 md:grid-cols-2 md:items-center">
-          <div className="space-y-5">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/60 px-3 py-1 text-xs font-semibold text-neutral-800 backdrop-blur">
-              <span className="h-2 w-2 rounded-full bg-gradient-to-r from-violet-500 to-rose-500" />
-              {' '}
-              Premium gifting for every occasion
-            </div>
+      <section className="h-[65vh] relative max-w-7xl flex gap-8 justify-center flex-col">
 
-            <h1 className="text-4xl font-extrabold tracking-tight text-neutral-900 md:text-6xl">
-              Thoughtful gifts,{' '}
-              <span className="block mc-text-gradient">beautifully packaged.</span>
-            </h1>
 
-            <p className="max-w-xl text-base text-neutral-700 md:text-lg">
-              Shop curated gift items and bundles for birthdays, anniversaries,
-              weddings, corporate events, and more — crafted to delight.
-            </p>
 
-            <div className="flex flex-wrap gap-3">
-              <Link href="/products" className="mc-btn px-6 py-2.5">
-                Browse Products
-              </Link>
-              <Link href="/packages" className="mc-btn-outline px-6 py-2.5">
-                View Packages
-              </Link>
-            </div>
+<h1 className="text-9xl z-10 font-semibold tracking-tight instrument-serif-regular">
+ The Moon Charm
+</h1>
 
-            <div className="mt-4 flex flex-wrap gap-2">
-              <span className="mc-pill">Gift-ready packaging</span>
-              <span className="mc-pill">Fast checkout</span>
-              <span className="mc-pill">Curated bundles</span>
-            </div>
-          </div>
+<p className="text-lg z-10 max-w-prose text-neutral-600">
+  Curated gifts and bundles for birthdays, anniversaries, weddings,
+  corporate events, and more — crafted to delight.
+</p>
 
-          <div className="relative">
-            <div className="mc-card mc-card-hover animate-[mc-float_7s_ease-in-out_infinite] p-6">
-              <div className="flex items-center justify-between">
-                <div className="text-sm font-semibold">Special offers</div>
-                <span className="mc-pill border-rose-200/60 bg-white/70 text-rose-700">
-                  Limited time
-                </span>
-              </div>
 
-              <div className="mt-4 grid gap-2 text-sm">
-                {offers.length === 0 ? (
-                  <div className="text-neutral-600">Seed data will populate discounts here.</div>
-                ) : (
-                  (offers as any[]).map((o) => (
-                    <div
-                      key={o._id.toString()}
-                      className="flex items-center justify-between rounded-xl border border-white/50 bg-white/60 px-3 py-2"
-                    >
-                      <span className="truncate font-medium text-neutral-800">{o.name}</span>
-                      <span className="text-xs font-extrabold text-rose-600">
-                        {o.discountPercent}% off
-                      </span>
-                    </div>
-                  ))
-                )}
-              </div>
+<div className="flex items-center z-10 gap-4"><a href="/products" className="mc-btn px-6 py-2.5">
+  Shop products
+</a></div>
 
-              <div className="mt-5 flex items-center gap-2 text-xs text-neutral-600">
-                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-violet-200/60">✓</span>
-                {' '}
-                Secure checkout with The Moon Charm
-              </div>
-            </div>
+    <img
+      src="https://images.unsplash.com/photo-1524758631624-e2822e304c36"
+      alt="The Moon Charm"
+      className="w-full h-full scale-[2] max-h-[750px] object-cover absolute -top-65 -z-10 opacity-30"
+    />
 
-            <div className="pointer-events-none absolute -bottom-10 -left-8 hidden h-32 w-32 rotate-12 rounded-3xl bg-white/60 shadow-lg shadow-violet-200/40 md:block" />
-          </div>
-        </div>
+
+
       </section>
+
+{/* -------------------------------------------------------------------------------- */}
 
       <section className="mt-14">
         <div className="flex items-end justify-between gap-4">
@@ -122,7 +88,7 @@ export default async function HomePage() {
                 images: p.images ?? [],
                 stock: p.stock,
                 category: p.categoryId
-                  ? { name: (p as any).categoryId.name, slug: (p as any).categoryId.slug }
+                  ? { name: p.categoryId.name, slug: p.categoryId.slug }
                   : null,
               }}
             />
@@ -189,7 +155,7 @@ export default async function HomePage() {
               className="mc-card mc-card-hover p-5"
             >
               <div className="flex items-center gap-3">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-200/80 via-fuchsia-200/80 to-rose-200/80 shadow-sm shadow-violet-200/50">
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-linear-to-br from-violet-200/80 via-fuchsia-200/80 to-rose-200/80 shadow-sm shadow-violet-200/50">
                   <CategoryIcon idx={idx} />
                 </div>
                 <div>
@@ -235,7 +201,7 @@ export default async function HomePage() {
           ].map((t) => (
             <div
               key={t.name}
-              className="mc-card mc-card-hover bg-gradient-to-br from-white/75 via-white/65 to-violet-50/70 p-6"
+              className="mc-card mc-card-hover bg-linear-to-br from-white/75 via-white/65 to-violet-50/70 p-6"
             >
               <div className="flex items-center justify-between">
                 <div className="inline-flex items-center gap-1">
@@ -251,7 +217,7 @@ export default async function HomePage() {
               <div className="mt-4 text-sm text-neutral-700">“{t.quote}”</div>
 
               <div className="mt-5 flex items-center gap-3">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-violet-300/70 via-fuchsia-300/70 to-rose-300/70 text-sm font-extrabold text-neutral-900 shadow-sm shadow-violet-200/50">
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-violet-300/70 via-fuchsia-300/70 to-rose-300/70 text-sm font-extrabold text-neutral-900 shadow-sm shadow-violet-200/50">
                   {t.initials}
                 </div>
                 <div>
@@ -267,7 +233,7 @@ export default async function HomePage() {
   );
 }
 
-function CategoryIcon({ idx }: { idx: number }) {
+function CategoryIcon({ idx }: Readonly<{ idx: number }>) {
   const icon = idx % 4;
   if (icon === 0) {
     return (

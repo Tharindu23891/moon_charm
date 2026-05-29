@@ -1,13 +1,19 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from 'sonner';
-import { Inter } from 'next/font/google';
+import { Inter, Instrument_Sans } from 'next/font/google';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNavbar } from '@/components/site-navbar';
 import { Providers } from '@/app/providers';
 
 const inter = Inter({
   subsets: ['latin'],
+});
+
+const instrumentSans = Instrument_Sans({
+  subsets: ['latin'],
+  variable: '--font-instrument-sans',
+  weight: ['400', '500', '600', '700'],
 });
 
 export const metadata: Metadata = {
@@ -30,7 +36,7 @@ export default function RootLayout({
             <main className="flex-1">{children}</main>
             <SiteFooter />
           </div>
-          <Toaster richColors position="top-right" />
+          <Toaster richColors position="top-center" />
         </Providers>
       </body>
     </html>

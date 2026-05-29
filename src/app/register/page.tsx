@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
+import { BrandName } from '@/components/brand-name';
 
 const registerSchema = z.object({
   name: z.string().min(1, 'Name is required').max(80),
@@ -80,8 +81,8 @@ export default function RegisterPage() {
           <div className="pointer-events-none absolute -bottom-12 -left-12 h-44 w-44 rounded-full bg-violet-200/40 blur-3xl" />
 
           <div className="relative">
-            <h1 className="text-2xl font-extrabold tracking-tight text-neutral-900">
-              Create your <span className="mc-text-gradient">The Moon Charm</span> account
+            <h1 className="text-center text-2xl font-extrabold tracking-tight text-neutral-900">
+              Create your <BrandName noWrap /> Account
             </h1>
             <p className="mt-1 text-sm text-neutral-600">Start gifting in style.</p>
 
