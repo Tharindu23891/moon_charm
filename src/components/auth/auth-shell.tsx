@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { MoonMark } from '@/components/moon-mark';
 import { BrandName } from '@/components/brand-name';
+import { Button } from '@/components/ui/button';
 
 const AUTH_IMAGE =
   'https://images.unsplash.com/photo-1487530811176-3780de880c2d?auto=format&fit=crop&w=900&q=75';
@@ -43,9 +44,9 @@ export function AuthShell({
             <BrandName className="text-lg" noWrap />
           </Link>
           <h1 className="mt-8 font-display text-3xl">{title}</h1>
-          {subtitle ? <p className="mt-2 text-muted">{subtitle}</p> : null}
+          {subtitle ? <p className="mt-2 text-muted-foreground">{subtitle}</p> : null}
           <div className="mt-7">{children}</div>
-          {footer ? <div className="mt-6 text-sm text-muted">{footer}</div> : null}
+          {footer ? <div className="mt-6 text-sm text-muted-foreground">{footer}</div> : null}
         </div>
       </div>
     </div>
@@ -68,11 +69,7 @@ export function AuthField({
 
 export function GoogleButton({ onClick, label }: Readonly<{ onClick: () => void; label: string }>) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="inline-flex h-11 w-full items-center justify-center gap-3 rounded-[var(--r)] border border-line-strong bg-bg px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-    >
+    <Button type="button" variant="outline" size="lg" onClick={onClick} className="w-full gap-3">
       <svg aria-hidden="true" viewBox="0 0 48 48" className="h-5 w-5">
         <path fill="#4285F4" d="M47.12 24.53c0-1.64-.15-3.21-.43-4.73H24v8.95h12.98c-.56 2.9-2.18 5.36-4.64 7.01v5.83h7.5c4.39-4.04 7.28-10 7.28-17.06z" />
         <path fill="#34A853" d="M24 48c6.48 0 11.92-2.14 15.9-5.81l-7.5-5.83c-2.08 1.4-4.74 2.23-8.4 2.23-6.24 0-11.53-4.2-13.42-9.86H2.83v6.02C6.78 42.69 14.74 48 24 48z" />
@@ -80,6 +77,6 @@ export function GoogleButton({ onClick, label }: Readonly<{ onClick: () => void;
         <path fill="#EA4335" d="M24 9.41c3.52 0 6.67 1.21 9.16 3.58l6.83-6.83C35.9 2.36 30.48 0 24 0 14.74 0 6.78 5.31 2.83 13.25l7.75 6.02C12.47 13.61 17.76 9.41 24 9.41z" />
       </svg>
       <span>{label}</span>
-    </button>
+    </Button>
   );
 }

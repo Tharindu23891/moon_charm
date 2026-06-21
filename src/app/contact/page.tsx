@@ -41,7 +41,7 @@ export default function ContactPage() {
 
           <div className="mt-8 rounded-[var(--r)] border border-line bg-bg p-5">
             <p className="text-sm font-semibold text-ink">A note on timing</p>
-            <p className="mt-1.5 text-sm leading-relaxed text-muted">
+            <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
               For custom orders, three days’ notice lets us source, design, and wrap without rushing.
               Tell us your date and we’ll let you know what’s possible.
             </p>
@@ -50,7 +50,7 @@ export default function ContactPage() {
 
         <section className="rounded-[var(--r-lg)] border border-line bg-bg p-7 md:p-8">
           <h2 className="font-display text-2xl">Send a message</h2>
-          <p className="mt-2 text-sm text-muted">
+          <p className="mt-2 text-sm text-muted-foreground">
             A few details are all we need to come back with ideas and pricing.
           </p>
           <div className="mt-6">

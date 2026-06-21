@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/cn';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 
 type SubmitStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -47,29 +50,29 @@ export function ContactForm() {
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
           <span className="mc-label">Your name</span>
-          <input className="mc-input" type="text" autoComplete="name" name="name" required />
+          <Input type="text" autoComplete="name" name="name" required />
         </label>
         <label className="block">
           <span className="mc-label">Phone <span className="font-normal text-faint">(optional)</span></span>
-          <input className="mc-input" type="tel" autoComplete="tel" name="phone" />
+          <Input type="tel" autoComplete="tel" name="phone" />
         </label>
       </div>
       <label className="block">
         <span className="mc-label">Email</span>
-        <input className="mc-input" type="email" autoComplete="email" name="email" required />
+        <Input type="email" autoComplete="email" name="email" required />
       </label>
       <label className="block">
         <span className="mc-label">Occasion date <span className="font-normal text-faint">(optional)</span></span>
-        <input className="mc-input" type="text" name="eventDate" placeholder="e.g. 14 February, or “next week”" />
+        <Input type="text" name="eventDate" placeholder="e.g. 14 February, or “next week”" />
       </label>
       <label className="block">
         <span className="mc-label">Tell us about the occasion</span>
-        <textarea className="mc-textarea min-h-[130px] resize-y" name="message" required placeholder="Who is it for, the feeling you’re after, any budget in mind…" />
+        <Textarea className="min-h-[130px]" name="message" required placeholder="Who is it for, the feeling you’re after, any budget in mind…" />
       </label>
 
-      <button type="submit" className="mc-btn mt-1" disabled={status === 'loading'}>
+      <Button type="submit" size="lg" className="mt-1 self-start" disabled={status === 'loading'}>
         {status === 'loading' ? 'Sending…' : 'Send your message'}
-      </button>
+      </Button>
 
       <p
         aria-live="polite"

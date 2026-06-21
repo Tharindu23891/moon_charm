@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { formatLkr } from '@/lib/money';
 import { AdminHeader, AdminPanel } from '@/components/admin/admin-ui';
 import { OrderStatusBadge } from '@/components/order-status-badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type Order = {
   id: string;
@@ -76,13 +77,13 @@ export default function AdminOrdersPage() {
       <div className="mt-8">
         <AdminPanel>
           {loading ? (
-            <p className="px-5 py-8 text-sm text-muted">Loading…</p>
+            <p className="px-5 py-8 text-sm text-muted-foreground">Loading…</p>
           ) : orders.length === 0 ? (
-            <p className="px-5 py-12 text-center text-sm text-muted">No orders yet.</p>
+            <p className="px-5 py-12 text-center text-sm text-muted-foreground">No orders yet.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[720px] text-left text-sm">
-                <thead className="border-b border-line bg-surface text-xs uppercase tracking-wide text-muted">
+                <thead className="border-b border-line bg-surface text-xs uppercase tracking-wide text-muted-foreground">
                   <tr>
                     <th className="px-5 py-3 font-semibold">Order</th>
                     <th className="px-5 py-3 font-semibold">Status</th>
@@ -97,20 +98,20 @@ export default function AdminOrdersPage() {
                     <tr key={o.id} className="transition-colors hover:bg-surface/60">
                       <td className="px-5 py-3.5 font-medium text-ink">#{o.id.slice(-8)}</td>
                       <td className="px-5 py-3.5"><OrderStatusBadge status={o.status} /></td>
-                      <td className="px-5 py-3.5 capitalize text-muted">{o.paymentStatus}</td>
+                      <td className="px-5 py-3.5 capitalize text-muted-foreground">{o.paymentStatus}</td>
                       <td className="px-5 py-3.5 text-right tabular-nums text-ink">{formatLkr(Number(o.total))}</td>
-                      <td className="px-5 py-3.5 text-muted">{new Date(o.createdAt).toLocaleDateString('en-LK', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                      <td className="px-5 py-3.5 text-muted-foreground">{new Date(o.createdAt).toLocaleDateString('en-LK', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
                       <td className="px-5 py-3.5">
-                        <select
-                          defaultValue={o.status}
-                          onChange={(e) => updateStatus(o.id, e.target.value)}
-                          aria-label={`Update status for order ${o.id.slice(-8)}`}
-                          className="mc-select mc-input h-9 w-40 py-1.5 text-sm capitalize"
-                        >
-                          {statuses.map((s) => (
-                            <option key={s} value={s} className="capitalize">{s}</option>
-                          ))}
-                        </select>
+                        <Select defaultValue={o.status} onValueChange={(v) => updateStatus(o.id, v)}>
+                          <SelectTrigger size="sm" aria-label={`Update status for order ${o.id.slice(-8)}`} className="w-40 capitalize">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {statuses.map((s) => (
+                              <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </td>
                     </tr>
                   ))}

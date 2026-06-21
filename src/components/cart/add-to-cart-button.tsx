@@ -1,6 +1,7 @@
 'use client';
 
 import { useCart, type CartItem } from '@/components/cart/cart-context';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/cn';
 
 type AddToCartButtonProps = Readonly<{
@@ -28,33 +29,34 @@ export function AddToCartButton({
 
   if (variant === 'icon') {
     return (
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="icon"
         disabled={disabled}
         onClick={onClick}
         aria-label={disabled ? `${item.name} is sold out` : `Add ${item.name} to cart`}
         className={cn(
-          'inline-flex h-10 w-10 items-center justify-center rounded-full border border-line bg-bg/90 text-ink shadow-[var(--shadow-sm)] backdrop-blur-sm transition-colors duration-300',
-          'hover:border-primary hover:bg-primary hover:text-white',
-          'disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-line disabled:hover:bg-bg/90 disabled:hover:text-ink',
+          'rounded-full bg-bg/90 shadow-[var(--shadow-sm)] backdrop-blur-sm hover:border-primary hover:bg-primary hover:text-primary-foreground',
           className,
         )}
       >
         <PlusIcon />
-      </button>
+      </Button>
     );
   }
 
   return (
-    <button
+    <Button
       type="button"
+      variant={variant === 'outline' ? 'outline' : 'default'}
       disabled={disabled}
       onClick={onClick}
-      className={cn(variant === 'outline' ? 'mc-btn-outline' : 'mc-btn', fullWidth && 'w-full', className)}
+      className={cn(fullWidth && 'w-full', className)}
     >
       <PlusIcon />
       {label}
-    </button>
+    </Button>
   );
 }
 

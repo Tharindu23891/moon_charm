@@ -9,6 +9,8 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 import { AuthShell, AuthField, GoogleButton } from '@/components/auth/auth-shell';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 const loginSchema = z.object({
   email: z.email({ message: 'Valid email is required' }),
@@ -61,14 +63,14 @@ export function LoginClient({ next }: Readonly<{ next: string }>) {
     >
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
         <AuthField label="Email" error={form.formState.errors.email?.message}>
-          <input type="email" autoComplete="email" {...form.register('email')} className="mc-input" />
+          <Input type="email" autoComplete="email" {...form.register('email')} />
         </AuthField>
         <AuthField label="Password" error={form.formState.errors.password?.message}>
-          <input type="password" autoComplete="current-password" {...form.register('password')} className="mc-input" />
+          <Input type="password" autoComplete="current-password" {...form.register('password')} />
         </AuthField>
-        <button type="submit" disabled={form.formState.isSubmitting} className="mc-btn mt-1 w-full">
+        <Button type="submit" size="lg" disabled={form.formState.isSubmitting} className="mt-1 w-full">
           {form.formState.isSubmitting ? 'Signing in…' : 'Sign in'}
-        </button>
+        </Button>
       </form>
 
       {googleEnabled ? (

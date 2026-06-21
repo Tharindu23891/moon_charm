@@ -6,6 +6,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { AdminHeader, AdminPanel, AdminField } from '@/components/admin/admin-ui';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type Category = { id: string; name: string; slug: string };
 
@@ -44,20 +48,20 @@ function FieldsSection({
   return (
     <>
       <AdminField label="Name" error={fieldErrors.name}>
-        <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className="mc-input" />
+        <Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
       </AdminField>
 
       <AdminField label="Short description" error={fieldErrors.shortDescription}>
-        <input value={form.shortDescription} onChange={(e) => setForm((f) => ({ ...f, shortDescription: e.target.value }))} className="mc-input" />
+        <Input value={form.shortDescription} onChange={(e) => setForm((f) => ({ ...f, shortDescription: e.target.value }))} />
       </AdminField>
 
       <AdminField label="Full description" error={fieldErrors.description}>
-        <textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} rows={6} className="mc-textarea resize-y" />
+        <Textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} rows={6} />
       </AdminField>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <AdminField label="Price (LKR)" error={fieldErrors.price}>
-          <input
+          <Input
             type="number"
             min={0}
             step="0.01"
@@ -71,22 +75,25 @@ function FieldsSection({
               }
               setForm((f) => ({ ...f, price: parsed.toFixed(2) }));
             }}
-            className="mc-input"
           />
         </AdminField>
 
         <AdminField label="Quantity in stock" error={fieldErrors.stock}>
-          <input type="number" min={0} step={1} value={form.stock} onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))} className="mc-input" />
+          <Input type="number" min={0} step={1} value={form.stock} onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))} />
         </AdminField>
       </div>
 
       <AdminField label="Category" error={fieldErrors.categorySlug}>
-        <select value={form.categorySlug} onChange={(e) => setForm((f) => ({ ...f, categorySlug: e.target.value }))} className="mc-select mc-input">
-          <option value="">Select category</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.slug}>{c.name}</option>
-          ))}
-        </select>
+        <Select value={form.categorySlug || undefined} onValueChange={(v) => setForm((f) => ({ ...f, categorySlug: v }))}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select category" />
+          </SelectTrigger>
+          <SelectContent>
+            {categories.map((c) => (
+              <SelectItem key={c.id} value={c.slug}>{c.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </AdminField>
     </>
   );
@@ -120,7 +127,7 @@ function ImagesSection({
       </p>
 
       <label className="flex cursor-pointer flex-col items-center justify-center rounded-[var(--r)] border border-dashed border-line-strong bg-surface px-4 py-7 text-center transition-colors hover:border-primary">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-7 w-7 text-muted">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-7 w-7 text-muted-foreground">
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0L8 8m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
         </svg>
         <span className="mt-2 text-sm font-medium text-ink">Choose images</span>
@@ -373,13 +380,13 @@ export function ProductForm({ mode, productId }: Readonly<{ mode: 'create' | 'ed
       <AdminHeader
         title={mode === 'edit' ? 'Edit product' : 'New product'}
         description={mode === 'edit' ? 'Update the details and save your changes.' : 'Add the details and a few photos, then create.'}
-        actions={<Link href="/admin/products" className="mc-btn-outline">Cancel</Link>}
+        actions={<Button asChild variant="outline"><Link href="/admin/products">Cancel</Link></Button>}
       />
 
       <div className="mt-8 max-w-2xl">
         <AdminPanel bodyClassName="p-5 sm:p-6">
           {loading ? (
-            <p className="py-6 text-sm text-muted">Loading…</p>
+            <p className="py-6 text-sm text-muted-foreground">Loading…</p>
           ) : (
             <div className="grid gap-5">
               <FieldsSection form={form} setForm={setForm} categories={categories} fieldErrors={fieldErrors} />
@@ -393,10 +400,10 @@ export function ProductForm({ mode, productId }: Readonly<{ mode: 'create' | 'ed
                 onRemove={removeImageAtIndex}
               />
               <div className="flex items-center justify-end gap-3 border-t border-line pt-5">
-                <Link href="/admin/products" className="mc-btn-ghost">Cancel</Link>
-                <button type="button" disabled={!canSubmit || submitting} onClick={submit} className="mc-btn">
+                <Button asChild variant="ghost"><Link href="/admin/products">Cancel</Link></Button>
+                <Button type="button" disabled={!canSubmit || submitting} onClick={submit}>
                   {submitting ? 'Saving…' : mode === 'edit' ? 'Save changes' : 'Create product'}
-                </button>
+                </Button>
               </div>
             </div>
           )}

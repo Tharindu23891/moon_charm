@@ -68,7 +68,7 @@ export default async function PackagesPage({
       </div>
 
       {databaseUnavailable ? (
-        <p className="mt-6 rounded-[var(--r)] border border-line bg-surface px-4 py-3 text-sm text-muted">
+        <p className="mt-6 rounded-[var(--r)] border border-line bg-surface px-4 py-3 text-sm text-muted-foreground">
           Packages are briefly unavailable while we reconnect. Please try again in a moment.
         </p>
       ) : null}
@@ -82,7 +82,7 @@ export default async function PackagesPage({
       ) : (
         <div className="mt-10 rounded-[var(--r-lg)] border border-dashed border-line-strong bg-surface px-6 py-16 text-center">
           <p className="font-display text-xl text-ink">No packages just yet</p>
-          <p className="mt-2 text-sm text-muted">New bundles are added often. Check back soon.</p>
+          <p className="mt-2 text-sm text-muted-foreground">New bundles are added often. Check back soon.</p>
         </div>
       )}
     </div>

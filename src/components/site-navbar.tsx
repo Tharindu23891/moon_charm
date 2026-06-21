@@ -2,12 +2,29 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
+import { Menu } from 'lucide-react';
 import { useCart } from '@/components/cart/cart-context';
 import { BrandName } from '@/components/brand-name';
 import { MoonMark } from '@/components/moon-mark';
 import { cn } from '@/lib/cn';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 const links = [
   { href: '/products', label: 'Shop' },
@@ -23,10 +40,8 @@ export function SiteNavbar() {
   const { data: session, status } = useSession();
   const isAuthenticated = status === 'authenticated';
   const { count } = useCart();
-  const [accountOpen, setAccountOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const accountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     router.prefetch('/products');
@@ -39,24 +54,6 @@ export function SiteNavbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Close the account menu on outside click / Escape.
-  useEffect(() => {
-    if (!accountOpen) return;
-    const onDown = (e: MouseEvent) => {
-      if (accountRef.current && !accountRef.current.contains(e.target as Node)) {
-        setAccountOpen(false);
-      }
-    };
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setAccountOpen(false);
-    document.addEventListener('mousedown', onDown);
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('mousedown', onDown);
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [accountOpen]);
-
-  // Close mobile menu on route change.
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
@@ -72,7 +69,6 @@ export function SiteNavbar() {
       )}
     >
       <div className="mc-container flex h-[4.75rem] items-center justify-between gap-6">
-        {/* Brand */}
         <Link href="/" className="group flex shrink-0 items-center gap-2.5" aria-label="The Moon Charm home">
           <span className="h-8 w-8 text-primary transition-transform duration-500 group-hover:-rotate-12">
             <MoonMark />
@@ -80,7 +76,6 @@ export function SiteNavbar() {
           <BrandName noWrap className="text-[1.15rem] leading-none" />
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden items-center gap-8 lg:flex">
           {links.map((l) => {
             const active = pathname === l.href || pathname.startsWith(`${l.href}/`);
@@ -92,7 +87,6 @@ export function SiteNavbar() {
           })}
         </nav>
 
-        {/* Actions */}
         <div className="flex items-center gap-1.5">
           <Link
             href="/cart"
@@ -105,117 +99,113 @@ export function SiteNavbar() {
               <circle cx="17.5" cy="20" r="1.4" />
             </svg>
             {count > 0 ? (
-              <span className="absolute right-0.5 top-0.5 inline-flex h-[1.1rem] min-w-[1.1rem] items-center justify-center rounded-full bg-accent px-1 text-[0.65rem] font-bold text-white">
+              <span className="absolute right-0.5 top-0.5 inline-flex h-[1.1rem] min-w-[1.1rem] items-center justify-center rounded-full bg-claret px-1 text-[0.65rem] font-bold text-white">
                 {count}
               </span>
             ) : null}
           </Link>
 
           {isAuthenticated && session?.user ? (
-            <div className="relative" ref={accountRef}>
-              <button
-                type="button"
-                onClick={() => setAccountOpen((v) => !v)}
-                className="mc-btn-ghost h-10"
-                aria-haspopup="menu"
-                aria-expanded={accountOpen}
-              >
-                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[0.7rem] font-bold text-white">
-                  {firstName.charAt(0).toUpperCase()}
-                </span>
-                <span className="hidden max-w-[7rem] truncate sm:inline">{firstName}</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={cn('h-3.5 w-3.5 transition-transform', accountOpen && 'rotate-180')}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" />
-                </svg>
-              </button>
-              {accountOpen ? (
-                <div
-                  role="menu"
-                  className="absolute right-0 mt-2 w-52 overflow-hidden rounded-[var(--r-lg)] border border-line bg-bg py-1.5 shadow-[var(--shadow-lg)]"
-                >
-                  <MenuLink href="/profile" onClick={() => setAccountOpen(false)}>Profile</MenuLink>
-                  <MenuLink href="/orders" onClick={() => setAccountOpen(false)}>My orders</MenuLink>
-                  {isAdmin ? <MenuLink href="/admin" onClick={() => setAccountOpen(false)}>Admin</MenuLink> : null}
-                  <div className="my-1.5 mx-3 mc-rule" />
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={() => {
-                      setAccountOpen(false);
-                      signOut({ callbackUrl: '/' });
-                    }}
-                    className="block w-full px-4 py-2 text-left text-sm font-medium text-muted transition-colors hover:bg-surface hover:text-ink"
-                  >
-                    Sign out
-                  </button>
-                </div>
-              ) : null}
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-10 gap-2">
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[0.7rem] font-bold text-primary-foreground">
+                    {firstName.charAt(0).toUpperCase()}
+                  </span>
+                  <span className="hidden max-w-[7rem] truncate sm:inline">{firstName}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/orders">My orders</Link>
+                </DropdownMenuItem>
+                {isAdmin ? (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin">Admin</Link>
+                  </DropdownMenuItem>
+                ) : null}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => signOut({ callbackUrl: '/' })}>
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <div className="hidden items-center gap-2 sm:flex">
-              <Link href="/login" className="mc-btn-ghost h-10">Sign in</Link>
-              <Link href="/register" className="mc-btn h-10">Create account</Link>
+              <Button asChild variant="ghost" className="h-10">
+                <Link href="/login">Sign in</Link>
+              </Button>
+              <Button asChild className="h-10">
+                <Link href="/register">Create account</Link>
+              </Button>
             </div>
           )}
 
-          {/* Mobile toggle */}
-          <button
-            type="button"
-            onClick={() => setMobileOpen((v) => !v)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-[var(--r)] text-ink transition-colors hover:bg-surface lg:hidden"
-            aria-label="Menu"
-            aria-expanded={mobileOpen}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-5 w-5">
-              {mobileOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6L6 18" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 6h18M3 12h18M3 18h18" />
-              )}
-            </svg>
-          </button>
+          {/* Mobile menu */}
+          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Menu">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-80 max-w-[85vw] p-0">
+              <SheetHeader className="border-b border-line">
+                <SheetTitle className="flex items-center gap-2 text-left">
+                  <span className="h-6 w-6 text-primary"><MoonMark /></span>
+                  <BrandName noWrap className="text-base" />
+                </SheetTitle>
+              </SheetHeader>
+              <nav className="grid gap-1 p-4">
+                <SheetClose asChild>
+                  <Link href="/" className="rounded-[var(--r)] px-3 py-2.5 text-[0.95rem] font-medium text-ink hover:bg-surface">Home</Link>
+                </SheetClose>
+                {links.map((l) => (
+                  <SheetClose key={l.href} asChild>
+                    <Link href={l.href} className="rounded-[var(--r)] px-3 py-2.5 text-[0.95rem] font-medium text-ink hover:bg-surface">
+                      {l.label}
+                    </Link>
+                  </SheetClose>
+                ))}
+                {!isAuthenticated ? (
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <SheetClose asChild>
+                      <Button asChild variant="outline"><Link href="/login">Sign in</Link></Button>
+                    </SheetClose>
+                    <SheetClose asChild>
+                      <Button asChild><Link href="/register">Create account</Link></Button>
+                    </SheetClose>
+                  </div>
+                ) : (
+                  <>
+                    <div className="my-2 mc-rule" />
+                    <SheetClose asChild>
+                      <Link href="/profile" className="rounded-[var(--r)] px-3 py-2.5 text-[0.95rem] font-medium text-ink hover:bg-surface">Profile</Link>
+                    </SheetClose>
+                    <SheetClose asChild>
+                      <Link href="/orders" className="rounded-[var(--r)] px-3 py-2.5 text-[0.95rem] font-medium text-ink hover:bg-surface">My orders</Link>
+                    </SheetClose>
+                    {isAdmin ? (
+                      <SheetClose asChild>
+                        <Link href="/admin" className="rounded-[var(--r)] px-3 py-2.5 text-[0.95rem] font-medium text-ink hover:bg-surface">Admin</Link>
+                      </SheetClose>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => { setMobileOpen(false); signOut({ callbackUrl: '/' }); }}
+                      className="rounded-[var(--r)] px-3 py-2.5 text-left text-[0.95rem] font-medium text-muted-foreground hover:bg-surface hover:text-ink"
+                    >
+                      Sign out
+                    </button>
+                  </>
+                )}
+              </nav>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
-
-      {/* Mobile menu */}
-      {mobileOpen ? (
-        <div className="border-t border-line bg-bg lg:hidden">
-          <div className="mc-container grid gap-1 py-4">
-            <Link href="/" className="rounded-[var(--r)] px-3 py-2.5 text-[0.95rem] font-medium text-ink hover:bg-surface" data-active={pathname === '/'}>
-              Home
-            </Link>
-            {links.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                prefetch
-                className="rounded-[var(--r)] px-3 py-2.5 text-[0.95rem] font-medium text-ink hover:bg-surface"
-              >
-                {l.label}
-              </Link>
-            ))}
-            {!isAuthenticated ? (
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                <Link href="/login" className="mc-btn-outline">Sign in</Link>
-                <Link href="/register" className="mc-btn">Create account</Link>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
     </header>
-  );
-}
-
-function MenuLink({ href, onClick, children }: { href: string; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <Link
-      href={href}
-      role="menuitem"
-      onClick={onClick}
-      className="block px-4 py-2 text-sm font-medium text-muted transition-colors hover:bg-surface hover:text-ink"
-    >
-      {children}
-    </Link>
   );
 }

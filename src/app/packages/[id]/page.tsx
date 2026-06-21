@@ -4,6 +4,8 @@ import { connectToDatabase } from '@/lib/mongoose';
 import { GiftPackage } from '@/models/GiftPackage';
 import { PackagePurchasePanel } from '@/components/package/package-purchase-panel';
 import { Breadcrumb } from '@/components/breadcrumb';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 export default async function PackageDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -15,8 +17,8 @@ export default async function PackageDetailsPage({ params }: { params: Promise<{
     return (
       <div className="mc-container py-20 text-center">
         <h1 className="font-display text-3xl">We can’t find that package</h1>
-        <p className="mt-3 text-muted">It may have sold out or been moved.</p>
-        <Link href="/packages" className="mc-btn mt-6">Back to packages</Link>
+        <p className="mt-3 text-muted-foreground">It may have sold out or been moved.</p>
+        <Button asChild className="mt-6"><Link href="/packages">Back to packages</Link></Button>
       </div>
     );
   }
@@ -37,20 +39,20 @@ export default async function PackageDetailsPage({ params }: { params: Promise<{
         </div>
 
         <div className="lg:sticky lg:top-28 lg:self-start">
-          <span className="mc-pill-blush mc-pill border-transparent">Gift package</span>
+          <Badge variant="blush">Gift package</Badge>
           <h1 className="mt-4 font-display text-[clamp(2rem,4vw,3rem)] leading-[1.05]">{p.name}</h1>
-          <p className="mt-3 text-[1.05rem] leading-relaxed text-muted">
+          <p className="mt-3 text-[1.05rem] leading-relaxed text-muted-foreground">
             A curated bundle, assembled and wrapped by hand as one considered gift.
           </p>
 
           {items.length > 0 ? (
             <div className="mt-6 rounded-[var(--r-lg)] border border-line bg-bg p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted">What’s inside</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">What’s inside</p>
               <ul className="mt-3 divide-y divide-line">
                 {items.map((it, idx) => (
                   <li key={idx} className="flex items-center justify-between gap-3 py-2.5 text-sm">
                     <span className="text-ink">{it.productId?.name ?? 'Gift item'}</span>
-                    <span className="text-muted">×{it.quantity}</span>
+                    <span className="text-muted-foreground">×{it.quantity}</span>
                   </li>
                 ))}
               </ul>

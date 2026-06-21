@@ -4,6 +4,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { formatLkr } from '@/lib/money';
 import { AdminHeader, AdminPanel, AdminField } from '@/components/admin/admin-ui';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 
 type Product = { id: string; name: string };
 
@@ -81,7 +85,6 @@ export default function AdminPackagesPage() {
   }
 
   async function deletePackage(id: string) {
-    if (!confirm('Delete this package?')) return;
     const res = await fetch(`/api/packages/${id}`, { method: 'DELETE' });
     if (!res.ok) {
       toast.error('Delete failed');
@@ -98,31 +101,35 @@ export default function AdminPackagesPage() {
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <AdminPanel title="Add a package" bodyClassName="grid gap-4 p-5">
           <AdminField label="Name">
-            <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className="mc-input" placeholder="e.g. Birthday Surprise Box" />
+            <Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="e.g. Birthday Surprise Box" />
           </AdminField>
           <div className="grid gap-4 sm:grid-cols-2">
             <AdminField label="Price (LKR)">
-              <input value={form.price} onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))} inputMode="decimal" className="mc-input" />
+              <Input value={form.price} onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))} inputMode="decimal" />
             </AdminField>
             <AdminField label="Discount %" hint="Optional">
-              <input value={form.discountPercent} onChange={(e) => setForm((f) => ({ ...f, discountPercent: e.target.value }))} inputMode="decimal" className="mc-input" />
+              <Input value={form.discountPercent} onChange={(e) => setForm((f) => ({ ...f, discountPercent: e.target.value }))} inputMode="decimal" />
             </AdminField>
           </div>
           <AdminField label="Image URL" hint="Optional">
-            <input value={form.image} onChange={(e) => setForm((f) => ({ ...f, image: e.target.value }))} className="mc-input" placeholder="https://…" />
+            <Input value={form.image} onChange={(e) => setForm((f) => ({ ...f, image: e.target.value }))} placeholder="https://…" />
           </AdminField>
 
           <div className="rounded-[var(--r)] border border-line bg-surface p-4">
             <p className="text-sm font-semibold text-ink">Included items</p>
             <div className="mt-3 flex flex-wrap gap-2">
-              <select value={form.productId} onChange={(e) => setForm((f) => ({ ...f, productId: e.target.value }))} className="mc-select mc-input flex-1">
-                <option value="">Select product</option>
-                {products.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
-                ))}
-              </select>
-              <input value={form.quantity} onChange={(e) => setForm((f) => ({ ...f, quantity: e.target.value }))} placeholder="Qty" inputMode="numeric" className="mc-input w-20" />
-              <button type="button" onClick={addItem} className="mc-btn-outline shrink-0">Add</button>
+              <Select value={form.productId || undefined} onValueChange={(v) => setForm((f) => ({ ...f, productId: v }))}>
+                <SelectTrigger className="w-full flex-1 sm:w-auto">
+                  <SelectValue placeholder="Select product" />
+                </SelectTrigger>
+                <SelectContent>
+                  {products.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Input value={form.quantity} onChange={(e) => setForm((f) => ({ ...f, quantity: e.target.value }))} placeholder="Qty" inputMode="numeric" className="w-20" />
+              <Button type="button" variant="outline" onClick={addItem} className="shrink-0">Add</Button>
             </div>
             <div className="mt-3 text-sm">
               {form.items.length === 0 ? (
@@ -132,7 +139,7 @@ export default function AdminPackagesPage() {
                   {form.items.map((it, idx) => (
                     <li key={idx} className="flex items-center justify-between gap-2 text-ink">
                       <span>{it.quantity}× {products.find((p) => p.id === it.productId)?.name ?? it.productId}</span>
-                      <button type="button" onClick={() => removeItem(idx)} aria-label="Remove item" className="text-faint transition-colors hover:text-accent">×</button>
+                      <button type="button" onClick={() => removeItem(idx)} aria-label="Remove item" className="text-faint transition-colors hover:text-claret">×</button>
                     </li>
                   ))}
                 </ul>
@@ -140,27 +147,31 @@ export default function AdminPackagesPage() {
             </div>
           </div>
 
-          <button type="button" disabled={!canSubmit} onClick={createPackage} className="mc-btn">Create package</button>
+          <Button type="button" disabled={!canSubmit} onClick={createPackage}>Create package</Button>
         </AdminPanel>
 
         <AdminPanel title={`Packages (${packages.length})`}>
           {loading ? (
-            <p className="px-5 py-8 text-sm text-muted">Loading…</p>
+            <p className="px-5 py-8 text-sm text-muted-foreground">Loading…</p>
           ) : packages.length === 0 ? (
-            <p className="px-5 py-8 text-sm text-muted">No packages yet.</p>
+            <p className="px-5 py-8 text-sm text-muted-foreground">No packages yet.</p>
           ) : (
             <ul className="divide-y divide-line">
               {packages.map((p) => (
                 <li key={p.id} className="flex items-center justify-between gap-3 px-5 py-4">
                   <div>
                     <p className="font-medium text-ink">{p.name}</p>
-                    <p className="mt-0.5 text-xs text-muted">
+                    <p className="mt-0.5 text-xs text-muted-foreground">
                       {formatLkr(p.price)}{p.discountPercent ? ` · ${p.discountPercent}% off` : ''}
                     </p>
                   </div>
-                  <button type="button" onClick={() => deletePackage(p.id)} className="mc-btn-ghost h-9 px-3 text-sm text-muted hover:text-accent">
-                    Delete
-                  </button>
+                  <ConfirmDialog
+                    title="Delete this package?"
+                    description={`“${p.name}” will be removed.`}
+                    confirmLabel="Delete package"
+                    onConfirm={() => deletePackage(p.id)}
+                    trigger={<Button variant="ghost" size="sm" className="text-muted-foreground hover:text-claret">Delete</Button>}
+                  />
                 </li>
               ))}
             </ul>

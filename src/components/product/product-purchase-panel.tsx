@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { AddToCartButton } from '@/components/cart/add-to-cart-button';
 import { QuantityStepper } from '@/components/quantity-stepper';
+import { Badge } from '@/components/ui/badge';
 import { formatLkr } from '@/lib/money';
 
 export function ProductPurchasePanel({
@@ -23,12 +24,12 @@ export function ProductPurchasePanel({
     <div className="rounded-[var(--r-lg)] border border-line bg-surface p-6">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.1em] text-muted">Price</p>
+          <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground">Price</p>
           <p className="mt-1 font-display text-[2rem] leading-none text-ink">{formatLkr(product.price)}</p>
         </div>
-        <span className="mc-pill border-transparent bg-blush text-accent">
+        <Badge variant="blush">
           {soldOut ? 'Sold out' : product.stock <= 5 ? `Only ${product.stock} left` : 'In stock'}
-        </span>
+        </Badge>
       </div>
 
       <div className="mt-6 flex items-center justify-between gap-4">
@@ -46,7 +47,7 @@ export function ProductPurchasePanel({
         />
       </div>
 
-      <ul className="mt-6 space-y-2 border-t border-line pt-5 text-sm text-muted">
+      <ul className="mt-6 space-y-2 border-t border-line pt-5 text-sm text-muted-foreground">
         <Reassurance>Wrapped by hand, with a gift note on request</Reassurance>
         <Reassurance>Delivered island-wide across Sri Lanka</Reassurance>
       </ul>

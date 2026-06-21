@@ -6,11 +6,15 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useCart } from '@/components/cart/cart-context';
 import { formatLkr } from '@/lib/money';
 import { cn } from '@/lib/cn';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const checkoutSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
@@ -63,8 +67,6 @@ export default function CheckoutPage() {
     if (defaultEmail) form.setValue('email', defaultEmail, { shouldValidate: true });
     if (session?.user?.name) form.setValue('fullName', session.user.name, { shouldValidate: true });
   }, [defaultEmail, session?.user?.name, form]);
-
-  const paymentMethod = form.watch('paymentMethod');
 
   async function onSubmit(values: CheckoutValues) {
     if (items.length === 0) {
@@ -125,8 +127,8 @@ export default function CheckoutPage() {
     return (
       <div className="mc-container py-20 text-center">
         <h1 className="font-display text-3xl">Your cart is empty</h1>
-        <p className="mt-3 text-muted">Add a gift or two, then come back to check out.</p>
-        <Link href="/products" className="mc-btn mt-6">Shop gifts</Link>
+        <p className="mt-3 text-muted-foreground">Add a gift or two, then come back to check out.</p>
+        <Button asChild className="mt-6"><Link href="/products">Shop gifts</Link></Button>
       </div>
     );
   }
@@ -134,7 +136,7 @@ export default function CheckoutPage() {
   return (
     <div className="mc-container py-12 md:py-16">
       <h1 className="font-display text-[clamp(2rem,4vw,2.8rem)]">Checkout</h1>
-      <p className="mt-2 text-muted">Tell us where it’s going and how you’d like to pay.</p>
+      <p className="mt-2 text-muted-foreground">Tell us where it’s going and how you’d like to pay.</p>
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
         <div className="space-y-10">
@@ -142,13 +144,13 @@ export default function CheckoutPage() {
             <legend className="font-display text-xl">Your details</legend>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <Field label="Full name" error={form.formState.errors.fullName?.message}>
-                <input {...form.register('fullName')} className="mc-input" autoComplete="name" />
+                <Input {...form.register('fullName')} autoComplete="name" />
               </Field>
               <Field label="Email" error={form.formState.errors.email?.message}>
-                <input {...form.register('email')} className="mc-input" autoComplete="email" inputMode="email" />
+                <Input {...form.register('email')} autoComplete="email" inputMode="email" />
               </Field>
               <Field label="Phone" error={form.formState.errors.phone?.message} className="sm:col-span-2">
-                <input {...form.register('phone')} className="mc-input" autoComplete="tel" inputMode="tel" />
+                <Input {...form.register('phone')} autoComplete="tel" inputMode="tel" />
               </Field>
             </div>
           </fieldset>
@@ -157,23 +159,23 @@ export default function CheckoutPage() {
             <legend className="font-display text-xl">Delivery address</legend>
             <div className="mt-5 grid gap-4">
               <Field label="Address line 1" error={form.formState.errors.line1?.message}>
-                <input {...form.register('line1')} className="mc-input" autoComplete="address-line1" />
+                <Input {...form.register('line1')} autoComplete="address-line1" />
               </Field>
               <Field label="Address line 2 (optional)" error={form.formState.errors.line2?.message}>
-                <input {...form.register('line2')} className="mc-input" autoComplete="address-line2" />
+                <Input {...form.register('line2')} autoComplete="address-line2" />
               </Field>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="City" error={form.formState.errors.city?.message}>
-                  <input {...form.register('city')} className="mc-input" autoComplete="address-level2" />
+                  <Input {...form.register('city')} autoComplete="address-level2" />
                 </Field>
                 <Field label="District / State" error={form.formState.errors.state?.message}>
-                  <input {...form.register('state')} className="mc-input" autoComplete="address-level1" />
+                  <Input {...form.register('state')} autoComplete="address-level1" />
                 </Field>
                 <Field label="Postal code" error={form.formState.errors.postalCode?.message}>
-                  <input {...form.register('postalCode')} className="mc-input" autoComplete="postal-code" />
+                  <Input {...form.register('postalCode')} autoComplete="postal-code" />
                 </Field>
                 <Field label="Country" error={form.formState.errors.country?.message}>
-                  <input {...form.register('country')} className="mc-input" autoComplete="country-name" />
+                  <Input {...form.register('country')} autoComplete="country-name" />
                 </Field>
               </div>
             </div>
@@ -181,24 +183,27 @@ export default function CheckoutPage() {
 
           <fieldset>
             <legend className="font-display text-xl">Payment</legend>
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              {paymentMethods.map((m) => {
-                const selected = paymentMethod === m.value;
-                return (
-                  <label
-                    key={m.value}
-                    className={cn(
-                      'cursor-pointer rounded-[var(--r)] border p-4 transition-colors',
-                      selected ? 'border-primary bg-blush/50 ring-1 ring-primary' : 'border-line hover:border-line-strong',
-                    )}
-                  >
-                    <input type="radio" value={m.value} {...form.register('paymentMethod')} className="sr-only" />
-                    <span className="block text-sm font-semibold text-ink">{m.label}</span>
-                    <span className="mt-0.5 block text-xs text-muted">{m.hint}</span>
-                  </label>
-                );
-              })}
-            </div>
+            <Controller
+              control={form.control}
+              name="paymentMethod"
+              render={({ field }) => (
+                <RadioGroup value={field.value} onValueChange={field.onChange} className="mt-5 grid gap-3 sm:grid-cols-3">
+                  {paymentMethods.map((m) => (
+                    <Label
+                      key={m.value}
+                      htmlFor={`pay-${m.value}`}
+                      className="flex cursor-pointer flex-col items-start gap-1.5 rounded-[var(--r)] border border-line p-4 transition-colors hover:border-line-strong has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-blush/50 has-[[data-state=checked]]:ring-1 has-[[data-state=checked]]:ring-primary"
+                    >
+                      <span className="flex items-center gap-2">
+                        <RadioGroupItem id={`pay-${m.value}`} value={m.value} />
+                        <span className="text-sm font-semibold text-ink">{m.label}</span>
+                      </span>
+                      <span className="text-xs text-muted-foreground">{m.hint}</span>
+                    </Label>
+                  ))}
+                </RadioGroup>
+              )}
+            />
           </fieldset>
         </div>
 
@@ -209,7 +214,7 @@ export default function CheckoutPage() {
             <ul className="mt-4 space-y-3 text-sm">
               {items.map((it) => (
                 <li key={it.refId} className="flex items-start justify-between gap-3">
-                  <span className="text-muted">
+                  <span className="text-muted-foreground">
                     <span className="text-ink">{it.quantity}×</span> {it.name}
                   </span>
                   <span className="shrink-0 font-medium text-ink">{formatLkr(it.unitPrice * it.quantity)}</span>
@@ -221,9 +226,9 @@ export default function CheckoutPage() {
               <span className="font-display text-xl text-ink">{formatLkr(subtotal)}</span>
             </div>
 
-            <button type="submit" disabled={submitting} className="mc-btn mt-6 w-full">
+            <Button type="submit" size="lg" disabled={submitting} className="mt-6 w-full">
               {submitting ? 'Placing order…' : 'Place order'}
-            </button>
+            </Button>
             <p className="mt-3 text-center text-xs text-faint">
               We’ll wrap it by hand and confirm delivery for your area.
             </p>

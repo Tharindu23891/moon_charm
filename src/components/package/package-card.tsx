@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { AddToCartButton } from '@/components/cart/add-to-cart-button';
+import { Badge } from '@/components/ui/badge';
 import { formatLkr } from '@/lib/money';
 import { applyDiscount } from '@/lib/pricing';
 
@@ -37,14 +38,10 @@ export function PackageCard({ pkg }: { pkg: PackageListItem }) {
           />
         </Link>
 
-        <span className="absolute left-3 top-3 mc-pill-blush rounded-full px-2.5 py-1 text-[0.7rem] font-semibold">
-          Gift package
-        </span>
+        <Badge variant="blush" className="absolute left-3 top-3">Gift package</Badge>
 
         {pkg.discountPercent ? (
-          <span className="absolute right-3 top-3 rounded-full bg-accent px-2.5 py-1 text-[0.7rem] font-semibold text-white">
-            Save {pkg.discountPercent}%
-          </span>
+          <Badge variant="claret" className="absolute right-3 top-3">Save {pkg.discountPercent}%</Badge>
         ) : null}
 
         <div className="absolute bottom-3 right-3 translate-y-1 opacity-0 transition-all duration-300 ease-[var(--ease-out)] group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100">
@@ -68,7 +65,7 @@ export function PackageCard({ pkg }: { pkg: PackageListItem }) {
           ) : null}
         </span>
 
-        <p className="mt-1.5 line-clamp-2 text-sm text-muted">
+        <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">
           {includes ? <>Includes {includes}</> : 'A curated bundle, ready to gift.'}
         </p>
       </div>

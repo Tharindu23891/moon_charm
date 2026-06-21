@@ -2,8 +2,11 @@ import Link from 'next/link';
 import { connectToDatabase } from '@/lib/mongoose';
 import { Category } from '@/models/Category';
 import { Product } from '@/models/Product';
+import { Suspense } from 'react';
 import { ProductCard, type ProductListItem } from '@/components/product/product-card';
 import { PageHeader } from '@/components/page-header';
+import { ProductFilters } from '@/components/product-filters';
+import { Button } from '@/components/ui/button';
 
 export const metadata = { title: 'Shop all gifts' };
 
@@ -71,7 +74,7 @@ export default async function ProductsPage({
 
   const activeCategory = categories.find((c: any) => c.slug === category);
   const hasFilters = Boolean(q || category || minPrice || maxPrice || sort !== 'newest');
-  const fieldClass = 'mc-input h-11';
+  const filterCategories = categories.map((c: any) => ({ id: c._id.toString(), name: c.name, slug: c.slug }));
 
   return (
     <div className="mc-container py-12 md:py-16">
@@ -81,55 +84,20 @@ export default async function ProductsPage({
         description="Browse individual pieces. Filter by occasion, price, or search for something specific."
       />
 
-      <form className="mt-8 rounded-[var(--r-lg)] border border-line bg-surface p-4 md:p-5">
-        <div className="grid gap-3 md:grid-cols-[1.6fr_1fr_0.8fr_0.8fr_1fr]">
-          <label className="block">
-            <span className="sr-only">Search gifts</span>
-            <input name="q" defaultValue={q} placeholder="Search gifts…" className={fieldClass} />
-          </label>
-          <label className="block">
-            <span className="sr-only">Category</span>
-            <select name="category" defaultValue={category} className={`${fieldClass} mc-select`}>
-              <option value="">All occasions</option>
-              {categories.map((c: any) => (
-                <option key={c._id.toString()} value={c.slug}>{c.name}</option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className="sr-only">Minimum price</span>
-            <input name="minPrice" defaultValue={minPrice} placeholder="Min" inputMode="decimal" className={fieldClass} />
-          </label>
-          <label className="block">
-            <span className="sr-only">Maximum price</span>
-            <input name="maxPrice" defaultValue={maxPrice} placeholder="Max" inputMode="decimal" className={fieldClass} />
-          </label>
-          <label className="block">
-            <span className="sr-only">Sort by</span>
-            <select name="sort" defaultValue={sort} className={`${fieldClass} mc-select`}>
-              <option value="newest">Newest first</option>
-              <option value="popularity">Most loved</option>
-              <option value="price-asc">Price: low to high</option>
-              <option value="price-desc">Price: high to low</option>
-            </select>
-          </label>
-        </div>
-        <div className="mt-3 flex items-center justify-end gap-2">
-          {hasFilters ? (
-            <Link href="/products" className="mc-btn-ghost h-11">Reset</Link>
-          ) : null}
-          <button type="submit" className="mc-btn h-11">Apply filters</button>
-        </div>
-      </form>
+      <div className="mt-8">
+        <Suspense fallback={<div className="h-36 animate-pulse rounded-[var(--r-lg)] border border-line bg-surface" />}>
+          <ProductFilters categories={filterCategories} />
+        </Suspense>
+      </div>
 
       {databaseUnavailable ? (
-        <p className="mt-6 rounded-[var(--r)] border border-line bg-surface px-4 py-3 text-sm text-muted">
+        <p className="mt-6 rounded-[var(--r)] border border-line bg-surface px-4 py-3 text-sm text-muted-foreground">
           Our catalog is briefly unavailable while we reconnect. Please try again in a moment.
         </p>
       ) : null}
 
       <div className="mt-8 flex items-center justify-between gap-3">
-        <p className="text-sm text-muted">
+        <p className="text-sm text-muted-foreground">
           {list.length} {list.length === 1 ? 'gift' : 'gifts'}
           {activeCategory ? <> in <span className="text-ink">{activeCategory.name}</span></> : null}
         </p>
@@ -144,9 +112,9 @@ export default async function ProductsPage({
       ) : (
         <div className="mt-6 rounded-[var(--r-lg)] border border-dashed border-line-strong bg-surface px-6 py-16 text-center">
           <p className="font-display text-xl text-ink">Nothing matches yet</p>
-          <p className="mt-2 text-sm text-muted">Try a broader search, or clear the filters to see everything.</p>
+          <p className="mt-2 text-sm text-muted-foreground">Try a broader search, or clear the filters to see everything.</p>
           {hasFilters ? (
-            <Link href="/products" className="mc-btn-outline mt-5">Clear filters</Link>
+            <Button asChild variant="outline" className="mt-5"><Link href="/products">Clear filters</Link></Button>
           ) : null}
         </div>
       )}

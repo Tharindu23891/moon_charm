@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Reveal } from '@/components/reveal';
 import { MoonMark } from '@/components/moon-mark';
+import { Button } from '@/components/ui/button';
 
 const HERO_IMAGE = 'https://images.unsplash.com/photo-1457089328109-e5d9bd499191?auto=format&fit=crop&w=1800&q=75';
 const STORY_IMAGE = 'https://images.unsplash.com/photo-1512909006721-3d6018887383?auto=format&fit=crop&w=1100&q=75';
@@ -53,7 +54,7 @@ export function StorySection() {
       <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
         <Reveal className="order-2 lg:order-1">
           <h2 className="text-[clamp(1.8rem,3.5vw,2.6rem)] leading-tight">It started at a kitchen table</h2>
-          <div className="mc-prose mt-5 space-y-4 text-[1.05rem] leading-relaxed text-muted">
+          <div className="mc-prose mt-5 space-y-4 text-[1.05rem] leading-relaxed text-muted-foreground">
             <p>
               The first gifts were chocolate bouquets, wrapped late at night for friends’ birthdays.
               People kept asking where they came from. They came from a table in Kuliyapitiya, and a
@@ -88,7 +89,7 @@ export function ValuesSection() {
             <Reveal key={v.title} delay={i * 90} className="bg-bg p-7 md:p-8">
               <span className="inline-block h-7 w-7 text-honey"><MoonMark /></span>
               <h3 className="mt-5 font-display text-xl">{v.title}</h3>
-              <p className="mt-2 text-[0.95rem] leading-relaxed text-muted">{v.body}</p>
+              <p className="mt-2 text-[0.95rem] leading-relaxed text-muted-foreground">{v.body}</p>
             </Reveal>
           ))}
         </div>
@@ -156,7 +157,7 @@ export function AboutCTA() {
             Browse the shop, or let a ready-made package do the choosing for you.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Link href="/products" className="mc-btn bg-honey text-espresso hover:bg-honey">Shop gifts</Link>
+            <Button asChild size="lg" className="bg-honey text-espresso hover:bg-honey/90"><Link href="/products">Shop gifts</Link></Button>
             <Link href="/packages" className="inline-flex items-center justify-center rounded-[var(--r)] border border-white/25 px-5 py-2.5 text-sm font-semibold text-on-dark transition-colors hover:bg-white/10">
               Browse packages
             </Link>

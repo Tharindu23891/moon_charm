@@ -16,7 +16,7 @@ export function PageHeader({ eyebrow, title, description, align = 'left', classN
       {eyebrow ? <span className="mc-eyebrow">{eyebrow}</span> : null}
       <h1 className={cn('text-[clamp(2.1rem,4vw,3.1rem)] leading-[1.05]', eyebrow && 'mt-4')}>{title}</h1>
       {description ? (
-        <p className={cn('mt-3 text-[1.05rem] leading-relaxed text-muted', align === 'left' && 'max-w-2xl')}>
+        <p className={cn('mt-3 text-[1.05rem] leading-relaxed text-muted-foreground', align === 'left' && 'max-w-2xl')}>
           {description}
         </p>
       ) : null}

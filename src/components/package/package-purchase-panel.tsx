@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { AddToCartButton } from '@/components/cart/add-to-cart-button';
 import { QuantityStepper } from '@/components/quantity-stepper';
+import { Badge } from '@/components/ui/badge';
 import { formatLkr } from '@/lib/money';
 import { applyDiscount } from '@/lib/pricing';
 
@@ -24,7 +25,7 @@ export function PackagePurchasePanel({
     <div className="rounded-[var(--r-lg)] border border-line bg-surface p-6">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.1em] text-muted">Package price</p>
+          <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground">Package price</p>
           <div className="mt-1 flex items-baseline gap-2.5">
             <p className="font-display text-[2rem] leading-none text-ink">{formatLkr(effectivePrice)}</p>
             {pkg.discountPercent ? (
@@ -33,7 +34,7 @@ export function PackagePurchasePanel({
           </div>
         </div>
         {pkg.discountPercent ? (
-          <span className="mc-pill border-transparent bg-accent text-white">Save {pkg.discountPercent}%</span>
+          <Badge variant="claret">Save {pkg.discountPercent}%</Badge>
         ) : null}
       </div>
 
@@ -51,7 +52,7 @@ export function PackagePurchasePanel({
         />
       </div>
 
-      <ul className="mt-6 space-y-2 border-t border-line pt-5 text-sm text-muted">
+      <ul className="mt-6 space-y-2 border-t border-line pt-5 text-sm text-muted-foreground">
         <li className="flex items-center gap-2.5">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4 shrink-0 text-primary">
             <path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" />

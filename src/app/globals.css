@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 /* =========================================================================
    The Moon Charm — design tokens
@@ -6,12 +7,11 @@
    ========================================================================= */
 
 @theme {
-  /* Color (OKLCH) */
+  /* Brand surfaces, ink, lines (OKLCH) */
   --color-bg: oklch(1 0 0);
   --color-surface: oklch(0.976 0.008 75);
   --color-surface-warm: oklch(0.955 0.013 70);
   --color-ink: oklch(0.22 0.012 60);
-  --color-muted: oklch(0.44 0.016 55);
   --color-faint: oklch(0.54 0.015 60);
   --color-line: oklch(0.9 0.008 70);
   --color-line-strong: oklch(0.84 0.01 65);
@@ -20,20 +20,50 @@
   --color-espresso: oklch(0.255 0.03 58);
   --color-on-dark: oklch(0.95 0.011 80);
 
-  --color-primary: oklch(0.49 0.115 53);
-  --color-primary-hover: oklch(0.43 0.115 51);
+  /* Brand accents */
   --color-honey: oklch(0.8 0.14 72);
-  --color-accent: oklch(0.4 0.125 16);
-  --color-accent-hover: oklch(0.34 0.12 16);
+  --color-claret: oklch(0.4 0.125 16);
+  --color-claret-hover: oklch(0.34 0.12 16);
   --color-blush: oklch(0.945 0.022 24);
   --color-success: oklch(0.5 0.09 140);
   --color-danger: oklch(0.52 0.17 25);
+
+  /* shadcn/ui token surface, themed to the brand. The mood lives in the
+     brand accents + imagery; shadcn's neutral roles map to our warm surfaces. */
+  --color-background: oklch(1 0 0);
+  --color-foreground: oklch(0.22 0.012 60);
+  --color-card: oklch(1 0 0);
+  --color-card-foreground: oklch(0.22 0.012 60);
+  --color-popover: oklch(1 0 0);
+  --color-popover-foreground: oklch(0.22 0.012 60);
+  --color-primary: oklch(0.49 0.115 53);
+  --color-primary-foreground: oklch(0.99 0.005 80);
+  --color-primary-hover: oklch(0.43 0.115 51);
+  --color-secondary: oklch(0.976 0.008 75);
+  --color-secondary-foreground: oklch(0.22 0.012 60);
+  --color-muted: oklch(0.976 0.008 75);
+  --color-muted-foreground: oklch(0.44 0.016 55);
+  --color-accent: oklch(0.976 0.008 75);
+  --color-accent-foreground: oklch(0.22 0.012 60);
+  --color-destructive: oklch(0.52 0.17 25);
+  --color-destructive-foreground: oklch(0.99 0.005 80);
+  --color-border: oklch(0.9 0.008 70);
+  --color-input: oklch(0.84 0.01 65);
+  --color-ring: oklch(0.49 0.115 53);
 
   /* Type families (wired to next/font variables in layout.tsx) */
   --font-sans: var(--font-hanken), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", sans-serif;
   --font-display: var(--font-spectral), ui-serif, Georgia, "Times New Roman",
     serif;
+}
+
+/* shadcn radius scale, derived from --radius */
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
 :root {
@@ -44,6 +74,9 @@
   --r: 0.75rem;
   --r-lg: 1.125rem;
   --r-xl: 1.5rem;
+
+  /* shadcn radius base */
+  --radius: 0.625rem;
 
   --shadow-sm: 0 1px 2px rgb(54 38 22 / 0.05);
   --shadow: 0 6px 24px rgb(54 38 22 / 0.07);
@@ -169,166 +202,13 @@
     opacity: 0.6;
   }
 
-  /* Buttons */
-  .mc-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    border-radius: var(--r);
-    padding: 0.7rem 1.4rem;
-    font-family: var(--font-sans);
-    font-size: 0.9rem;
-    font-weight: 600;
-    line-height: 1;
-    color: oklch(0.99 0.005 80);
-    background-color: var(--color-primary);
-    border: 1px solid transparent;
-    cursor: pointer;
-    transition:
-      background-color 0.25s var(--ease-out),
-      transform 0.25s var(--ease-out),
-      box-shadow 0.25s var(--ease-out);
-  }
-
-  .mc-btn:hover {
-    background-color: var(--color-primary-hover);
-    box-shadow: var(--shadow);
-  }
-
-  .mc-btn:active {
-    transform: translateY(1px);
-  }
-
-  .mc-btn:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-    box-shadow: none;
-  }
-
-  .mc-btn-outline {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    border-radius: var(--r);
-    padding: 0.7rem 1.4rem;
-    font-family: var(--font-sans);
-    font-size: 0.9rem;
-    font-weight: 600;
-    line-height: 1;
-    color: var(--color-ink);
-    background-color: transparent;
-    border: 1px solid var(--color-line-strong);
-    cursor: pointer;
-    transition:
-      background-color 0.25s var(--ease-out),
-      border-color 0.25s var(--ease-out),
-      transform 0.25s var(--ease-out);
-  }
-
-  .mc-btn-outline:hover {
-    background-color: var(--color-surface);
-    border-color: var(--color-ink);
-  }
-
-  .mc-btn-outline:active {
-    transform: translateY(1px);
-  }
-
-  .mc-btn-outline:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-
-  .mc-btn-ghost {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    border-radius: var(--r);
-    padding: 0.6rem 0.9rem;
-    font-family: var(--font-sans);
-    font-size: 0.9rem;
-    font-weight: 600;
-    line-height: 1;
-    color: var(--color-ink);
-    background-color: transparent;
-    border: 1px solid transparent;
-    cursor: pointer;
-    transition:
-      background-color 0.25s var(--ease-out),
-      color 0.25s var(--ease-out);
-  }
-
-  .mc-btn-ghost:hover {
-    background-color: var(--color-surface);
-  }
-
-  /* Inputs */
-  .mc-input,
-  .mc-select,
-  .mc-textarea {
-    width: 100%;
-    border-radius: var(--r);
-    border: 1px solid var(--color-line-strong);
-    background-color: var(--color-bg);
-    padding: 0.7rem 0.9rem;
-    font-family: var(--font-sans);
-    font-size: 0.95rem;
-    color: var(--color-ink);
-    line-height: 1.4;
-    transition:
-      border-color 0.2s var(--ease-out),
-      box-shadow 0.2s var(--ease-out);
-  }
-
-  .mc-input::placeholder,
-  .mc-textarea::placeholder {
-    color: var(--color-muted);
-  }
-
-  .mc-input:focus,
-  .mc-select:focus,
-  .mc-textarea:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-primary) 16%, transparent);
-  }
-
+  /* Form label (paired with shadcn Input/Textarea/Select) */
   .mc-label {
     display: block;
     font-size: 0.82rem;
     font-weight: 600;
     color: var(--color-ink);
     margin-bottom: 0.4rem;
-  }
-
-  /* Pills / tags */
-  .mc-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    border-radius: 999px;
-    padding: 0.25rem 0.7rem;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    color: var(--color-ink);
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-line);
-  }
-
-  .mc-pill-accent {
-    color: oklch(0.99 0.005 80);
-    background-color: var(--color-accent);
-    border-color: transparent;
-  }
-
-  .mc-pill-blush {
-    color: var(--color-accent);
-    background-color: var(--color-blush);
-    border-color: transparent;
   }
 
   /* Cards (no glass) */
@@ -364,7 +244,7 @@
     position: relative;
     font-size: 0.92rem;
     font-weight: 500;
-    color: var(--color-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.25s var(--ease-out);
   }
 

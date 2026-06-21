@@ -9,6 +9,8 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 import { AuthShell, AuthField, GoogleButton } from '@/components/auth/auth-shell';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 const registerSchema = z.object({
   name: z.string().min(1, 'Name is required').max(80),
@@ -75,17 +77,17 @@ export default function RegisterPage() {
     >
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
         <AuthField label="Name" error={form.formState.errors.name?.message}>
-          <input autoComplete="name" {...form.register('name')} className="mc-input" />
+          <Input autoComplete="name" {...form.register('name')} />
         </AuthField>
         <AuthField label="Email" error={form.formState.errors.email?.message}>
-          <input type="email" autoComplete="email" {...form.register('email')} className="mc-input" />
+          <Input type="email" autoComplete="email" {...form.register('email')} />
         </AuthField>
         <AuthField label="Password" error={form.formState.errors.password?.message}>
-          <input type="password" autoComplete="new-password" {...form.register('password')} className="mc-input" />
+          <Input type="password" autoComplete="new-password" {...form.register('password')} />
         </AuthField>
-        <button type="submit" disabled={form.formState.isSubmitting} className="mc-btn mt-1 w-full">
+        <Button type="submit" size="lg" disabled={form.formState.isSubmitting} className="mt-1 w-full">
           {form.formState.isSubmitting ? 'Creating…' : 'Create account'}
-        </button>
+        </Button>
       </form>
 
       {googleEnabled ? (

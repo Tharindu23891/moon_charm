@@ -10,6 +10,7 @@ import { SectionHeading } from '@/components/section-heading';
 import { Reveal } from '@/components/reveal';
 import { MoonMark } from '@/components/moon-mark';
 import { OccasionTile } from '@/components/occasion-tile';
+import { Button } from '@/components/ui/button';
 
 const HERO_IMAGE =
   'https://images.unsplash.com/photo-1512909006721-3d6018887383?auto=format&fit=crop&w=1100&q=75';
@@ -67,13 +68,13 @@ export default async function HomePage() {
             <h1 className="mc-display mt-5 text-[clamp(2.75rem,6vw,5rem)] mc-animate-rise" style={{ animationDelay: '90ms' }}>
               Gifts made to be <span className="italic text-primary">remembered</span>.
             </h1>
-            <p className="mc-prose mt-6 text-[1.15rem] leading-relaxed text-muted mc-animate-rise" style={{ animationDelay: '180ms' }}>
+            <p className="mc-prose mt-6 text-[1.15rem] leading-relaxed text-muted-foreground mc-animate-rise" style={{ animationDelay: '180ms' }}>
               We assemble each package by hand and send it island-wide, so the thought you
               put in is exactly what arrives at the door.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-3 mc-animate-rise" style={{ animationDelay: '270ms' }}>
-              <Link href="/products" className="mc-btn">Shop gifts</Link>
-              <Link href="/packages" className="mc-btn-outline">Explore gift packages</Link>
+              <Button asChild size="lg"><Link href="/products">Shop gifts</Link></Button>
+              <Button asChild size="lg" variant="outline"><Link href="/packages">Explore gift packages</Link></Button>
             </div>
             <p className="mt-7 text-sm text-faint mc-animate-rise" style={{ animationDelay: '360ms' }}>
               Hand-wrapped · Gift note included · Delivered anywhere in Sri Lanka
@@ -95,7 +96,7 @@ export default async function HomePage() {
               <span className="h-7 w-7 text-primary"><MoonMark /></span>
               <div className="leading-tight">
                 <p className="text-sm font-semibold text-ink">Wrapped by hand</p>
-                <p className="text-xs text-muted">Every single order</p>
+                <p className="text-xs text-muted-foreground">Every single order</p>
               </div>
             </div>
           </div>
@@ -103,7 +104,7 @@ export default async function HomePage() {
 
         {/* Trust strip */}
         <div className="border-y border-line bg-surface">
-          <div className="mc-container flex flex-wrap items-center justify-center gap-x-8 gap-y-2 py-4 text-sm text-muted">
+          <div className="mc-container flex flex-wrap items-center justify-center gap-x-8 gap-y-2 py-4 text-sm text-muted-foreground">
             {trustPoints.map((point, i) => (
               <span key={point} className="flex items-center gap-x-8">
                 {point}
@@ -216,7 +217,7 @@ export default async function HomePage() {
             <h2 className="mt-4 text-[clamp(1.8rem,3.5vw,2.8rem)] leading-tight">
               A small house that takes the gift personally
             </h2>
-            <div className="mc-prose mt-5 space-y-4 text-[1.05rem] leading-relaxed text-muted">
+            <div className="mc-prose mt-5 space-y-4 text-[1.05rem] leading-relaxed text-muted-foreground">
               <p>
                 The Moon Charm began at a kitchen table in Kuliyapitiya, wrapping chocolate
                 bouquets for friends. We still work the same way: a person chooses the pieces,
@@ -287,12 +288,12 @@ export default async function HomePage() {
             <h2 className="max-w-xl text-[clamp(1.7rem,3vw,2.4rem)] leading-tight">
               Not sure what to give? Tell us about them.
             </h2>
-            <p className="mc-prose text-muted">
+            <p className="mc-prose text-muted-foreground">
               Send us the occasion and the person, and we will put together something that suits.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
-              <Link href="/contact" className="mc-btn">Ask for a recommendation</Link>
-              <Link href="/packages" className="mc-btn-outline">Browse packages</Link>
+              <Button asChild><Link href="/contact">Ask for a recommendation</Link></Button>
+              <Button asChild variant="outline"><Link href="/packages">Browse packages</Link></Button>
             </div>
           </div>
         </Reveal>
@@ -303,7 +304,7 @@ export default async function HomePage() {
 
 function EmptyNote({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mt-10 rounded-[var(--r-lg)] border border-dashed border-line-strong bg-surface px-6 py-10 text-center text-sm text-muted">
+    <div className="mt-10 rounded-[var(--r-lg)] border border-dashed border-line-strong bg-surface px-6 py-10 text-center text-sm text-muted-foreground">
       {children}
     </div>
   );

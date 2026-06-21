@@ -28,11 +28,11 @@ export default function AdminHomePage() {
             <div>
               <div className="flex items-center gap-1.5 font-display text-lg">
                 {s.title}
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4 text-muted transition-transform duration-300 group-hover:translate-x-1 group-hover:text-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-hover:translate-x-1 group-hover:text-primary">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
                 </svg>
               </div>
-              <p className="mt-1 text-sm text-muted">{s.desc}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{s.desc}</p>
             </div>
           </Link>
         ))}

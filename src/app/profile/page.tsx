@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { MoonMark } from '@/components/moon-mark';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 export const metadata = { title: 'Your account' };
 
@@ -12,8 +14,8 @@ export default async function ProfilePage() {
     return (
       <div className="mc-container py-20 text-center">
         <h1 className="font-display text-3xl">Please sign in</h1>
-        <p className="mt-3 text-muted">Sign in to view your account details.</p>
-        <Link href="/login?next=/profile" className="mc-btn mt-6">Sign in</Link>
+        <p className="mt-3 text-muted-foreground">Sign in to view your account details.</p>
+        <Button asChild className="mt-6"><Link href="/login?next=/profile">Sign in</Link></Button>
       </div>
     );
   }
@@ -34,10 +36,10 @@ export default async function ProfilePage() {
           </span>
           <div>
             <p className="font-display text-xl leading-tight">{session.user.name ?? '—'}</p>
-            <p className="text-sm text-muted">{session.user.email ?? '—'}</p>
+            <p className="text-sm text-muted-foreground">{session.user.email ?? '—'}</p>
           </div>
           {role === 'admin' ? (
-            <span className="ml-auto mc-pill-blush mc-pill border-transparent">Admin</span>
+            <Badge variant="blush" className="ml-auto">Admin</Badge>
           ) : null}
         </div>
 
@@ -53,12 +55,12 @@ export default async function ProfilePage() {
         </dl>
 
         <div className="mt-7 flex flex-wrap gap-3">
-          <Link href="/orders" className="mc-btn">View your orders</Link>
-          {role === 'admin' ? <Link href="/admin" className="mc-btn-outline">Admin dashboard</Link> : null}
+          <Button asChild><Link href="/orders">View your orders</Link></Button>
+          {role === 'admin' ? <Button asChild variant="outline"><Link href="/admin">Admin dashboard</Link></Button> : null}
         </div>
       </div>
 
-      <Link href="/products" className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted transition-colors hover:text-ink">
+      <Link href="/products" className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-ink">
         <span className="h-5 w-5 text-honey"><MoonMark /></span>
         Continue shopping
       </Link>

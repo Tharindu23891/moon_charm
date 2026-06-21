@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/cn';
 
 type Option = { value: string; label: string };
@@ -23,24 +24,24 @@ export function SortSelect({
   const searchParams = useSearchParams();
   const current = searchParams.get(paramKey) ?? defaultValue;
 
-  const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const onChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (e.target.value && e.target.value !== defaultValue) params.set(paramKey, e.target.value);
+    if (value && value !== defaultValue) params.set(paramKey, value);
     else params.delete(paramKey);
     const qs = params.toString();
     router.push(qs ? `${pathname}?${qs}` : pathname);
   };
 
   return (
-    <select
-      value={current}
-      onChange={onChange}
-      aria-label={label}
-      className={cn('mc-select mc-input h-11', className)}
-    >
-      {options.map((o) => (
-        <option key={o.value} value={o.value}>{o.label}</option>
-      ))}
-    </select>
+    <Select value={current} onValueChange={onChange}>
+      <SelectTrigger aria-label={label} className={cn('w-full', className)}>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {options.map((o) => (
+          <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

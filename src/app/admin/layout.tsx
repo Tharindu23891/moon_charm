@@ -31,7 +31,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   href={item.href}
                   className={cn(
                     'flex items-center gap-2.5 whitespace-nowrap rounded-[var(--r)] px-3 py-2 text-sm font-medium transition-colors',
-                    active ? 'bg-surface text-ink' : 'text-muted hover:bg-surface hover:text-ink',
+                    active ? 'bg-surface text-ink' : 'text-muted-foreground hover:bg-surface hover:text-ink',
                   )}
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={cn('h-[1.05rem] w-[1.05rem]', active ? 'text-primary' : 'text-faint')}>
@@ -43,7 +43,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             })}
           </nav>
           <div className="mt-4 hidden border-t border-line pt-4 lg:block">
-            <Link href="/" className="flex items-center gap-2 rounded-[var(--r)] px-3 py-2 text-sm text-muted transition-colors hover:text-ink">
+            <Link href="/" className="flex items-center gap-2 rounded-[var(--r)] px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-ink">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m15 18-6-6 6-6" />
               </svg>

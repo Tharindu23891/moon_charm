@@ -22,7 +22,7 @@ export function SectionHeading({ kicker, title, description, action, align = 'le
       <div className={cn('max-w-2xl', align === 'center' && 'mx-auto text-center')}>
         {kicker ? <span className="mc-eyebrow">{kicker}</span> : null}
         <h2 className={cn('text-[clamp(1.7rem,3vw,2.5rem)] leading-tight', kicker && 'mt-4')}>{title}</h2>
-        {description ? <p className="mt-3 text-[1.05rem] text-muted">{description}</p> : null}
+        {description ? <p className="mt-3 text-[1.05rem] text-muted-foreground">{description}</p> : null}
       </div>
       {action ? (
         <Link

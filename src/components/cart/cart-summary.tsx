@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCart } from '@/components/cart/cart-context';
 import { formatLkr } from '@/lib/money';
 import { cn } from '@/lib/cn';
+import { Button } from '@/components/ui/button';
 
 export function CartSummary() {
   const { subtotal, count } = useCart();
@@ -15,12 +16,12 @@ export function CartSummary() {
 
       <dl className="mt-5 space-y-3 text-sm">
         <div className="flex items-center justify-between">
-          <dt className="text-muted">Subtotal · {count} {count === 1 ? 'item' : 'items'}</dt>
+          <dt className="text-muted-foreground">Subtotal · {count} {count === 1 ? 'item' : 'items'}</dt>
           <dd className="font-medium text-ink">{formatLkr(subtotal)}</dd>
         </div>
         <div className="flex items-center justify-between">
-          <dt className="text-muted">Delivery</dt>
-          <dd className="text-muted">Confirmed at checkout</dd>
+          <dt className="text-muted-foreground">Delivery</dt>
+          <dd className="text-muted-foreground">Confirmed at checkout</dd>
         </div>
       </dl>
 
@@ -29,14 +30,10 @@ export function CartSummary() {
         <span className="font-display text-xl text-ink">{formatLkr(subtotal)}</span>
       </div>
 
-      <Link
-        href="/checkout"
-        aria-disabled={empty}
-        className={cn('mc-btn mt-6 w-full', empty && 'pointer-events-none opacity-50')}
-      >
-        Proceed to checkout
-      </Link>
-      <Link href="/products" className="mt-3 block text-center text-sm text-muted transition-colors hover:text-ink">
+      <Button asChild size="lg" className={cn('mt-6 w-full', empty && 'pointer-events-none opacity-50')}>
+        <Link href="/checkout" aria-disabled={empty}>Proceed to checkout</Link>
+      </Button>
+      <Link href="/products" className="mt-3 block text-center text-sm text-muted-foreground transition-colors hover:text-ink">
         Continue shopping
       </Link>
     </div>

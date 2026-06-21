@@ -8,6 +8,7 @@ import { CartSummary } from '@/components/cart/cart-summary';
 import { QuantityStepper } from '@/components/quantity-stepper';
 import { MoonMark } from '@/components/moon-mark';
 import { formatLkr } from '@/lib/money';
+import { Button } from '@/components/ui/button';
 
 const FALLBACK = 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=400&q=70';
 
@@ -31,12 +32,12 @@ export default function CartPage() {
         <div className="mx-auto flex max-w-md flex-col items-center text-center">
           <span className="h-12 w-12 text-primary"><MoonMark /></span>
           <h1 className="mt-5 font-display text-3xl">Your cart is empty</h1>
-          <p className="mt-3 text-muted">
+          <p className="mt-3 text-muted-foreground">
             Nothing chosen yet. Browse the shop, or start with a ready-made gift package.
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
-            <Link href="/products" className="mc-btn">Shop gifts</Link>
-            <Link href="/packages" className="mc-btn-outline">Browse packages</Link>
+            <Button asChild><Link href="/products">Shop gifts</Link></Button>
+            <Button asChild variant="outline"><Link href="/packages">Browse packages</Link></Button>
           </div>
         </div>
       </div>
@@ -47,9 +48,9 @@ export default function CartPage() {
     <div className="mc-container py-12 md:py-16">
       <div className="flex items-end justify-between gap-4">
         <h1 className="font-display text-[clamp(2rem,4vw,2.8rem)]">Your cart</h1>
-        <button type="button" onClick={clear} className="mc-btn-ghost text-sm text-muted hover:text-accent">
+        <Button type="button" variant="ghost" size="sm" onClick={clear} className="text-muted-foreground hover:text-claret">
           Clear cart
-        </button>
+        </Button>
       </div>
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
@@ -76,7 +77,7 @@ export default function CartPage() {
                       type="button"
                       onClick={() => removeItem(it.refId)}
                       aria-label={`Remove ${it.name}`}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface hover:text-accent"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-surface hover:text-claret"
                     >
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6L6 18" />

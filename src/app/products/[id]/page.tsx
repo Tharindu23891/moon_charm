@@ -6,6 +6,8 @@ import { ProductPurchasePanel } from '@/components/product/product-purchase-pane
 import { ProductCard } from '@/components/product/product-card';
 import { ProductImageGallery } from '@/components/product/product-image-gallery';
 import { Breadcrumb } from '@/components/breadcrumb';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 export default async function ProductDetailsPage({
   params,
@@ -22,8 +24,8 @@ export default async function ProductDetailsPage({
     return (
       <div className="mc-container py-20 text-center">
         <h1 className="font-display text-3xl">We can’t find that gift</h1>
-        <p className="mt-3 text-muted">It may have sold out or been moved.</p>
-        <Link href="/products" className="mc-btn mt-6">Back to the shop</Link>
+        <p className="mt-3 text-muted-foreground">It may have sold out or been moved.</p>
+        <Button asChild className="mt-6"><Link href="/products">Back to the shop</Link></Button>
       </div>
     );
   }
@@ -44,18 +46,15 @@ export default async function ProductDetailsPage({
 
         <div className="lg:sticky lg:top-28 lg:self-start">
           {p.categoryId?.name ? (
-            <Link
-              href={`/products?category=${encodeURIComponent(p.categoryId.slug)}`}
-              className="mc-pill transition-colors hover:border-line-strong"
-            >
-              {p.categoryId.name}
-            </Link>
+            <Badge asChild variant="outline" className="transition-colors hover:border-line-strong">
+              <Link href={`/products?category=${encodeURIComponent(p.categoryId.slug)}`}>{p.categoryId.name}</Link>
+            </Badge>
           ) : null}
 
           <h1 className="mt-4 font-display text-[clamp(2rem,4vw,3rem)] leading-[1.05]">{p.name}</h1>
 
           {p.shortDescription ? (
-            <p className="mt-3 text-[1.05rem] leading-relaxed text-muted">{p.shortDescription}</p>
+            <p className="mt-3 text-[1.05rem] leading-relaxed text-muted-foreground">{p.shortDescription}</p>
           ) : null}
 
           {p.description ? (

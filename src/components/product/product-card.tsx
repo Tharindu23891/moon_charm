@@ -62,7 +62,7 @@ export function ProductCard({ product }: Readonly<{ product: ProductListItem }>)
         <p className="mt-1 text-[0.95rem] font-semibold text-ink">{formatLkr(product.price)}</p>
 
         {product.shortDescription ? (
-          <p className="mt-1.5 line-clamp-2 text-sm text-muted">{product.shortDescription}</p>
+          <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">{product.shortDescription}</p>
         ) : null}
 
         <p className="mt-auto pt-2 text-xs text-faint">
