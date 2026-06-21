@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import type { SortOrder } from 'mongoose';
-import { connectToDatabase } from '@/lib/mongoose';
+import { ensureDatabase } from '@/lib/api';
 import { requireAdmin } from '@/lib/server-auth';
 import { GiftPackage } from '@/models/GiftPackage';
 import { slugify } from '@/lib/slugify';
@@ -43,7 +43,8 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const sort = url.searchParams.get('sort');
 
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const packages = await GiftPackage.find({})
     .sort(parseSort(sort))
@@ -83,7 +84,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const slug = parsed.data.slug ? slugify(parsed.data.slug) : slugify(parsed.data.name);
   const exists = await GiftPackage.findOne({ slug }).lean();

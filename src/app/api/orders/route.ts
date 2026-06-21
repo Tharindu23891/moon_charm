@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { connectToDatabase } from '@/lib/mongoose';
+import { ensureDatabase } from '@/lib/api';
 import { getSessionUser, requireUser } from '@/lib/server-auth';
 import { Cart } from '@/models/Cart';
 import { Order } from '@/models/Order';
@@ -26,7 +26,8 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const filter = role === 'admin' ? {} : { userId };
   const orders = await Order.find(filter).sort({ createdAt: -1 }).limit(200).lean();
@@ -57,7 +58,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const cart = await Cart.findOne({ userId }).lean();
   if (!cart || !cart.items || cart.items.length === 0) {

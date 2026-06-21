@@ -26,7 +26,10 @@ export async function connectToDatabase() {
   const fallbackUri = 'mongodb://127.0.0.1:27017/moon_charm';
   const connectionOptions = {
     bufferCommands: false,
-    serverSelectionTimeoutMS: 2000,
+    // Atlas on a slow/unreliable network needs time for DNS SRV lookup, the
+    // TLS handshake, and server selection. 2s was too aggressive and timed
+    // out before a real connection (or a real error) could surface.
+    serverSelectionTimeoutMS: 10000,
   };
 
   cached.promise ??= mongoose.connect(mongoUri, {

@@ -6,14 +6,6 @@ import { Product } from '@/models/Product';
 import { GiftPackage } from '@/models/GiftPackage';
 import { ProductCard } from '@/components/product/product-card';
 import { PackageCard } from '@/components/package/package-card';
-import { BrandName } from '@/components/brand-name';
-import { Inter, Instrument_Sans } from 'next/font/google';
-
-const instrumentSans = Instrument_Sans({
-  subsets: ['latin'],
-  variable: '--font-instrument-sans',
-  weight: ['400', '500', '600', '700'],
-});
 
 export default async function HomePage() {
   let featuredProducts: any[] = [];
@@ -49,13 +41,17 @@ export default async function HomePage() {
 </p>
 
 
-<div className="flex items-center z-10 gap-4"><a href="/products" className="mc-btn px-6 py-2.5">
+<div className="flex items-center z-10 gap-4"><Link href="/products" className="mc-btn px-6 py-2.5">
   Shop products
-</a></div>
+</Link></div>
 
-    <img
+    <Image
       src="https://images.unsplash.com/photo-1524758631624-e2822e304c36"
       alt="The Moon Charm"
+      width={1600}
+      height={750}
+      priority
+      sizes="100vw"
       className="w-full h-full scale-[2] max-h-[750px] object-cover absolute -top-65 -z-10 opacity-30"
     />
 

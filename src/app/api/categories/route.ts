@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { connectToDatabase } from '@/lib/mongoose';
+import { ensureDatabase } from '@/lib/api';
 import { requireAdmin } from '@/lib/server-auth';
 import { Category } from '@/models/Category';
 import { slugify } from '@/lib/slugify';
@@ -11,7 +11,8 @@ const createCategorySchema = z.object({
 });
 
 export async function GET() {
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
   const categories = await Category.find({}).sort({ name: 1 }).lean();
   return NextResponse.json(
     categories.map((c) => ({
@@ -37,7 +38,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const slug = parsed.data.slug ? slugify(parsed.data.slug) : slugify(parsed.data.name);
   const exists = await Category.findOne({ slug }).lean();

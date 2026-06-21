@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import type { SortOrder } from 'mongoose';
-import { connectToDatabase } from '@/lib/mongoose';
+import { ensureDatabase } from '@/lib/api';
 import { requireAdmin } from '@/lib/server-auth';
 import { Category } from '@/models/Category';
 import { Product } from '@/models/Product';
@@ -41,7 +41,8 @@ export async function GET(req: Request) {
   const maxPrice = url.searchParams.get('maxPrice');
   const sort = url.searchParams.get('sort');
 
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const filter: any = {};
 
@@ -96,7 +97,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const category = await Category.findOne({ slug: parsed.data.categorySlug }).lean();
   if (!category) {

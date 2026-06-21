@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { connectToDatabase } from '@/lib/mongoose';
+import { ensureDatabase } from '@/lib/api';
 import { requireAdmin } from '@/lib/server-auth';
 import { Order } from '@/models/Order';
 
@@ -31,7 +31,8 @@ export async function PATCH(
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
   const updated = await Order.findByIdAndUpdate(id, parsed.data, { new: true }).lean();
   if (!updated) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });

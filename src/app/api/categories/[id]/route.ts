@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { connectToDatabase } from '@/lib/mongoose';
+import { ensureDatabase } from '@/lib/api';
 import { requireAdmin } from '@/lib/server-auth';
 import { Category } from '@/models/Category';
 import { slugify } from '@/lib/slugify';
@@ -30,7 +30,8 @@ export async function PATCH(
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const update: any = {};
   if (parsed.data.name) update.name = parsed.data.name;
@@ -63,7 +64,8 @@ export async function DELETE(
   }
 
   const { id } = await ctx.params;
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const deleted = await Category.findByIdAndDelete(id).lean();
   if (!deleted) {

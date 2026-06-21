@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { connectToDatabase } from '@/lib/mongoose';
+import { ensureDatabase } from '@/lib/api';
 import { requireAdmin } from '@/lib/server-auth';
 import { GiftPackage } from '@/models/GiftPackage';
 
@@ -29,7 +29,8 @@ export async function GET(
   ctx: { params: Promise<{ id: string }> }
 ) {
   const { id } = await ctx.params;
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const pkg = await GiftPackage.findById(id).populate('items.productId').lean();
   if (!pkg) {
@@ -71,7 +72,8 @@ export async function PATCH(
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const update: any = { ...parsed.data };
   if (parsed.data.discountPercent === null) {
@@ -99,7 +101,8 @@ export async function DELETE(
   }
 
   const { id } = await ctx.params;
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
   const deleted = await GiftPackage.findByIdAndDelete(id).lean();
   if (!deleted) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
