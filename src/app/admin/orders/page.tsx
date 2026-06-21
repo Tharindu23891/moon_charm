@@ -1,10 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { formatLkr } from '@/lib/money';
+import { AdminHeader, AdminPanel } from '@/components/admin/admin-ui';
+import { OrderStatusBadge } from '@/components/order-status-badge';
 
 type Order = {
   id: string;
@@ -26,29 +27,24 @@ export default function AdminOrdersPage() {
     setLoading(true);
     try {
       const res = await fetch('/api/orders');
-
       if (res.status === 401) {
         setOrders([]);
-        toast.error('Please log in as admin to view orders');
+        toast.error('Please sign in as an admin to view orders');
         router.push('/login?next=/admin/orders');
         return;
       }
-
       if (!res.ok) {
         setOrders([]);
         const msg = (await res.json().catch(() => null))?.error ?? 'Failed to load orders';
         toast.error(msg);
         return;
       }
-
       const data: unknown = await res.json().catch(() => null);
       if (!Array.isArray(data)) {
         setOrders([]);
-        const msg = (data as any)?.error ?? 'Unexpected response from server';
-        toast.error(msg);
+        toast.error('Unexpected response from server');
         return;
       }
-
       setOrders(data as Order[]);
     } finally {
       setLoading(false);
@@ -69,69 +65,60 @@ export default function AdminOrdersPage() {
       toast.error('Update failed');
       return;
     }
-    toast.success('Updated');
+    toast.success('Order updated');
     await load();
   }
 
   return (
-    <div className="mc-container py-10">
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">
-            <span className="mc-text-gradient">Admin · Orders</span>
-          </h1>
-          <p className="mt-1 text-sm text-zinc-600">View and update orders.</p>
-        </div>
-        <Link href="/admin" className="mc-pill hover:bg-white">
-          Back to dashboard
-        </Link>
-      </div>
+    <div>
+      <AdminHeader title="Orders" description="Review orders and move them through fulfilment." />
 
-      <div className="mc-card mt-6 overflow-hidden p-0">
-        {loading ? (
-          <div className="p-4 text-sm text-zinc-600">Loading…</div>
-        ) : orders.length === 0 ? (
-          <div className="p-4 text-sm text-zinc-600">No orders.</div>
-        ) : (
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-white/50 bg-white/40 text-xs text-zinc-600">
-              <tr>
-                <th className="px-4 py-3">Order</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Payment</th>
-                <th className="px-4 py-3">Total</th>
-                <th className="px-4 py-3">Date</th>
-                <th className="px-4 py-3">Update</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((o) => (
-                <tr key={o.id} className="border-b border-white/50 last:border-0 hover:bg-white/35">
-                  <td className="px-4 py-3 font-medium">{o.id.slice(-8)}</td>
-                  <td className="px-4 py-3">{o.status}</td>
-                  <td className="px-4 py-3">{o.paymentStatus}</td>
-                  <td className="px-4 py-3">{formatLkr(Number(o.total))}</td>
-                  <td className="px-4 py-3 text-zinc-600">
-                    {new Date(o.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-3">
-                    <select
-                      defaultValue={o.status}
-                      onChange={(e) => updateStatus(o.id, e.target.value)}
-                      className="mc-input w-44"
-                    >
-                      {statuses.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+      <div className="mt-8">
+        <AdminPanel>
+          {loading ? (
+            <p className="px-5 py-8 text-sm text-muted">Loading…</p>
+          ) : orders.length === 0 ? (
+            <p className="px-5 py-12 text-center text-sm text-muted">No orders yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[720px] text-left text-sm">
+                <thead className="border-b border-line bg-surface text-xs uppercase tracking-wide text-muted">
+                  <tr>
+                    <th className="px-5 py-3 font-semibold">Order</th>
+                    <th className="px-5 py-3 font-semibold">Status</th>
+                    <th className="px-5 py-3 font-semibold">Payment</th>
+                    <th className="px-5 py-3 text-right font-semibold">Total</th>
+                    <th className="px-5 py-3 font-semibold">Placed</th>
+                    <th className="px-5 py-3 font-semibold">Update status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line">
+                  {orders.map((o) => (
+                    <tr key={o.id} className="transition-colors hover:bg-surface/60">
+                      <td className="px-5 py-3.5 font-medium text-ink">#{o.id.slice(-8)}</td>
+                      <td className="px-5 py-3.5"><OrderStatusBadge status={o.status} /></td>
+                      <td className="px-5 py-3.5 capitalize text-muted">{o.paymentStatus}</td>
+                      <td className="px-5 py-3.5 text-right tabular-nums text-ink">{formatLkr(Number(o.total))}</td>
+                      <td className="px-5 py-3.5 text-muted">{new Date(o.createdAt).toLocaleDateString('en-LK', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                      <td className="px-5 py-3.5">
+                        <select
+                          defaultValue={o.status}
+                          onChange={(e) => updateStatus(o.id, e.target.value)}
+                          aria-label={`Update status for order ${o.id.slice(-8)}`}
+                          className="mc-select mc-input h-9 w-40 py-1.5 text-sm capitalize"
+                        >
+                          {statuses.map((s) => (
+                            <option key={s} value={s} className="capitalize">{s}</option>
+                          ))}
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </AdminPanel>
       </div>
     </div>
   );

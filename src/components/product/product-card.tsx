@@ -13,87 +13,62 @@ export type ProductListItem = {
   category?: { name: string; slug: string } | null;
 };
 
+const FALLBACK_IMAGE =
+  'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=70';
+
 export function ProductCard({ product }: Readonly<{ product: ProductListItem }>) {
-  const image = product.images?.[0] || 'https://images.unsplash.com/photo-1778084765801-a53bc6dc5f96';
+  const image = product.images?.[0] || FALLBACK_IMAGE;
+  const soldOut = product.stock <= 0;
 
   return (
-    <div className="mc-card mc-card-hover group p-4">
-      <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-white/50">
-        <Link
-          href={`/products/${product.id}`}
-          aria-label={`View details for ${product.name}`}
-          className="absolute inset-0"
-        >
+    <article className="group flex flex-col">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--r-lg)] bg-surface">
+        <Link href={`/products/${product.id}`} aria-label={`View ${product.name}`} className="absolute inset-0">
           <Image
             src={image}
             alt={product.name}
             fill
-            sizes="400px"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 320px"
+            className="object-cover transition-transform duration-700 ease-[var(--ease-out)] group-hover:scale-[1.04]"
           />
         </Link>
-        <div className="absolute left-3 top-3">
-          <span className="mc-pill border-fuchsia-200/60 bg-white/75 text-fuchsia-700">
-            {product.category?.name ?? 'Gift'}
+
+        {product.category?.name ? (
+          <span className="absolute left-3 top-3 rounded-full bg-bg/85 px-2.5 py-1 text-[0.7rem] font-medium text-ink backdrop-blur-sm">
+            {product.category.name}
           </span>
-        </div>
-      </div>
+        ) : null}
 
-      <div className="mt-4 space-y-2">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="text-sm font-semibold leading-5 text-neutral-900">
-              {product.name}
-            </div>
-            <div className="mt-1 flex items-center gap-1">
-              <Stars />
-              <span className="text-xs text-neutral-600">Top rated</span>
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="text-sm font-extrabold">
-              <span className="mc-text-gradient">{formatLkr(product.price)}</span>
-            </div>
-          </div>
-        </div>
-
-        <p className="text-sm text-neutral-600 line-clamp-2">{product.shortDescription}</p>
-
-        <div className="flex items-center justify-between gap-3 pt-2">
-          <div className="text-xs text-neutral-600">
-            {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
-          </div>
-          <div className="flex items-center gap-2">
+        {soldOut ? (
+          <span className="absolute right-3 top-3 rounded-full bg-ink/80 px-2.5 py-1 text-[0.7rem] font-semibold text-white">
+            Sold out
+          </span>
+        ) : (
+          <div className="absolute bottom-3 right-3 translate-y-1 opacity-0 transition-all duration-300 ease-[var(--ease-out)] group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100">
             <AddToCartButton
-              disabled={product.stock <= 0}
-              item={{
-                itemType: 'product',
-                refId: product.id,
-                name: product.name,
-                image,
-                unitPrice: product.price,
-              }}
+              variant="icon"
+              item={{ itemType: 'product', refId: product.id, name: product.name, image, unitPrice: product.price }}
             />
           </div>
-        </div>
+        )}
       </div>
-    </div>
-  );
-}
 
-function Stars() {
-  return (
-    <span className="inline-flex items-center gap-0.5" aria-label="Rating">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <svg
-          key={star}
-          viewBox="0 0 20 20"
-          className="h-3.5 w-3.5 text-amber-400"
-          fill="currentColor"
-        >
-          <path d="M10 15.27l-5.18 2.73 1-5.81L1.64 7.5l5.84-.85L10 1.35l2.52 5.3 5.84.85-4.18 4.69 1 5.81L10 15.27z" />
-        </svg>
-      ))}
-    </span>
+      <div className="mt-3.5 flex flex-1 flex-col">
+        <h3 className="font-display text-[1.15rem] leading-snug">
+          <Link href={`/products/${product.id}`} className="transition-colors hover:text-primary">
+            {product.name}
+          </Link>
+        </h3>
+        <p className="mt-1 text-[0.95rem] font-semibold text-ink">{formatLkr(product.price)}</p>
+
+        {product.shortDescription ? (
+          <p className="mt-1.5 line-clamp-2 text-sm text-muted">{product.shortDescription}</p>
+        ) : null}
+
+        <p className="mt-auto pt-2 text-xs text-faint">
+          {soldOut ? 'Currently unavailable' : product.stock <= 5 ? `Only ${product.stock} left` : 'In stock'}
+        </p>
+      </div>
+    </article>
   );
 }

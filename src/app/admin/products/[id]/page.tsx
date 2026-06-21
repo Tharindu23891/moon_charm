@@ -1,7 +1,8 @@
 import { ProductForm } from '../product-form';
 
-export default function AdminEditProductPage({
+export default async function AdminEditProductPage({
   params,
-}: Readonly<{ params: { id: string } }>) {
-  return <ProductForm mode="edit" productId={params.id} />;
+}: Readonly<{ params: Promise<{ id: string }> }>) {
+  const { id } = await params;
+  return <ProductForm mode="edit" productId={id} />;
 }

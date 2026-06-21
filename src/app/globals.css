@@ -1,88 +1,426 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
-
 @import "tailwindcss";
 
-html,
-body {
-  height: 100%;
+/* =========================================================================
+   The Moon Charm — design tokens
+   Warm, romantic, editorial luxury. Bright canvas; warmth from brand + image.
+   ========================================================================= */
+
+@theme {
+  /* Color (OKLCH) */
+  --color-bg: oklch(1 0 0);
+  --color-surface: oklch(0.976 0.008 75);
+  --color-surface-warm: oklch(0.955 0.013 70);
+  --color-ink: oklch(0.22 0.012 60);
+  --color-muted: oklch(0.44 0.016 55);
+  --color-faint: oklch(0.54 0.015 60);
+  --color-line: oklch(0.9 0.008 70);
+  --color-line-strong: oklch(0.84 0.01 65);
+
+  /* Warm dark ground (footer, dark sections) + text on it */
+  --color-espresso: oklch(0.255 0.03 58);
+  --color-on-dark: oklch(0.95 0.011 80);
+
+  --color-primary: oklch(0.49 0.115 53);
+  --color-primary-hover: oklch(0.43 0.115 51);
+  --color-honey: oklch(0.8 0.14 72);
+  --color-accent: oklch(0.4 0.125 16);
+  --color-accent-hover: oklch(0.34 0.12 16);
+  --color-blush: oklch(0.945 0.022 24);
+  --color-success: oklch(0.5 0.09 140);
+  --color-danger: oklch(0.52 0.17 25);
+
+  /* Type families (wired to next/font variables in layout.tsx) */
+  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  --font-display: var(--font-spectral), ui-serif, Georgia, "Times New Roman",
+    serif;
 }
 
-body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+:root {
+  --container: 76rem;
+  --container-wide: 90rem;
+
+  --r-sm: 0.5rem;
+  --r: 0.75rem;
+  --r-lg: 1.125rem;
+  --r-xl: 1.5rem;
+
+  --shadow-sm: 0 1px 2px rgb(54 38 22 / 0.05);
+  --shadow: 0 6px 24px rgb(54 38 22 / 0.07);
+  --shadow-lg: 0 18px 48px rgb(54 38 22 / 0.1);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --z-dropdown: 40;
+  --z-sticky: 50;
+  --z-backdrop: 60;
+  --z-modal: 70;
+  --z-toast: 80;
 }
+
+/* =========================================================================
+   Base
+   ========================================================================= */
 
 @layer base {
+  html {
+    height: 100%;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
-    @apply text-neutral-900;
-    @apply bg-linear-to-b from-violet-50 via-rose-50 to-white;
+    min-height: 100%;
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    color: var(--color-ink);
+  }
+
+  p {
+    text-wrap: pretty;
   }
 
   ::selection {
-    @apply bg-fuchsia-200 text-neutral-900;
+    background: var(--color-blush);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  img {
+    color: transparent;
   }
 }
+
+/* =========================================================================
+   Components
+   ========================================================================= */
 
 @layer components {
   .mc-container {
-    @apply mx-auto w-full max-w-6xl px-4;
+    width: 100%;
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: 1.25rem;
   }
 
-  .mc-card {
-    @apply rounded-2xl border border-white/50 bg-white/70 backdrop-blur-xl;
-    @apply shadow-lg shadow-violet-100/40;
+  @media (min-width: 768px) {
+    .mc-container {
+      padding-inline: 2rem;
+    }
   }
 
-  .mc-card-hover {
-    @apply transition-all duration-300;
-    @apply hover:-translate-y-1 hover:shadow-xl hover:shadow-violet-200/40;
+  .mc-container-wide {
+    max-width: var(--container-wide);
   }
 
+  .mc-section {
+    padding-block: clamp(3.5rem, 8vw, 7rem);
+  }
+
+  /* Display heading helper */
+  .mc-display {
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  /* A single, deliberate kicker — used sparingly, never on every section */
+  .mc-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+  }
+
+  .mc-eyebrow::before {
+    content: "";
+    width: 1.75rem;
+    height: 1px;
+    background: var(--color-primary);
+    opacity: 0.6;
+  }
+
+  /* Buttons */
   .mc-btn {
-    @apply inline-flex items-center justify-center gap-2;
-    @apply rounded-xl px-4 py-2 text-sm font-semibold;
-    @apply text-white;
-    @apply bg-linear-to-r from-violet-600 via-fuchsia-600 to-rose-500;
-    @apply shadow-md shadow-fuchsia-200/40;
-    @apply transition-all duration-300;
-    @apply hover:brightness-110 hover:shadow-lg hover:shadow-fuchsia-200/60;
-    @apply active:scale-[0.99];
-    @apply disabled:cursor-not-allowed disabled:opacity-60;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--r);
+    padding: 0.7rem 1.4rem;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1;
+    color: oklch(0.99 0.005 80);
+    background-color: var(--color-primary);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition:
+      background-color 0.25s var(--ease-out),
+      transform 0.25s var(--ease-out),
+      box-shadow 0.25s var(--ease-out);
+  }
+
+  .mc-btn:hover {
+    background-color: var(--color-primary-hover);
+    box-shadow: var(--shadow);
+  }
+
+  .mc-btn:active {
+    transform: translateY(1px);
+  }
+
+  .mc-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    box-shadow: none;
   }
 
   .mc-btn-outline {
-    @apply inline-flex items-center justify-center gap-2;
-    @apply rounded-xl px-4 py-2 text-sm font-semibold;
-    @apply border border-white/60 bg-white/60 backdrop-blur;
-    @apply text-neutral-800;
-    @apply shadow-sm shadow-violet-100/40;
-    @apply transition-all duration-300;
-    @apply hover:bg-white/80 hover:shadow-md hover:shadow-violet-200/40;
-    @apply active:scale-[0.99];
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--r);
+    padding: 0.7rem 1.4rem;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--color-ink);
+    background-color: transparent;
+    border: 1px solid var(--color-line-strong);
+    cursor: pointer;
+    transition:
+      background-color 0.25s var(--ease-out),
+      border-color 0.25s var(--ease-out),
+      transform 0.25s var(--ease-out);
   }
 
-  .mc-input {
-    @apply w-full rounded-xl border border-white/60 bg-white/70 backdrop-blur;
-    @apply px-3 py-2 text-sm;
-    @apply shadow-sm shadow-violet-100/40;
-    @apply outline-none transition-all duration-200;
-    @apply focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-200/60;
-    @apply placeholder:text-neutral-400;
+  .mc-btn-outline:hover {
+    background-color: var(--color-surface);
+    border-color: var(--color-ink);
   }
 
+  .mc-btn-outline:active {
+    transform: translateY(1px);
+  }
+
+  .mc-btn-outline:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .mc-btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--r);
+    padding: 0.6rem 0.9rem;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--color-ink);
+    background-color: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition:
+      background-color 0.25s var(--ease-out),
+      color 0.25s var(--ease-out);
+  }
+
+  .mc-btn-ghost:hover {
+    background-color: var(--color-surface);
+  }
+
+  /* Inputs */
+  .mc-input,
+  .mc-select,
+  .mc-textarea {
+    width: 100%;
+    border-radius: var(--r);
+    border: 1px solid var(--color-line-strong);
+    background-color: var(--color-bg);
+    padding: 0.7rem 0.9rem;
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    color: var(--color-ink);
+    line-height: 1.4;
+    transition:
+      border-color 0.2s var(--ease-out),
+      box-shadow 0.2s var(--ease-out);
+  }
+
+  .mc-input::placeholder,
+  .mc-textarea::placeholder {
+    color: var(--color-muted);
+  }
+
+  .mc-input:focus,
+  .mc-select:focus,
+  .mc-textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-primary) 16%, transparent);
+  }
+
+  .mc-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 0.4rem;
+  }
+
+  /* Pills / tags */
   .mc-pill {
-    @apply inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold;
-    @apply border border-white/60 bg-white/70 backdrop-blur;
-    @apply text-neutral-700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 999px;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--color-ink);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-line);
   }
 
-  .mc-text-gradient {
-    @apply bg-linear-to-r from-violet-600 via-fuchsia-600 to-rose-500;
-    @apply bg-clip-text text-transparent;
+  .mc-pill-accent {
+    color: oklch(0.99 0.005 80);
+    background-color: var(--color-accent);
+    border-color: transparent;
+  }
+
+  .mc-pill-blush {
+    color: var(--color-accent);
+    background-color: var(--color-blush);
+    border-color: transparent;
+  }
+
+  /* Cards (no glass) */
+  .mc-card {
+    border-radius: var(--r-lg);
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-line);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .mc-card-hover {
+    transition:
+      transform 0.4s var(--ease-out),
+      box-shadow 0.4s var(--ease-out),
+      border-color 0.4s var(--ease-out);
+  }
+
+  .mc-card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-line-strong);
+  }
+
+  /* Hairline divider, optionally honey-tinted */
+  .mc-rule {
+    height: 1px;
+    background-color: var(--color-line);
+    border: 0;
+  }
+
+  /* Animated underline link (nav) */
+  .mc-navlink {
+    position: relative;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--color-muted);
+    transition: color 0.25s var(--ease-out);
+  }
+
+  .mc-navlink::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -0.4rem;
+    height: 1.5px;
+    width: 0;
+    background-color: var(--color-primary);
+    transition: width 0.3s var(--ease-out);
+  }
+
+  .mc-navlink:hover,
+  .mc-navlink[data-active="true"] {
+    color: var(--color-ink);
+  }
+
+  .mc-navlink:hover::after,
+  .mc-navlink[data-active="true"]::after {
+    width: 100%;
   }
 }
 
+/* =========================================================================
+   Utilities + motion
+   ========================================================================= */
+
 @layer utilities {
+  .mc-prose {
+    max-width: 68ch;
+  }
+
+  /* Reveal-on-scroll. Visible by default; only hidden when JS has flagged
+     `.js-reveal` on <html> AND the user has not asked for reduced motion. */
+  .mc-reveal {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .js-reveal .mc-reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition:
+        opacity 0.7s var(--ease-out),
+        transform 0.7s var(--ease-out);
+      will-change: opacity, transform;
+    }
+
+    .js-reveal .mc-reveal.is-visible {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   @keyframes mc-float {
     0%,
     100% {
@@ -93,27 +431,28 @@ body {
     }
   }
 
-  @keyframes mc-fade-up {
-    0% {
+  @keyframes mc-rise {
+    from {
       opacity: 0;
-      transform: translateY(10px);
+      transform: translateY(20px);
     }
-    100% {
+    to {
       opacity: 1;
-      transform: translateY(0);
+      transform: none;
     }
   }
-}
 
+  .mc-animate-rise {
+    animation: mc-rise 0.8s var(--ease-out) both;
+  }
 
-.instrument-serif-regular {
-  font-family: "Instrument Serif", serif;
-  font-weight: 400;
-  font-style: normal;
-}
+  @media (prefers-reduced-motion: reduce) {
+    .mc-animate-rise {
+      animation: none;
+    }
 
-.instrument-serif-regular-italic {
-  font-family: "Instrument Serif", serif;
-  font-weight: 400;
-  font-style: italic;
+    html {
+      scroll-behavior: auto;
+    }
+  }
 }

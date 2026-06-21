@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Image from 'next/image';
+import { cn } from '@/lib/cn';
 
 type ProductImageGalleryProps = {
   images: string[];
@@ -9,88 +10,71 @@ type ProductImageGalleryProps = {
 };
 
 const FALLBACK_IMAGE =
-  'https://images.unsplash.com/photo-1520975958225-2a44e04e0a4b?auto=format&fit=crop&w=1200&q=60';
+  'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=1200&q=70';
 
 export function ProductImageGallery({ images, productName }: Readonly<ProductImageGalleryProps>) {
   const galleryImages = useMemo(() => (images.length ? images : [FALLBACK_IMAGE]), [images]);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const activeImage = galleryImages[activeImageIndex];
-  const hasMultipleImages = galleryImages.length > 1;
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeImage = galleryImages[activeIndex];
+  const hasMultiple = galleryImages.length > 1;
 
-  const showPreviousImage = () => {
-    setActiveImageIndex((current) => (current - 1 + galleryImages.length) % galleryImages.length);
-  };
-
-  const showNextImage = () => {
-    setActiveImageIndex((current) => (current + 1) % galleryImages.length);
-  };
+  const prev = () => setActiveIndex((c) => (c - 1 + galleryImages.length) % galleryImages.length);
+  const next = () => setActiveIndex((c) => (c + 1) % galleryImages.length);
 
   return (
     <div>
-      <div className="mc-card relative aspect-4/3 overflow-hidden p-0">
-        <Image src={activeImage} alt={productName} fill sizes="600px" className="object-cover" />
+      <div className="group relative aspect-[4/5] overflow-hidden rounded-[var(--r-xl)] bg-surface">
+        <Image src={activeImage} alt={productName} fill priority sizes="(max-width: 768px) 100vw, 560px" className="object-cover" />
 
-        {hasMultipleImages && (
+        {hasMultiple ? (
           <>
             <button
               type="button"
-              aria-label="Show previous image"
-              onClick={showPreviousImage}
-              className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/70 bg-white/85 p-2 text-neutral-800 shadow transition hover:bg-white"
+              aria-label="Previous image"
+              onClick={prev}
+              className="absolute left-3 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-line bg-bg/85 text-ink opacity-0 shadow-[var(--shadow-sm)] backdrop-blur-sm transition-all hover:bg-bg focus-visible:opacity-100 group-hover:opacity-100"
             >
-              <ChevronLeft />
+              <Chevron dir="left" />
             </button>
             <button
               type="button"
-              aria-label="Show next image"
-              onClick={showNextImage}
-              className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/70 bg-white/85 p-2 text-neutral-800 shadow transition hover:bg-white"
+              aria-label="Next image"
+              onClick={next}
+              className="absolute right-3 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-line bg-bg/85 text-ink opacity-0 shadow-[var(--shadow-sm)] backdrop-blur-sm transition-all hover:bg-bg focus-visible:opacity-100 group-hover:opacity-100"
             >
-              <ChevronRight />
+              <Chevron dir="right" />
             </button>
-            <div className="absolute bottom-3 right-3 z-10 rounded-full bg-black/55 px-2 py-0.5 text-xs text-white">
-              {activeImageIndex + 1}/{galleryImages.length}
-            </div>
           </>
-        )}
+        ) : null}
       </div>
 
-      {hasMultipleImages ? (
-        <div className="mt-3 grid grid-cols-4 gap-2">
-          {galleryImages.slice(0, 8).map((src, index) => {
-            const isActive = index === activeImageIndex;
-            return (
-              <button
-                key={`${src}-${index}`}
-                type="button"
-                onClick={() => setActiveImageIndex(index)}
-                className={`mc-card relative aspect-square overflow-hidden p-0 ${
-                  isActive ? 'ring-2 ring-fuchsia-500' : 'ring-0'
-                }`}
-                aria-label={`Show image ${index + 1}`}
-              >
-                <Image src={src} alt={`${productName} thumbnail ${index + 1}`} fill sizes="150px" className="object-cover" />
-              </button>
-            );
-          })}
+      {hasMultiple ? (
+        <div className="mt-3 grid grid-cols-5 gap-2.5">
+          {galleryImages.slice(0, 10).map((src, index) => (
+            <button
+              key={`${src}-${index}`}
+              type="button"
+              onClick={() => setActiveIndex(index)}
+              aria-label={`View image ${index + 1}`}
+              aria-current={index === activeIndex}
+              className={cn(
+                'relative aspect-square overflow-hidden rounded-[var(--r)] bg-surface transition',
+                index === activeIndex ? 'ring-2 ring-primary ring-offset-2 ring-offset-bg' : 'opacity-70 hover:opacity-100',
+              )}
+            >
+              <Image src={src} alt={`${productName} ${index + 1}`} fill sizes="120px" className="object-cover" />
+            </button>
+          ))}
         </div>
       ) : null}
     </div>
   );
 }
 
-function ChevronLeft() {
+function Chevron({ dir }: { dir: 'left' | 'right' }) {
   return (
-    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" aria-hidden="true">
-      <path d="M12.5 4.5L7 10l5.5 5.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function ChevronRight() {
-  return (
-    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" aria-hidden="true">
-      <path d="M7.5 4.5L13 10l-5.5 5.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d={dir === 'left' ? 'm15 6-6 6 6 6' : 'm9 6 6 6-6 6'} />
     </svg>
   );
 }

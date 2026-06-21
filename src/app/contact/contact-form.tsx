@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { cn } from '@/lib/cn';
 
 type SubmitStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -15,7 +16,6 @@ export function ContactForm() {
 
     const form = event.currentTarget;
     const formData = new FormData(form);
-
     const payload = {
       name: String(formData.get('name') ?? ''),
       email: String(formData.get('email') ?? ''),
@@ -30,12 +30,10 @@ export function ContactForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-
       if (!response.ok) {
         const data = await response.json().catch(() => null);
-        throw new Error(data?.error ?? 'Unable to send request.');
+        throw new Error(data?.error ?? 'Unable to send your message.');
       }
-
       setStatus('success');
       form.reset();
     } catch (error) {
@@ -45,47 +43,45 @@ export function ContactForm() {
   };
 
   return (
-    <form className="mt-5 grid gap-4" onSubmit={handleSubmit}>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <input
-          className="mc-input"
-          placeholder="Full name"
-          type="text"
-          autoComplete="name"
-          name="name"
-          required
-        />
-        <input
-          className="mc-input"
-          placeholder="Phone number"
-          type="tel"
-          autoComplete="tel"
-          name="phone"
-        />
+    <form className="grid gap-4" onSubmit={handleSubmit}>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="block">
+          <span className="mc-label">Your name</span>
+          <input className="mc-input" type="text" autoComplete="name" name="name" required />
+        </label>
+        <label className="block">
+          <span className="mc-label">Phone <span className="font-normal text-faint">(optional)</span></span>
+          <input className="mc-input" type="tel" autoComplete="tel" name="phone" />
+        </label>
       </div>
-      <input
-        className="mc-input"
-        placeholder="Email address"
-        type="email"
-        autoComplete="email"
-        name="email"
-        required
-      />
-      <input className="mc-input" placeholder="Event date" type="text" name="eventDate" />
-      <textarea
-        className="mc-input min-h-[120px] resize-none"
-        placeholder="Tell us about the occasion"
-        name="message"
-        required
-      />
-      <button type="submit" className="mc-btn" disabled={status === 'loading'}>
-        {status === 'loading' ? 'Sending...' : 'Send request'}
+      <label className="block">
+        <span className="mc-label">Email</span>
+        <input className="mc-input" type="email" autoComplete="email" name="email" required />
+      </label>
+      <label className="block">
+        <span className="mc-label">Occasion date <span className="font-normal text-faint">(optional)</span></span>
+        <input className="mc-input" type="text" name="eventDate" placeholder="e.g. 14 February, or “next week”" />
+      </label>
+      <label className="block">
+        <span className="mc-label">Tell us about the occasion</span>
+        <textarea className="mc-textarea min-h-[130px] resize-y" name="message" required placeholder="Who is it for, the feeling you’re after, any budget in mind…" />
+      </label>
+
+      <button type="submit" className="mc-btn mt-1" disabled={status === 'loading'}>
+        {status === 'loading' ? 'Sending…' : 'Send your message'}
       </button>
 
-      <div aria-live="polite" className="text-xs text-neutral-600">
-        {status === 'success' ? 'Thanks! We will get back to you shortly.' : null}
+      <p
+        aria-live="polite"
+        className={cn(
+          'text-sm',
+          status === 'success' && 'text-[var(--color-success)]',
+          status === 'error' && 'text-danger',
+        )}
+      >
+        {status === 'success' ? 'Thank you. We’ll be in touch within a day.' : null}
         {status === 'error' ? errorMessage : null}
-      </div>
+      </p>
     </form>
   );
 }

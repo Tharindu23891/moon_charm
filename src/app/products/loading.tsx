@@ -1,24 +1,17 @@
 export default function ProductsLoading() {
   return (
-    <div className="mc-container py-10">
-      <div className="h-10 w-48 animate-pulse rounded bg-zinc-200/70" />
-      <div className="mt-2 h-4 w-72 animate-pulse rounded bg-zinc-200/60" />
+    <div className="mc-container py-12 md:py-16">
+      <div className="h-9 w-64 animate-pulse rounded bg-surface" />
+      <div className="mt-3 h-4 w-80 max-w-full animate-pulse rounded bg-surface" />
 
-      <div className="mc-card mt-6 grid gap-3 p-4 md:grid-cols-12">
-        <div className="h-10 animate-pulse rounded bg-zinc-200/70 md:col-span-4" />
-        <div className="h-10 animate-pulse rounded bg-zinc-200/70 md:col-span-3" />
-        <div className="h-10 animate-pulse rounded bg-zinc-200/60 md:col-span-2" />
-        <div className="h-10 animate-pulse rounded bg-zinc-200/60 md:col-span-2" />
-        <div className="h-10 animate-pulse rounded bg-zinc-200/70 md:col-span-1" />
-      </div>
+      <div className="mt-8 h-24 animate-pulse rounded-[var(--r-lg)] border border-line bg-surface" />
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {[1, 2, 3, 4, 5, 6].map((item) => (
-          <div key={item} className="mc-card p-4">
-            <div className="h-44 animate-pulse rounded-2xl bg-zinc-200/70" />
-            <div className="mt-4 h-4 w-3/4 animate-pulse rounded bg-zinc-200/70" />
-            <div className="mt-2 h-3 w-2/3 animate-pulse rounded bg-zinc-200/60" />
-            <div className="mt-4 h-9 w-full animate-pulse rounded bg-zinc-200/60" />
+      <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
+          <div key={item}>
+            <div className="aspect-[4/5] animate-pulse rounded-[var(--r-lg)] bg-surface" />
+            <div className="mt-3.5 h-4 w-3/4 animate-pulse rounded bg-surface" />
+            <div className="mt-2 h-3 w-1/3 animate-pulse rounded bg-surface" />
           </div>
         ))}
       </div>

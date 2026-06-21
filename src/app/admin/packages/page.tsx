@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
 import { toast } from 'sonner';
 import { formatLkr } from '@/lib/money';
+import { AdminHeader, AdminPanel, AdminField } from '@/components/admin/admin-ui';
 
 type Product = { id: string; name: string };
 
@@ -30,9 +30,7 @@ export default function AdminPackagesPage() {
     items: [] as { productId: string; quantity: number }[],
   });
 
-  const canSubmit = useMemo(() => {
-    return form.name.trim().length > 0 && Number(form.price) >= 0;
-  }, [form.name, form.price]);
+  const canSubmit = useMemo(() => form.name.trim().length > 0 && Number(form.price) >= 0, [form.name, form.price]);
 
   async function load() {
     setLoading(true);
@@ -41,11 +39,9 @@ export default function AdminPackagesPage() {
         fetch('/api/products').then((r) => r.json()),
         fetch('/api/packages').then((r) => r.json()),
       ]);
-      setProducts(prods.map((p: any) => ({ id: p.id, name: p.name })));
+      setProducts((prods as any[]).map((p) => ({ id: p.id, name: p.name })));
       setPackages(pkgs);
-      if (!form.productId && prods?.[0]?.id) {
-        setForm((f) => ({ ...f, productId: prods[0].id }));
-      }
+      if (!form.productId && prods?.[0]?.id) setForm((f) => ({ ...f, productId: prods[0].id }));
     } finally {
       setLoading(false);
     }
@@ -59,37 +55,28 @@ export default function AdminPackagesPage() {
   function addItem() {
     if (!form.productId) return;
     const qty = Math.max(1, Number(form.quantity) || 1);
-    setForm((f) => ({
-      ...f,
-      items: [...f.items, { productId: f.productId, quantity: qty }],
-    }));
+    setForm((f) => ({ ...f, items: [...f.items, { productId: f.productId, quantity: qty }] }));
+  }
+
+  function removeItem(index: number) {
+    setForm((f) => ({ ...f, items: f.items.filter((_, i) => i !== index) }));
   }
 
   async function createPackage() {
     if (!canSubmit) return;
-
     const discountPercent = form.discountPercent.trim() ? Number(form.discountPercent) : undefined;
-
     const res = await fetch('/api/packages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: form.name,
-        price: Number(form.price),
-        discountPercent,
-        image: form.image,
-        items: form.items,
-      }),
+      body: JSON.stringify({ name: form.name, price: Number(form.price), discountPercent, image: form.image, items: form.items }),
     });
-
     if (!res.ok) {
       const msg = (await res.json().catch(() => null))?.error ?? 'Create failed';
       toast.error(msg);
       return;
     }
-
     toast.success('Package created');
-    setForm((f) => ({ ...f, name: '', image: '', items: [] }));
+    setForm((f) => ({ ...f, name: '', image: '', discountPercent: '', items: [] }));
     await load();
   }
 
@@ -100,141 +87,85 @@ export default function AdminPackagesPage() {
       toast.error('Delete failed');
       return;
     }
-    toast.success('Deleted');
+    toast.success('Package deleted');
     await load();
   }
 
   return (
-    <div className="mc-container py-10">
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">
-            <span className="mc-text-gradient">Admin · Packages</span>
-          </h1>
-          <p className="mt-1 text-sm text-zinc-600">Create and manage packages.</p>
-        </div>
-        <Link href="/admin" className="mc-pill hover:bg-white">
-          Back to dashboard
-        </Link>
-      </div>
+    <div>
+      <AdminHeader title="Packages" description="Bundle products into ready-to-give gift packages." />
 
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <div className="mc-card p-5">
-          <div className="text-sm font-medium">Add package</div>
-          <div className="mt-4 grid gap-3">
-            <input
-              value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              placeholder="Name"
-              className="mc-input"
-            />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <input
-                value={form.price}
-                onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
-                placeholder="Price"
-                inputMode="decimal"
-                className="mc-input"
-              />
-              <input
-                value={form.discountPercent}
-                onChange={(e) => setForm((f) => ({ ...f, discountPercent: e.target.value }))}
-                placeholder="Discount % (optional)"
-                inputMode="decimal"
-                className="mc-input"
-              />
-            </div>
-            <input
-              value={form.image}
-              onChange={(e) => setForm((f) => ({ ...f, image: e.target.value }))}
-              placeholder="Image URL (optional)"
-              className="mc-input"
-            />
-
-            <div className="rounded-xl border border-white/60 bg-white/25 p-3">
-              <div className="text-sm font-medium">Included items</div>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <select
-                  value={form.productId}
-                  onChange={(e) => setForm((f) => ({ ...f, productId: e.target.value }))}
-                  className="mc-input"
-                >
-                  <option value="">Select product</option>
-                  {products.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  value={form.quantity}
-                  onChange={(e) => setForm((f) => ({ ...f, quantity: e.target.value }))}
-                  placeholder="Qty"
-                  inputMode="numeric"
-                  className="mc-input w-24"
-                />
-                <button
-                  type="button"
-                  onClick={addItem}
-                  className="mc-btn-outline"
-                >
-                  Add item
-                </button>
-              </div>
-              <div className="mt-3 text-sm text-zinc-700">
-                {form.items.length === 0 ? (
-                  <div className="text-zinc-600">No items added.</div>
-                ) : (
-                  <ul className="space-y-1">
-                    {form.items.map((it, idx) => (
-                      <li key={idx}>
-                        {it.quantity}× {products.find((p) => p.id === it.productId)?.name ?? it.productId}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-
-            <button
-              type="button"
-              disabled={!canSubmit}
-              onClick={createPackage}
-              className="mc-btn disabled:cursor-not-allowed"
-            >
-              Create
-            </button>
+      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+        <AdminPanel title="Add a package" bodyClassName="grid gap-4 p-5">
+          <AdminField label="Name">
+            <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className="mc-input" placeholder="e.g. Birthday Surprise Box" />
+          </AdminField>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <AdminField label="Price (LKR)">
+              <input value={form.price} onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))} inputMode="decimal" className="mc-input" />
+            </AdminField>
+            <AdminField label="Discount %" hint="Optional">
+              <input value={form.discountPercent} onChange={(e) => setForm((f) => ({ ...f, discountPercent: e.target.value }))} inputMode="decimal" className="mc-input" />
+            </AdminField>
           </div>
-        </div>
+          <AdminField label="Image URL" hint="Optional">
+            <input value={form.image} onChange={(e) => setForm((f) => ({ ...f, image: e.target.value }))} className="mc-input" placeholder="https://…" />
+          </AdminField>
 
-        <div className="mc-card overflow-hidden p-0">
-          <div className="border-b border-white/50 p-4 text-sm font-medium">Packages</div>
+          <div className="rounded-[var(--r)] border border-line bg-surface p-4">
+            <p className="text-sm font-semibold text-ink">Included items</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <select value={form.productId} onChange={(e) => setForm((f) => ({ ...f, productId: e.target.value }))} className="mc-select mc-input flex-1">
+                <option value="">Select product</option>
+                {products.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+              <input value={form.quantity} onChange={(e) => setForm((f) => ({ ...f, quantity: e.target.value }))} placeholder="Qty" inputMode="numeric" className="mc-input w-20" />
+              <button type="button" onClick={addItem} className="mc-btn-outline shrink-0">Add</button>
+            </div>
+            <div className="mt-3 text-sm">
+              {form.items.length === 0 ? (
+                <p className="text-faint">No items added yet.</p>
+              ) : (
+                <ul className="space-y-1.5">
+                  {form.items.map((it, idx) => (
+                    <li key={idx} className="flex items-center justify-between gap-2 text-ink">
+                      <span>{it.quantity}× {products.find((p) => p.id === it.productId)?.name ?? it.productId}</span>
+                      <button type="button" onClick={() => removeItem(idx)} aria-label="Remove item" className="text-faint transition-colors hover:text-accent">×</button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+
+          <button type="button" disabled={!canSubmit} onClick={createPackage} className="mc-btn">Create package</button>
+        </AdminPanel>
+
+        <AdminPanel title={`Packages (${packages.length})`}>
           {loading ? (
-            <div className="p-4 text-sm text-zinc-600">Loading…</div>
+            <p className="px-5 py-8 text-sm text-muted">Loading…</p>
           ) : packages.length === 0 ? (
-            <div className="p-4 text-sm text-zinc-600">No packages.</div>
+            <p className="px-5 py-8 text-sm text-muted">No packages yet.</p>
           ) : (
-            <div className="divide-y">
+            <ul className="divide-y divide-line">
               {packages.map((p) => (
-                <div key={p.id} className="flex items-center justify-between gap-3 p-4">
+                <li key={p.id} className="flex items-center justify-between gap-3 px-5 py-4">
                   <div>
-                    <div className="text-sm font-medium">{p.name}</div>
-                    <div className="mt-1 text-xs text-zinc-600">
+                    <p className="font-medium text-ink">{p.name}</p>
+                    <p className="mt-0.5 text-xs text-muted">
                       {formatLkr(p.price)}{p.discountPercent ? ` · ${p.discountPercent}% off` : ''}
-                    </div>
+                    </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => deletePackage(p.id)}
-                    className="mc-btn-outline"
-                  >
+                  <button type="button" onClick={() => deletePackage(p.id)} className="mc-btn-ghost h-9 px-3 text-sm text-muted hover:text-accent">
                     Delete
                   </button>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
-        </div>
+        </AdminPanel>
       </div>
     </div>
   );

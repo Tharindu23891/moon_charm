@@ -6,6 +6,40 @@ import { Product } from '@/models/Product';
 import { GiftPackage } from '@/models/GiftPackage';
 import { ProductCard } from '@/components/product/product-card';
 import { PackageCard } from '@/components/package/package-card';
+import { SectionHeading } from '@/components/section-heading';
+import { Reveal } from '@/components/reveal';
+import { MoonMark } from '@/components/moon-mark';
+import { OccasionTile } from '@/components/occasion-tile';
+
+const HERO_IMAGE =
+  'https://images.unsplash.com/photo-1512909006721-3d6018887383?auto=format&fit=crop&w=1100&q=75';
+const STORY_IMAGE =
+  'https://images.unsplash.com/photo-1487530811176-3780de880c2d?auto=format&fit=crop&w=1100&q=75';
+
+const trustPoints = [
+  'Hand-assembled packages',
+  'Island-wide delivery',
+  'A handwritten gift note',
+  'Made in Kuliyapitiya',
+];
+
+const testimonials = [
+  {
+    quote: 'It arrived wrapped so beautifully my sister thought I had it flown in. I did not. It came from Kuliyapitiya.',
+    name: 'Ayesha K.',
+    place: 'Colombo',
+  },
+  {
+    quote: 'I ordered from abroad for my parents’ anniversary. They sent me photos the moment it landed. Perfect.',
+    name: 'Mark L.',
+    place: 'London',
+  },
+  {
+    quote: 'Every detail was considered, down to the note card. This is now my go-to for the people I care about.',
+    name: 'Priya S.',
+    place: 'Kandy',
+  },
+];
 
 export default async function HomePage() {
   let featuredProducts: any[] = [];
@@ -14,7 +48,6 @@ export default async function HomePage() {
 
   try {
     await connectToDatabase();
-
     [featuredProducts, featuredPackages, categories] = await Promise.all([
       Product.find({ isFeatured: true }).sort({ popularity: -1 }).limit(6).populate('categoryId').lean(),
       GiftPackage.find({ isFeatured: true }).sort({ popularity: -1 }).limit(6).populate('items.productId').lean(),
@@ -25,239 +58,253 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="mc-container py-10">
-
-      <section className="h-[65vh] relative max-w-7xl flex gap-8 justify-center flex-col">
-
-
-
-<h1 className="text-9xl z-10 font-semibold tracking-tight instrument-serif-regular">
- The Moon Charm
-</h1>
-
-<p className="text-lg z-10 max-w-prose text-neutral-600">
-  Curated gifts and bundles for birthdays, anniversaries, weddings,
-  corporate events, and more — crafted to delight.
-</p>
-
-
-<div className="flex items-center z-10 gap-4"><Link href="/products" className="mc-btn px-6 py-2.5">
-  Shop products
-</Link></div>
-
-    <Image
-      src="https://images.unsplash.com/photo-1524758631624-e2822e304c36"
-      alt="The Moon Charm"
-      width={1600}
-      height={750}
-      priority
-      sizes="100vw"
-      className="w-full h-full scale-[2] max-h-[750px] object-cover absolute -top-65 -z-10 opacity-30"
-    />
-
-
-
-      </section>
-
-{/* -------------------------------------------------------------------------------- */}
-
-      <section className="mt-14">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-extrabold tracking-tight">Featured gift items</h2>
-            <p className="mt-1 text-sm text-neutral-600">Popular picks, crafted to impress.</p>
-          </div>
-          <Link href="/products" className="text-sm text-neutral-700 hover:text-neutral-900">
-            View all
-          </Link>
-        </div>
-
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {(featuredProducts as any[]).map((p) => (
-            <ProductCard
-              key={p._id.toString()}
-              product={{
-                id: p._id.toString(),
-                name: p.name,
-                shortDescription: p.shortDescription,
-                price: p.price,
-                images: p.images ?? [],
-                stock: p.stock,
-                category: p.categoryId
-                  ? { name: p.categoryId.name, slug: p.categoryId.slug }
-                  : null,
-              }}
-            />
-          ))}
-          {featuredProducts.length === 0 ? (
-            <div className="mc-card p-6 text-sm text-neutral-600 sm:col-span-2 lg:col-span-3">
-              No featured products yet. Run the seed script to populate sample items.
+    <div>
+      {/* Hero */}
+      <section className="relative overflow-hidden">
+        <div className="mc-container grid items-center gap-12 pb-14 pt-8 md:pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:pb-24">
+          <div className="max-w-xl">
+            <span className="mc-eyebrow mc-animate-rise">A gift house · Sri Lanka</span>
+            <h1 className="mc-display mt-5 text-[clamp(2.75rem,6vw,5rem)] mc-animate-rise" style={{ animationDelay: '90ms' }}>
+              Gifts made to be <span className="italic text-primary">remembered</span>.
+            </h1>
+            <p className="mc-prose mt-6 text-[1.15rem] leading-relaxed text-muted mc-animate-rise" style={{ animationDelay: '180ms' }}>
+              We assemble each package by hand and send it island-wide, so the thought you
+              put in is exactly what arrives at the door.
+            </p>
+            <div className="mt-9 flex flex-wrap items-center gap-3 mc-animate-rise" style={{ animationDelay: '270ms' }}>
+              <Link href="/products" className="mc-btn">Shop gifts</Link>
+              <Link href="/packages" className="mc-btn-outline">Explore gift packages</Link>
             </div>
-          ) : null}
-        </div>
-      </section>
-
-      <section className="mt-14 rounded-3xl bg-white/40 p-6 md:p-8">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-extrabold tracking-tight">Featured packages</h2>
-            <p className="mt-1 text-sm text-neutral-600">Curated bundles with extra value.</p>
+            <p className="mt-7 text-sm text-faint mc-animate-rise" style={{ animationDelay: '360ms' }}>
+              Hand-wrapped · Gift note included · Delivered anywhere in Sri Lanka
+            </p>
           </div>
-          <Link href="/packages" className="text-sm text-neutral-700 hover:text-neutral-900">
-            View all
-          </Link>
-        </div>
 
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {(featuredPackages as any[]).map((p) => (
-            <PackageCard
-              key={p._id.toString()}
-              pkg={{
-                id: p._id.toString(),
-                name: p.name,
-                image: p.image,
-                price: p.price,
-                discountPercent: p.discountPercent ?? null,
-                items: (p.items ?? []).map((it: any) => ({
-                  name: it.productId?.name ?? null,
-                  quantity: it.quantity,
-                })),
-              }}
-            />
-          ))}
-          {featuredPackages.length === 0 ? (
-            <div className="mc-card p-6 text-sm text-neutral-600 sm:col-span-2 lg:col-span-3">
-              No featured packages yet. Run the seed script to populate sample bundles.
+          <div className="relative mc-animate-rise" style={{ animationDelay: '200ms' }}>
+            <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--r-xl)] bg-surface shadow-[var(--shadow-lg)]">
+              <Image
+                src={HERO_IMAGE}
+                alt="Hands presenting a gift wrapped in brown paper and ribbon"
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 520px"
+                className="object-cover"
+              />
             </div>
-          ) : null}
+            <div className="absolute -bottom-5 left-5 hidden items-center gap-3 rounded-[var(--r)] border border-line bg-bg px-4 py-3 shadow-[var(--shadow)] sm:flex">
+              <span className="h-7 w-7 text-primary"><MoonMark /></span>
+              <div className="leading-tight">
+                <p className="text-sm font-semibold text-ink">Wrapped by hand</p>
+                <p className="text-xs text-muted">Every single order</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Trust strip */}
+        <div className="border-y border-line bg-surface">
+          <div className="mc-container flex flex-wrap items-center justify-center gap-x-8 gap-y-2 py-4 text-sm text-muted">
+            {trustPoints.map((point, i) => (
+              <span key={point} className="flex items-center gap-x-8">
+                {point}
+                {i < trustPoints.length - 1 ? <span aria-hidden className="text-line-strong">·</span> : null}
+              </span>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="mt-14">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-extrabold tracking-tight">Categories</h2>
-            <p className="mt-1 text-sm text-neutral-600">Shop by occasion — find the perfect match.</p>
+      {/* Featured gifts */}
+      <section className="mc-container mc-section">
+        <Reveal>
+          <SectionHeading
+            title="A few favourites"
+            description="Individual pieces, chosen for how they feel to give and to receive."
+            action={{ href: '/products', label: 'View all gifts' }}
+          />
+        </Reveal>
+
+        {featuredProducts.length > 0 ? (
+          <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-3">
+            {featuredProducts.map((p, i) => (
+              <Reveal key={p._id.toString()} delay={(i % 3) * 80}>
+                <ProductCard
+                  product={{
+                    id: p._id.toString(),
+                    name: p.name,
+                    shortDescription: p.shortDescription,
+                    price: p.price,
+                    images: p.images ?? [],
+                    stock: p.stock,
+                    category: p.categoryId ? { name: p.categoryId.name, slug: p.categoryId.slug } : null,
+                  }}
+                />
+              </Reveal>
+            ))}
           </div>
-          <Link href="/categories" className="text-sm text-neutral-700 hover:text-neutral-900">
-            View all
-          </Link>
+        ) : (
+          <EmptyNote>No featured gifts yet. Run the seed script to populate the catalog.</EmptyNote>
+        )}
+      </section>
+
+      {/* Featured packages */}
+      <section className="bg-surface-warm">
+        <div className="mc-container mc-section">
+          <Reveal>
+            <SectionHeading
+              kicker="Ready to give"
+              title="Gift packages, assembled for you"
+              description="Thoughtful bundles at a gentler price than buying each piece on its own."
+              action={{ href: '/packages', label: 'View all packages' }}
+            />
+          </Reveal>
+
+          {featuredPackages.length > 0 ? (
+            <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-3">
+              {featuredPackages.map((p, i) => (
+                <Reveal key={p._id.toString()} delay={(i % 3) * 80}>
+                  <PackageCard
+                    pkg={{
+                      id: p._id.toString(),
+                      name: p.name,
+                      image: p.image,
+                      price: p.price,
+                      discountPercent: p.discountPercent ?? null,
+                      items: (p.items ?? []).map((it: any) => ({
+                        name: it.productId?.name ?? null,
+                        quantity: it.quantity,
+                      })),
+                    }}
+                  />
+                </Reveal>
+              ))}
+            </div>
+          ) : (
+            <EmptyNote>No featured packages yet. Run the seed script to add bundles.</EmptyNote>
+          )}
         </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {(categories as any[]).map((c, idx) => (
+      </section>
+
+      {/* Shop by occasion */}
+      <section className="mc-container mc-section">
+        <Reveal>
+          <SectionHeading
+            title="Shop by occasion"
+            description="Start with the moment. We will help you find the gift that fits it."
+            action={{ href: '/categories', label: 'All occasions' }}
+          />
+        </Reveal>
+
+        {categories.length > 0 ? (
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {categories.map((c, i) => (
+              <Reveal key={c._id.toString()} delay={(i % 4) * 70}>
+                <OccasionTile name={c.name} slug={c.slug} />
+              </Reveal>
+            ))}
+          </div>
+        ) : (
+          <EmptyNote>No occasions yet. Run the seed script to add categories.</EmptyNote>
+        )}
+      </section>
+
+      {/* Brand story */}
+      <section className="mc-container mc-section pt-0">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <Reveal className="order-2 lg:order-1">
+            <span className="mc-eyebrow">Our promise</span>
+            <h2 className="mt-4 text-[clamp(1.8rem,3.5vw,2.8rem)] leading-tight">
+              A small house that takes the gift personally
+            </h2>
+            <div className="mc-prose mt-5 space-y-4 text-[1.05rem] leading-relaxed text-muted">
+              <p>
+                The Moon Charm began at a kitchen table in Kuliyapitiya, wrapping chocolate
+                bouquets for friends. We still work the same way: a person chooses the pieces,
+                folds the paper, ties the ribbon, and writes your note by hand.
+              </p>
+              <p>
+                Nothing is mass-produced and nothing is rushed. When it leaves us, it looks
+                like someone cared, because someone did.
+              </p>
+            </div>
             <Link
-              key={c._id.toString()}
-              href={`/products?category=${encodeURIComponent(c.slug)}`}
-              className="mc-card mc-card-hover p-5"
+              href="/about"
+              className="group mt-7 inline-flex items-center gap-1.5 text-sm font-semibold text-ink transition-colors hover:text-primary"
             >
-              <div className="flex items-center gap-3">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-linear-to-br from-violet-200/80 via-fuchsia-200/80 to-rose-200/80 shadow-sm shadow-violet-200/50">
-                  <CategoryIcon idx={idx} />
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-neutral-900">{c.name}</div>
-                  <div className="mt-1 text-xs text-neutral-600">Browse products</div>
-                </div>
-              </div>
+              Read our story
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+              </svg>
             </Link>
-          ))}
-          {categories.length === 0 ? (
-            <div className="mc-card p-6 text-sm text-neutral-600 sm:col-span-2 lg:col-span-4">
-              No categories yet. Run the seed script to add sample categories.
+          </Reveal>
+
+          <Reveal className="order-1 lg:order-2">
+            <div className="relative aspect-[5/4] overflow-hidden rounded-[var(--r-xl)] bg-surface shadow-[var(--shadow)]">
+              <Image
+                src={STORY_IMAGE}
+                alt="A romantic bouquet of peach roses and dried flowers"
+                fill
+                sizes="(max-width: 1024px) 100vw, 560px"
+                className="object-cover"
+              />
             </div>
-          ) : null}
+          </Reveal>
         </div>
       </section>
 
-      <section className="mt-14 rounded-3xl bg-white/40 p-6 md:p-8">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-extrabold tracking-tight">Testimonials</h2>
-            <p className="mt-1 text-sm text-neutral-600">Loved by customers who gift with style.</p>
+      {/* Testimonials */}
+      <section className="bg-espresso text-on-dark">
+        <div className="mc-container mc-section">
+          <Reveal>
+            <SectionHeading
+              title={<span className="text-on-dark">Kind words</span>}
+              description={<span className="text-on-dark/70">From people who sent something that mattered.</span>}
+            />
+          </Reveal>
+          <div className="mt-12 grid gap-8 md:grid-cols-3">
+            {testimonials.map((t, i) => (
+              <Reveal key={t.name} delay={i * 90}>
+                <figure className="flex h-full flex-col">
+                  <span aria-hidden className="font-display text-5xl leading-none text-honey">“</span>
+                  <blockquote className="mt-3 flex-1 font-display text-[1.3rem] leading-snug text-on-dark">
+                    {t.quote}
+                  </blockquote>
+                  <figcaption className="mt-6 text-sm text-on-dark/65">
+                    <span className="font-semibold text-on-dark">{t.name}</span> · {t.place}
+                  </figcaption>
+                </figure>
+              </Reveal>
+            ))}
           </div>
         </div>
+      </section>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
-          {[
-            {
-              quote: 'Beautiful packaging and fast delivery — it felt truly premium.',
-              name: 'Ayesha K.',
-              initials: 'AK',
-            },
-            {
-              quote: 'Great selection of gifts for every occasion. The bundles are perfect.',
-              name: 'Mark L.',
-              initials: 'ML',
-            },
-            {
-              quote: 'Amazing quality and presentation. I’m buying again for sure.',
-              name: 'Priya S.',
-              initials: 'PS',
-            },
-          ].map((t) => (
-            <div
-              key={t.name}
-              className="mc-card mc-card-hover bg-linear-to-br from-white/75 via-white/65 to-violet-50/70 p-6"
-            >
-              <div className="flex items-center justify-between">
-                <div className="inline-flex items-center gap-1">
-                  {[0, 1, 2, 3, 4].map((star) => (
-                    <svg key={star} viewBox="0 0 20 20" className="h-4 w-4 text-amber-400" fill="currentColor">
-                      <path d="M10 15.27l-5.18 2.73 1-5.81L1.64 7.5l5.84-.85L10 1.35l2.52 5.3 5.84.85-4.18 4.69 1 5.81L10 15.27z" />
-                    </svg>
-                  ))}
-                </div>
-                <span className="mc-pill border-violet-200/60 bg-white/70 text-violet-700">Verified</span>
-              </div>
-
-              <div className="mt-4 text-sm text-neutral-700">“{t.quote}”</div>
-
-              <div className="mt-5 flex items-center gap-3">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-violet-300/70 via-fuchsia-300/70 to-rose-300/70 text-sm font-extrabold text-neutral-900 shadow-sm shadow-violet-200/50">
-                  {t.initials}
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-neutral-900">{t.name}</div>
-                  <div className="text-xs text-neutral-600">The Moon Charm customer</div>
-                </div>
-              </div>
+      {/* Closing CTA */}
+      <section className="mc-container mc-section">
+        <Reveal>
+          <div className="flex flex-col items-center gap-6 rounded-[var(--r-xl)] border border-line bg-surface px-6 py-14 text-center">
+            <span className="h-9 w-9 text-primary"><MoonMark /></span>
+            <h2 className="max-w-xl text-[clamp(1.7rem,3vw,2.4rem)] leading-tight">
+              Not sure what to give? Tell us about them.
+            </h2>
+            <p className="mc-prose text-muted">
+              Send us the occasion and the person, and we will put together something that suits.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link href="/contact" className="mc-btn">Ask for a recommendation</Link>
+              <Link href="/packages" className="mc-btn-outline">Browse packages</Link>
             </div>
-          ))}
-        </div>
+          </div>
+        </Reveal>
       </section>
     </div>
   );
 }
 
-function CategoryIcon({ idx }: Readonly<{ idx: number }>) {
-  const icon = idx % 4;
-  if (icon === 0) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5 text-violet-700">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2 7h20l-1 5H3L2 7z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21V7" />
-      </svg>
-    );
-  }
-  if (icon === 1) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5 text-fuchsia-700">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21s-7-4.35-7-10a4 4 0 017-2 4 4 0 017 2c0 5.65-7 10-7 10z" />
-      </svg>
-    );
-  }
-  if (icon === 2) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5 text-rose-700">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2l3 7h7l-5.5 4 2 7-6.5-4.5L5.5 20l2-7L2 9h7l3-7z" />
-      </svg>
-    );
-  }
+function EmptyNote({ children }: { children: React.ReactNode }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5 text-purple-700">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c4.42 0 8 3.58 8 8s-3.58 8-8 8-8-3.58-8-8 3.58-8 8-8z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M16 12a4 4 0 11-8 0" />
-    </svg>
+    <div className="mt-10 rounded-[var(--r-lg)] border border-dashed border-line-strong bg-surface px-6 py-10 text-center text-sm text-muted">
+      {children}
+    </div>
   );
 }

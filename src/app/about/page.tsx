@@ -1,22 +1,26 @@
 import {
-  AboutHeroSection,
-  CallToActionSection,
-  CapturedMomentsSection,
-  CompanyStorySection,
-  VisionMissionSection,
+  AboutHero,
+  StorySection,
+  ValuesSection,
+  MissionVisionSection,
+  MomentsGallery,
+  AboutCTA,
 } from './about-sections';
+
+export const metadata = {
+  title: 'Our story',
+  description: 'The Moon Charm is a small, handmade gift house in Kuliyapitiya, Sri Lanka.',
+};
 
 export default function AboutPage() {
   return (
-    <div className="pb-14">
-      <AboutHeroSection />
-
-      <div className="mc-container py-10">
-        <CompanyStorySection />
-        <CapturedMomentsSection />
-        <VisionMissionSection />
-        <CallToActionSection />
-      </div>
+    <div>
+      <AboutHero />
+      <StorySection />
+      <ValuesSection />
+      <MissionVisionSection />
+      <MomentsGallery />
+      <AboutCTA />
     </div>
   );
 }

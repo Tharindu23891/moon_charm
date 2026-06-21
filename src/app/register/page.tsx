@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
-import { BrandName } from '@/components/brand-name';
+import { AuthShell, AuthField, GoogleButton } from '@/components/auth/auth-shell';
 
 const registerSchema = z.object({
   name: z.string().min(1, 'Name is required').max(80),
@@ -25,15 +25,8 @@ export default function RegisterPage() {
   useEffect(() => {
     let alive = true;
     getProviders()
-      .then((providers) => {
-        if (!alive) return;
-        setGoogleEnabled(Boolean(providers?.google));
-      })
-      .catch(() => {
-        if (!alive) return;
-        setGoogleEnabled(false);
-      });
-
+      .then((providers) => alive && setGoogleEnabled(Boolean(providers?.google)))
+      .catch(() => alive && setGoogleEnabled(false));
     return () => {
       alive = false;
     };
@@ -57,114 +50,54 @@ export default function RegisterPage() {
       return;
     }
 
-    const login = await signIn('credentials', {
-      email: values.email,
-      password: values.password,
-      redirect: false,
-    });
-
+    const login = await signIn('credentials', { email: values.email, password: values.password, redirect: false });
     if (!login || login.error) {
       toast.success('Account created');
       router.push('/login');
       return;
     }
-
-    toast.success('Welcome');
+    toast.success('Welcome to The Moon Charm');
     router.push('/');
   }
 
   return (
-    <div className="mc-container py-12">
-      <div className="mx-auto w-full max-w-md">
-        <div className="relative overflow-hidden rounded-3xl border border-white/50 bg-white/70 p-7 shadow-xl shadow-violet-200/40 backdrop-blur-xl">
-          <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-rose-200/40 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-12 -left-12 h-44 w-44 rounded-full bg-violet-200/40 blur-3xl" />
+    <AuthShell
+      title="Create your account"
+      subtitle="Save your details, track orders, and gift with ease."
+      footer={
+        <>
+          Already have an account?{' '}
+          <Link href="/login" className="font-semibold text-primary hover:text-primary-hover">
+            Sign in
+          </Link>
+        </>
+      }
+    >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+        <AuthField label="Name" error={form.formState.errors.name?.message}>
+          <input autoComplete="name" {...form.register('name')} className="mc-input" />
+        </AuthField>
+        <AuthField label="Email" error={form.formState.errors.email?.message}>
+          <input type="email" autoComplete="email" {...form.register('email')} className="mc-input" />
+        </AuthField>
+        <AuthField label="Password" error={form.formState.errors.password?.message}>
+          <input type="password" autoComplete="new-password" {...form.register('password')} className="mc-input" />
+        </AuthField>
+        <button type="submit" disabled={form.formState.isSubmitting} className="mc-btn mt-1 w-full">
+          {form.formState.isSubmitting ? 'Creating…' : 'Create account'}
+        </button>
+      </form>
 
-          <div className="relative">
-            <h1 className="text-center text-2xl font-extrabold tracking-tight text-neutral-900">
-              Create your <BrandName noWrap /> Account
-            </h1>
-            <p className="mt-1 text-sm text-neutral-600">Start gifting in style.</p>
-
-            <form onSubmit={form.handleSubmit(onSubmit)} className="mt-7 grid gap-3">
-              <Field label="Name" error={form.formState.errors.name?.message}>
-                <input {...form.register('name')} className="mc-input" />
-              </Field>
-
-              <Field label="Email" error={form.formState.errors.email?.message}>
-                <input type="email" {...form.register('email')} className="mc-input" />
-              </Field>
-
-              <Field label="Password" error={form.formState.errors.password?.message}>
-                <input type="password" {...form.register('password')} className="mc-input" />
-              </Field>
-
-              <button type="submit" disabled={form.formState.isSubmitting} className="mc-btn mt-2">
-                {form.formState.isSubmitting ? 'Creating…' : 'Create account'}
-              </button>
-
-              {googleEnabled ? (
-                <button
-                  type="button"
-                  className="mt-3 inline-flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-neutral-200 bg-white px-4 text-sm font-semibold text-neutral-800 shadow-sm transition-all duration-150 hover:bg-neutral-50 hover:shadow-md active:translate-y-px active:scale-[0.99] active:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-200/60"
-                  onClick={() => signIn('google', { callbackUrl: '/' })}
-                >
-                  <GoogleGIcon />
-                  <span>Sign up with Google</span>
-                </button>
-              ) : null}
-            </form>
-
-            <div className="mt-5 text-sm text-neutral-600">
-              Already have an account?{' '}
-              <Link href="/login" className="font-semibold text-fuchsia-700 hover:text-fuchsia-800">
-                Login
-              </Link>
-            </div>
+      {googleEnabled ? (
+        <>
+          <div className="my-5 flex items-center gap-3 text-xs text-faint">
+            <span className="h-px flex-1 bg-line" />
+            or
+            <span className="h-px flex-1 bg-line" />
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Field({
-  label,
-  error,
-  children,
-}: Readonly<{
-  label: string;
-  error?: string;
-  children: React.ReactNode;
-}>) {
-  return (
-    <label className="grid gap-1 text-sm">
-      <span className="text-neutral-700 font-medium">{label}</span>
-      {children}
-      {error ? <span className="text-xs text-red-600">{error}</span> : null}
-    </label>
-  );
-}
-
-function GoogleGIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 48 48" className="h-5 w-5">
-      <path
-        className="fill-blue-500"
-        d="M47.12 24.53c0-1.64-.15-3.21-.43-4.73H24v8.95h12.98c-.56 2.9-2.18 5.36-4.64 7.01v5.83h7.5c4.39-4.04 7.28-10 7.28-17.06z"
-      />
-      <path
-        className="fill-green-500"
-        d="M24 48c6.48 0 11.92-2.14 15.9-5.81l-7.5-5.83c-2.08 1.4-4.74 2.23-8.4 2.23-6.24 0-11.53-4.2-13.42-9.86H2.83v6.02C6.78 42.69 14.74 48 24 48z"
-      />
-      <path
-        className="fill-amber-400"
-        d="M10.58 28.73A14.6 14.6 0 0 1 9.82 24c0-1.65.29-3.25.76-4.73V13.25H2.83A24 24 0 0 0 0 24c0 3.87.93 7.54 2.83 10.75l7.75-6.02z"
-      />
-      <path
-        className="fill-red-500"
-        d="M24 9.41c3.52 0 6.67 1.21 9.16 3.58l6.83-6.83C35.9 2.36 30.48 0 24 0 14.74 0 6.78 5.31 2.83 13.25l7.75 6.02C12.47 13.61 17.76 9.41 24 9.41z"
-      />
-    </svg>
+          <GoogleButton label="Continue with Google" onClick={() => signIn('google', { callbackUrl: '/' })} />
+        </>
+      ) : null}
+    </AuthShell>
   );
 }

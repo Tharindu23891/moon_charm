@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { z } from 'zod';
@@ -9,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useCart } from '@/components/cart/cart-context';
 import { formatLkr } from '@/lib/money';
+import { cn } from '@/lib/cn';
 
 const checkoutSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
@@ -25,11 +27,19 @@ const checkoutSchema = z.object({
 
 type CheckoutValues = z.infer<typeof checkoutSchema>;
 
+const paymentMethods = [
+  { value: 'cod', label: 'Cash on delivery', hint: 'Pay when it arrives' },
+  { value: 'card', label: 'Card', hint: 'Pay securely by card' },
+  { value: 'bank', label: 'Bank transfer', hint: 'We’ll send details' },
+] as const;
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const { items, subtotal, clear } = useCart();
+  const { items, subtotal, clear, count } = useCart();
   const [submitting, setSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const defaultEmail = useMemo(() => session?.user?.email ?? '', [session?.user?.email]);
 
@@ -44,19 +54,17 @@ export default function CheckoutPage() {
       city: '',
       state: '',
       postalCode: '',
-      country: 'United States',
+      country: 'Sri Lanka',
       paymentMethod: 'cod',
     },
   });
 
   useEffect(() => {
-    if (defaultEmail) {
-      form.setValue('email', defaultEmail, { shouldValidate: true });
-    }
-    if (session?.user?.name) {
-      form.setValue('fullName', session.user.name, { shouldValidate: true });
-    }
+    if (defaultEmail) form.setValue('email', defaultEmail, { shouldValidate: true });
+    if (session?.user?.name) form.setValue('fullName', session.user.name, { shouldValidate: true });
   }, [defaultEmail, session?.user?.name, form]);
+
+  const paymentMethod = form.watch('paymentMethod');
 
   async function onSubmit(values: CheckoutValues) {
     if (items.length === 0) {
@@ -66,16 +74,11 @@ export default function CheckoutPage() {
 
     setSubmitting(true);
     try {
-      // Sync local cart -> server cart
       const cartRes = await fetch('/api/cart', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          items: items.map((it) => ({
-            itemType: it.itemType,
-            refId: it.refId,
-            quantity: it.quantity,
-          })),
+          items: items.map((it) => ({ itemType: it.itemType, refId: it.refId, quantity: it.quantity })),
         }),
       });
 
@@ -111,135 +114,122 @@ export default function CheckoutPage() {
       }
 
       clear();
-      toast.success('Order placed');
+      toast.success('Order placed. Thank you.');
       router.push('/orders');
     } finally {
       setSubmitting(false);
     }
   }
 
-  return (
-    <div className="mc-container py-10">
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight">
-          <span className="mc-text-gradient">Checkout</span>
-        </h1>
-        <p className="mt-1 text-sm text-zinc-600">
-          Enter delivery details and confirm your order.
-        </p>
+  if (mounted && items.length === 0) {
+    return (
+      <div className="mc-container py-20 text-center">
+        <h1 className="font-display text-3xl">Your cart is empty</h1>
+        <p className="mt-3 text-muted">Add a gift or two, then come back to check out.</p>
+        <Link href="/products" className="mc-btn mt-6">Shop gifts</Link>
       </div>
+    );
+  }
 
-      <div className="mt-6 grid gap-6 md:grid-cols-3">
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="mc-card md:col-span-2 p-5"
-        >
-          <div className="text-sm font-medium">Customer details</div>
+  return (
+    <div className="mc-container py-12 md:py-16">
+      <h1 className="font-display text-[clamp(2rem,4vw,2.8rem)]">Checkout</h1>
+      <p className="mt-2 text-muted">Tell us where it’s going and how you’d like to pay.</p>
 
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <Field label="Full name" error={form.formState.errors.fullName?.message}>
-              <input
-                {...form.register('fullName')}
-                className="mc-input w-full"
-              />
-            </Field>
-
-            <Field label="Email" error={form.formState.errors.email?.message}>
-              <input
-                {...form.register('email')}
-                className="mc-input w-full"
-              />
-            </Field>
-
-            <Field label="Phone" error={form.formState.errors.phone?.message}>
-              <input
-                {...form.register('phone')}
-                className="mc-input w-full"
-              />
-            </Field>
-          </div>
-
-          <div className="mt-6 text-sm font-medium">Delivery address</div>
-          <div className="mt-4 grid gap-3">
-            <Field label="Address line 1" error={form.formState.errors.line1?.message}>
-              <input
-                {...form.register('line1')}
-                className="mc-input w-full"
-              />
-            </Field>
-            <Field label="Address line 2" error={form.formState.errors.line2?.message}>
-              <input
-                {...form.register('line2')}
-                className="mc-input w-full"
-              />
-            </Field>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="City" error={form.formState.errors.city?.message}>
-                <input
-                  {...form.register('city')}
-                  className="mc-input w-full"
-                />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
+        <div className="space-y-10">
+          <fieldset>
+            <legend className="font-display text-xl">Your details</legend>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <Field label="Full name" error={form.formState.errors.fullName?.message}>
+                <input {...form.register('fullName')} className="mc-input" autoComplete="name" />
               </Field>
-              <Field label="State" error={form.formState.errors.state?.message}>
-                <input
-                  {...form.register('state')}
-                  className="mc-input w-full"
-                />
+              <Field label="Email" error={form.formState.errors.email?.message}>
+                <input {...form.register('email')} className="mc-input" autoComplete="email" inputMode="email" />
               </Field>
-              <Field label="Postal code" error={form.formState.errors.postalCode?.message}>
-                <input
-                  {...form.register('postalCode')}
-                  className="mc-input w-full"
-                />
-              </Field>
-              <Field label="Country" error={form.formState.errors.country?.message}>
-                <input
-                  {...form.register('country')}
-                  className="mc-input w-full"
-                />
+              <Field label="Phone" error={form.formState.errors.phone?.message} className="sm:col-span-2">
+                <input {...form.register('phone')} className="mc-input" autoComplete="tel" inputMode="tel" />
               </Field>
             </div>
-          </div>
+          </fieldset>
 
-          <div className="mt-6 text-sm font-medium">Payment method</div>
-          <div className="mt-4">
-            <select
-              {...form.register('paymentMethod')}
-              className="mc-input w-full"
-            >
-              <option value="cod">Cash on delivery</option>
-              <option value="card">Card</option>
-              <option value="bank">Bank transfer</option>
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mc-btn mt-6 inline-flex items-center justify-center disabled:cursor-not-allowed"
-          >
-            {submitting ? 'Placing order…' : 'Place order'}
-          </button>
-        </form>
-
-        <div className="mc-card p-5">
-          <div className="text-sm font-medium">Order summary</div>
-          <div className="mt-3 space-y-2 text-sm text-zinc-700">
-            {items.map((it) => (
-              <div key={it.refId} className="flex items-center justify-between gap-3">
-                <span className="truncate">{it.quantity}× {it.name}</span>
-                <span className="font-medium">{formatLkr(it.unitPrice * it.quantity)}</span>
+          <fieldset>
+            <legend className="font-display text-xl">Delivery address</legend>
+            <div className="mt-5 grid gap-4">
+              <Field label="Address line 1" error={form.formState.errors.line1?.message}>
+                <input {...form.register('line1')} className="mc-input" autoComplete="address-line1" />
+              </Field>
+              <Field label="Address line 2 (optional)" error={form.formState.errors.line2?.message}>
+                <input {...form.register('line2')} className="mc-input" autoComplete="address-line2" />
+              </Field>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="City" error={form.formState.errors.city?.message}>
+                  <input {...form.register('city')} className="mc-input" autoComplete="address-level2" />
+                </Field>
+                <Field label="District / State" error={form.formState.errors.state?.message}>
+                  <input {...form.register('state')} className="mc-input" autoComplete="address-level1" />
+                </Field>
+                <Field label="Postal code" error={form.formState.errors.postalCode?.message}>
+                  <input {...form.register('postalCode')} className="mc-input" autoComplete="postal-code" />
+                </Field>
+                <Field label="Country" error={form.formState.errors.country?.message}>
+                  <input {...form.register('country')} className="mc-input" autoComplete="country-name" />
+                </Field>
               </div>
-            ))}
-            {items.length === 0 ? <div className="text-zinc-600">—</div> : null}
-          </div>
-          <div className="mt-4 flex items-center justify-between text-sm">
-            <span className="text-zinc-600">Total</span>
-            <span className="text-lg font-semibold text-zinc-900">{formatLkr(subtotal)}</span>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend className="font-display text-xl">Payment</legend>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              {paymentMethods.map((m) => {
+                const selected = paymentMethod === m.value;
+                return (
+                  <label
+                    key={m.value}
+                    className={cn(
+                      'cursor-pointer rounded-[var(--r)] border p-4 transition-colors',
+                      selected ? 'border-primary bg-blush/50 ring-1 ring-primary' : 'border-line hover:border-line-strong',
+                    )}
+                  >
+                    <input type="radio" value={m.value} {...form.register('paymentMethod')} className="sr-only" />
+                    <span className="block text-sm font-semibold text-ink">{m.label}</span>
+                    <span className="mt-0.5 block text-xs text-muted">{m.hint}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+        </div>
+
+        {/* Summary */}
+        <div className="lg:sticky lg:top-28 lg:self-start">
+          <div className="rounded-[var(--r-lg)] border border-line bg-surface p-6">
+            <h2 className="font-display text-xl">Your order</h2>
+            <ul className="mt-4 space-y-3 text-sm">
+              {items.map((it) => (
+                <li key={it.refId} className="flex items-start justify-between gap-3">
+                  <span className="text-muted">
+                    <span className="text-ink">{it.quantity}×</span> {it.name}
+                  </span>
+                  <span className="shrink-0 font-medium text-ink">{formatLkr(it.unitPrice * it.quantity)}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-5 flex items-center justify-between border-t border-line pt-4">
+              <span className="font-medium">Total · {count} {count === 1 ? 'item' : 'items'}</span>
+              <span className="font-display text-xl text-ink">{formatLkr(subtotal)}</span>
+            </div>
+
+            <button type="submit" disabled={submitting} className="mc-btn mt-6 w-full">
+              {submitting ? 'Placing order…' : 'Place order'}
+            </button>
+            <p className="mt-3 text-center text-xs text-faint">
+              We’ll wrap it by hand and confirm delivery for your area.
+            </p>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
@@ -247,17 +237,19 @@ export default function CheckoutPage() {
 function Field({
   label,
   error,
+  className,
   children,
 }: {
   label: string;
   error?: string;
+  className?: string;
   children: React.ReactNode;
 }) {
   return (
-    <label className="grid gap-1 text-sm">
-      <span className="text-zinc-700">{label}</span>
+    <label className={cn('block', className)}>
+      <span className="mc-label">{label}</span>
       {children}
-      {error ? <span className="text-xs text-rose-700">{error}</span> : null}
+      {error ? <span className="mt-1 block text-xs text-danger">{error}</span> : null}
     </label>
   );
 }

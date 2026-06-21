@@ -5,112 +5,94 @@ import { Product } from '@/models/Product';
 import { ProductPurchasePanel } from '@/components/product/product-purchase-panel';
 import { ProductCard } from '@/components/product/product-card';
 import { ProductImageGallery } from '@/components/product/product-image-gallery';
+import { Breadcrumb } from '@/components/breadcrumb';
 
 export default async function ProductDetailsPage({
   params,
-}: Readonly<{
-  params: Promise<{ id: string }>;
-}>) {
+}: Readonly<{ params: Promise<{ id: string }> }>) {
   const { id } = await params;
 
   await connectToDatabase();
   const product = await Product.findById(id)
-    .select('name description images price stock categoryId')
+    .select('name description shortDescription images price stock categoryId')
     .populate({ path: 'categoryId', select: 'name slug' })
     .lean();
 
   if (!product) {
     return (
-      <div className="mc-container py-10">
-        <div className="mc-card p-8 text-sm text-zinc-600">
-          Product not found.
-        </div>
+      <div className="mc-container py-20 text-center">
+        <h1 className="font-display text-3xl">We can’t find that gift</h1>
+        <p className="mt-3 text-muted">It may have sold out or been moved.</p>
+        <Link href="/products" className="mc-btn mt-6">Back to the shop</Link>
       </div>
     );
   }
 
-  const images: string[] = (product as any).images ?? [];
-  const heroImage =
-    images[0] ||
-    'https://images.unsplash.com/photo-1520975958225-2a44e04e0a4b?auto=format&fit=crop&w=1200&q=60';
-
-  const categoryId = (product as any).categoryId?._id?.toString() as string | undefined;
+  const p = product as any;
+  const images: string[] = p.images ?? [];
+  const heroImage = images[0] || 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=1200&q=70';
+  const categoryId = p.categoryId?._id?.toString() as string | undefined;
 
   return (
-    <div className="mc-container py-10">
-      <div className="flex flex-wrap items-center gap-2 text-sm text-zinc-600">
-        <Link href="/products" className="mc-pill hover:bg-white">
-          Products
-        </Link>
-        <span className="text-zinc-400">/</span>
-        <span className="font-medium text-zinc-900">{(product as any).name}</span>
-      </div>
+    <div className="mc-container py-8 md:py-12">
+      <Breadcrumb
+        items={[{ href: '/', label: 'Home' }, { href: '/products', label: 'Shop' }, { label: p.name }]}
+      />
 
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <div>
-          <ProductImageGallery
-            images={images}
-            productName={(product as any).name}
-          />
-        </div>
+      <div className="mt-7 grid gap-10 lg:grid-cols-2 lg:gap-14">
+        <ProductImageGallery images={images} productName={p.name} />
 
-        <div className="space-y-4">
-          <div>
-            <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
-              <span className="mc-text-gradient">{(product as any).name}</span>
-            </h1>
-            <div className="mt-2 text-sm text-zinc-600">
-              Category: {(product as any).categoryId?.name ?? '—'}
-            </div>
+        <div className="lg:sticky lg:top-28 lg:self-start">
+          {p.categoryId?.name ? (
+            <Link
+              href={`/products?category=${encodeURIComponent(p.categoryId.slug)}`}
+              className="mc-pill transition-colors hover:border-line-strong"
+            >
+              {p.categoryId.name}
+            </Link>
+          ) : null}
+
+          <h1 className="mt-4 font-display text-[clamp(2rem,4vw,3rem)] leading-[1.05]">{p.name}</h1>
+
+          {p.shortDescription ? (
+            <p className="mt-3 text-[1.05rem] leading-relaxed text-muted">{p.shortDescription}</p>
+          ) : null}
+
+          {p.description ? (
+            <p className="mc-prose mt-4 leading-relaxed text-ink/80">{p.description}</p>
+          ) : null}
+
+          <div className="mt-7">
+            <ProductPurchasePanel
+              product={{ id: p._id.toString(), name: p.name, image: heroImage, price: p.price, stock: p.stock }}
+            />
           </div>
-
-          <p className="text-sm text-zinc-700">{(product as any).description}</p>
-
-          <ProductPurchasePanel
-            product={{
-              id: (product as any)._id.toString(),
-              name: (product as any).name,
-              image: heroImage,
-              price: (product as any).price,
-              stock: (product as any).stock,
-            }}
-          />
         </div>
       </div>
 
       {categoryId ? (
-        <Suspense fallback={<RelatedProductsSkeleton />}>
-          <RelatedProductsSection
-            productId={(product as any)._id.toString()}
-            categoryId={categoryId}
-          />
+        <Suspense fallback={<RelatedSkeleton />}>
+          <RelatedProductsSection productId={p._id.toString()} categoryId={categoryId} />
         </Suspense>
       ) : null}
     </div>
   );
 }
 
-async function RelatedProductsSection({
-  productId,
-  categoryId,
-}: Readonly<{
-  productId: string;
-  categoryId: string;
-}>) {
-  const related = await Product.find({
-    _id: { $ne: productId },
-    categoryId,
-  })
+async function RelatedProductsSection({ productId, categoryId }: Readonly<{ productId: string; categoryId: string }>) {
+  const related = await Product.find({ _id: { $ne: productId }, categoryId })
     .select('name shortDescription price images stock categoryId')
     .sort({ popularity: -1 })
-    .limit(6)
+    .limit(4)
     .populate({ path: 'categoryId', select: 'name slug' })
     .lean();
 
+  if (related.length === 0) return null;
+
   return (
-    <section className="mt-10">
-      <h2 className="text-lg font-semibold tracking-tight text-zinc-900">Related products</h2>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <section className="mt-20 border-t border-line pt-12">
+      <h2 className="font-display text-2xl">You might also like</h2>
+      <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
         {(related as any[]).map((p) => (
           <ProductCard
             key={p._id.toString()}
@@ -130,16 +112,16 @@ async function RelatedProductsSection({
   );
 }
 
-function RelatedProductsSkeleton() {
+function RelatedSkeleton() {
   return (
-    <section className="mt-10">
-      <h2 className="text-lg font-semibold tracking-tight text-zinc-900">Related products</h2>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {[1, 2, 3].map((item) => (
-          <div key={item} className="mc-card p-4">
-            <div className="h-40 animate-pulse rounded-xl bg-zinc-200/70" />
-            <div className="mt-3 h-4 w-2/3 animate-pulse rounded bg-zinc-200/70" />
-            <div className="mt-2 h-3 w-1/2 animate-pulse rounded bg-zinc-200/60" />
+    <section className="mt-20 border-t border-line pt-12">
+      <h2 className="font-display text-2xl">You might also like</h2>
+      <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i}>
+            <div className="aspect-[4/5] animate-pulse rounded-[var(--r-lg)] bg-surface" />
+            <div className="mt-3 h-4 w-2/3 animate-pulse rounded bg-surface" />
+            <div className="mt-2 h-3 w-1/3 animate-pulse rounded bg-surface" />
           </div>
         ))}
       </div>

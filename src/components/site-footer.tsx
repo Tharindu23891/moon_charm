@@ -1,110 +1,118 @@
 import Link from 'next/link';
 import { BrandName } from '@/components/brand-name';
+import { MoonMark } from '@/components/moon-mark';
+
+const shopLinks = [
+  { href: '/products', label: 'All gifts' },
+  { href: '/packages', label: 'Gift packages' },
+  { href: '/categories', label: 'Shop by occasion' },
+];
+
+const companyLinks = [
+  { href: '/about', label: 'Our story' },
+  { href: '/contact', label: 'Contact' },
+  { href: '/orders', label: 'Track an order' },
+];
 
 export function SiteFooter() {
   return (
-    <footer className="mt-16 bg-gradient-to-br from-violet-950 via-purple-950 to-fuchsia-950 text-white">
-      <div className="mc-container grid gap-10 py-12 md:grid-cols-3">
-        <div>
-          <div className="text-base font-extrabold tracking-tight">
-            <BrandName noWrap />
-          </div>
-          <p className="mt-3 max-w-sm text-sm text-white/80">
-            Premium gifts and curated packages for every occasion — delivered with love and a little moonlit magic.
-          </p>
-
-          <div className="mt-5 flex items-center gap-3">
-            <SocialIcon label="Instagram" />
-            <SocialIcon label="Twitter" />
-            <SocialIcon label="Facebook" />
-          </div>
-        </div>
-
-        <div className="text-sm">
-          <div className="text-sm font-semibold text-white/90">Shop</div>
-          <div className="mt-3 grid gap-2 text-white/75">
-            <Link href="/products" className="transition-colors hover:text-white">
-              Products
-            </Link>
-            <Link href="/packages" className="transition-colors hover:text-white">
-              Packages
-            </Link>
-            <Link href="/categories" className="transition-colors hover:text-white">
-              Categories
-            </Link>
-            <Link href="/about" className="transition-colors hover:text-white">
-              About Us
-            </Link>
-            <Link href="/contact" className="transition-colors hover:text-white">
-              Contact Us
-            </Link>
-          </div>
-        </div>
-
-        <div className="text-sm">
-          <div className="text-sm font-semibold text-white/90">Newsletter</div>
-          <p className="mt-3 text-sm text-white/75">
-            Get new arrivals, seasonal bundles, and exclusive offers.
-          </p>
-          <div className="mt-4 flex gap-2">
-            <input
-              type="email"
-              placeholder="you@example.com"
-              className="h-11 w-full rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white placeholder:text-white/50 outline-none backdrop-blur transition-all focus:border-fuchsia-200/60 focus:ring-2 focus:ring-fuchsia-200/30"
-            />
-            <button
-              type="button"
-              className="h-11 shrink-0 rounded-xl bg-gradient-to-r from-violet-500 via-fuchsia-500 to-rose-500 px-4 text-sm font-semibold text-white shadow-md shadow-fuchsia-400/20 transition-all hover:brightness-110"
-            >
-              Join
-            </button>
+    <footer className="mt-24 bg-espresso text-on-dark">
+      <div className="mc-container py-16 md:py-20">
+        <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
+          {/* Brand */}
+          <div>
+            <div className="flex items-center gap-2.5">
+              <span className="h-7 w-7 text-honey">
+                <MoonMark />
+              </span>
+              <BrandName noWrap className="text-[1.2rem]" />
+            </div>
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-on-dark/70">
+              A small gift house in Kuliyapitiya. We assemble each package by hand,
+              so the thought arrives intact.
+            </p>
+            <div className="mt-6 flex items-center gap-2">
+              <Social label="Instagram" href="#">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4z" />
+                <circle cx="12" cy="12" r="3.5" />
+                <path strokeLinecap="round" d="M17.5 6.5h.01" />
+              </Social>
+              <Social label="Facebook" href="#">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14 8h3V5h-3a4 4 0 0 0-4 4v3H7v3h3v6h3v-6h3l1-3h-4V9a1 1 0 0 1 1-1z" />
+              </Social>
+              <Social label="Pinterest" href="#">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 2a10 10 0 0 0-3.6 19.3c-.1-.8-.2-2 0-2.9l1.2-5s-.3-.6-.3-1.5c0-1.4.8-2.4 1.8-2.4.9 0 1.3.6 1.3 1.4 0 .9-.5 2.1-.8 3.3-.2.9.5 1.7 1.4 1.7 1.7 0 2.9-2.2 2.9-4.7 0-2-1.3-3.4-3.7-3.4a4.2 4.2 0 0 0-4.4 4.2c0 .8.3 1.4.6 1.8l-.3 1c0 .2-.2.3-.4.2-1.1-.5-1.7-2-1.7-3.2 0-2.6 1.9-5 5.6-5 2.9 0 5.2 2.1 5.2 4.9 0 2.9-1.8 5.3-4.4 5.3-.9 0-1.7-.5-2-1l-.5 2c-.2.8-.8 1.8-1.2 2.4A10 10 0 1 0 12 2z" />
+              </Social>
+            </div>
           </div>
 
-          <div className="mt-6 grid gap-1 text-xs text-white/70">
-            <div>Email: support@mooncharm.example</div>
-            <div>Phone: +1 (000) 000-0000</div>
+          <FooterColumn title="Shop" links={shopLinks} />
+          <FooterColumn title="The house" links={companyLinks} />
+
+          {/* Newsletter */}
+          <div>
+            <h3 className="font-display text-lg text-on-dark">Letters from the moon</h3>
+            <p className="mt-2 text-sm text-on-dark/70">
+              Seasonal arrivals and gifting ideas, a few times a year. Never noise.
+            </p>
+            <form className="mt-4 flex gap-2" aria-label="Newsletter signup">
+              <input
+                type="email"
+                required
+                placeholder="you@example.com"
+                aria-label="Email address"
+                className="h-11 w-full rounded-[var(--r)] border border-white/15 bg-white/5 px-3.5 text-sm text-on-dark placeholder:text-on-dark/45 outline-none transition focus:border-honey/60 focus:bg-white/10"
+              />
+              <button
+                type="submit"
+                className="h-11 shrink-0 rounded-[var(--r)] bg-honey px-4 text-sm font-semibold text-espresso transition hover:brightness-105"
+              >
+                Join
+              </button>
+            </form>
           </div>
         </div>
-      </div>
 
-      <div className="border-t border-white/10 py-5 text-center text-xs text-white/60">
-          © {new Date().getFullYear()} <BrandName noWrap />
+        <div className="mt-14 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-on-dark/55 sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} The Moon Charm. Made by hand in Sri Lanka.</p>
+          <div className="flex items-center gap-5">
+            <a href="mailto:info.themooncharm@gmail.com" className="transition-colors hover:text-on-dark">info.themooncharm@gmail.com</a>
+            <span aria-hidden className="text-on-dark/25">·</span>
+            <a href="tel:+94781769568" className="transition-colors hover:text-on-dark">+94 78 176 95 68</a>
+          </div>
+        </div>
       </div>
     </footer>
   );
 }
 
-function SocialIcon({ label }: Readonly<{ label: 'Instagram' | 'Twitter' | 'Facebook' }>) {
-  const common =
-    'inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/20 bg-white/10 backdrop-blur transition-all hover:bg-white/15 hover:brightness-110';
-
-  if (label === 'Instagram') {
-    return (
-      <button type="button" aria-label="Instagram" className={common}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5 text-white/85">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M7 3h10a4 4 0 014 4v10a4 4 0 01-4 4H7a4 4 0 01-4-4V7a4 4 0 014-4z" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M16 11.37a4 4 0 11-7.74 1.26 4 4 0 017.74-1.26z" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M17.5 6.5h.01" />
-        </svg>
-      </button>
-    );
-  }
-
-  if (label === 'Twitter') {
-    return (
-      <button type="button" aria-label="Twitter" className={common}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5 text-white/85">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M22 4.01c-.8.36-1.65.6-2.55.71a4.47 4.47 0 001.96-2.47 8.94 8.94 0 01-2.83 1.08A4.46 4.46 0 0011.1 7.41a12.66 12.66 0 01-9.2-4.66 4.46 4.46 0 001.38 5.95A4.42 4.42 0 01.8 8.1v.06a4.46 4.46 0 003.58 4.37 4.5 4.5 0 01-2.01.08 4.46 4.46 0 004.17 3.1A8.94 8.94 0 012 18.3a12.62 12.62 0 006.86 2.01c8.24 0 12.75-6.82 12.75-12.73 0-.19 0-.38-.01-.57A9.1 9.1 0 0022 4.01z" />
-        </svg>
-      </button>
-    );
-  }
-
+function FooterColumn({ title, links }: { title: string; links: { href: string; label: string }[] }) {
   return (
-    <button type="button" aria-label="Facebook" className={common}>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5 text-white/85">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M14 8h3V5h-3a4 4 0 00-4 4v3H7v3h3v6h3v-6h3l1-3h-4V9a1 1 0 011-1z" />
+    <div>
+      <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-on-dark/50">{title}</h3>
+      <ul className="mt-4 grid gap-2.5 text-sm">
+        {links.map((l) => (
+          <li key={l.href}>
+            <Link href={l.href} className="text-on-dark/80 transition-colors hover:text-on-dark">
+              {l.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function Social({ label, href, children }: { label: string; href: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      aria-label={label}
+      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-on-dark/75 transition-colors hover:border-honey/50 hover:text-honey"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-[1.05rem] w-[1.05rem]">
+        {children}
       </svg>
-    </button>
+    </a>
   );
 }

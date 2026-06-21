@@ -6,7 +6,7 @@ export function formatLkr(amount: number) {
       style: 'currency',
       currency: 'LKR',
       currencyDisplay: 'code',
-      minimumFractionDigits: 2,
+      minimumFractionDigits: Number.isInteger(safeAmount) ? 0 : 2,
       maximumFractionDigits: 2,
     }).format(safeAmount);
   } catch {

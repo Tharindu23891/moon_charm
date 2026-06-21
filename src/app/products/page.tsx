@@ -3,20 +3,18 @@ import { connectToDatabase } from '@/lib/mongoose';
 import { Category } from '@/models/Category';
 import { Product } from '@/models/Product';
 import { ProductCard, type ProductListItem } from '@/components/product/product-card';
+import { PageHeader } from '@/components/page-header';
 
-function getParam(
-  searchParams: Record<string, string | string[] | undefined>,
-  key: string
-) {
+export const metadata = { title: 'Shop all gifts' };
+
+function getParam(searchParams: Record<string, string | string[] | undefined>, key: string) {
   const v = searchParams[key];
   return Array.isArray(v) ? v[0] : v;
 }
 
 export default async function ProductsPage({
   searchParams,
-}: Readonly<{
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}>) {
+}: Readonly<{ searchParams: Promise<Record<string, string | string[] | undefined>> }>) {
   const sp = await searchParams;
   const q = getParam(sp, 'q') ?? '';
   const category = getParam(sp, 'category') ?? '';
@@ -30,17 +28,14 @@ export default async function ProductsPage({
 
   try {
     await connectToDatabase();
-
     categories = await Category.find({}).sort({ name: 1 }).lean();
 
     const filter: any = {};
     if (q) filter.$text = { $search: q };
-
     if (category) {
       const cat = categories.find((c: any) => c.slug === category);
       if (cat) filter.categoryId = cat._id;
     }
-
     const priceFilter: any = {};
     if (minPrice) priceFilter.$gte = Number(minPrice);
     if (maxPrice) priceFilter.$lte = Number(maxPrice);
@@ -74,103 +69,87 @@ export default async function ProductsPage({
     console.error('Failed to load products page data from MongoDB', error);
   }
 
+  const activeCategory = categories.find((c: any) => c.slug === category);
+  const hasFilters = Boolean(q || category || minPrice || maxPrice || sort !== 'newest');
+  const fieldClass = 'mc-input h-11';
+
   return (
-    <div className="mc-container py-10">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">
-            <span className="mc-text-gradient">Products</span>
-          </h1>
-          <p className="mt-1 text-sm text-zinc-600">
-            Browse individual gift items.
-          </p>
+    <div className="mc-container py-12 md:py-16">
+      <PageHeader
+        eyebrow="The shop"
+        title="Every gift, in one place"
+        description="Browse individual pieces. Filter by occasion, price, or search for something specific."
+      />
+
+      <form className="mt-8 rounded-[var(--r-lg)] border border-line bg-surface p-4 md:p-5">
+        <div className="grid gap-3 md:grid-cols-[1.6fr_1fr_0.8fr_0.8fr_1fr]">
+          <label className="block">
+            <span className="sr-only">Search gifts</span>
+            <input name="q" defaultValue={q} placeholder="Search gifts…" className={fieldClass} />
+          </label>
+          <label className="block">
+            <span className="sr-only">Category</span>
+            <select name="category" defaultValue={category} className={`${fieldClass} mc-select`}>
+              <option value="">All occasions</option>
+              {categories.map((c: any) => (
+                <option key={c._id.toString()} value={c.slug}>{c.name}</option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <span className="sr-only">Minimum price</span>
+            <input name="minPrice" defaultValue={minPrice} placeholder="Min" inputMode="decimal" className={fieldClass} />
+          </label>
+          <label className="block">
+            <span className="sr-only">Maximum price</span>
+            <input name="maxPrice" defaultValue={maxPrice} placeholder="Max" inputMode="decimal" className={fieldClass} />
+          </label>
+          <label className="block">
+            <span className="sr-only">Sort by</span>
+            <select name="sort" defaultValue={sort} className={`${fieldClass} mc-select`}>
+              <option value="newest">Newest first</option>
+              <option value="popularity">Most loved</option>
+              <option value="price-asc">Price: low to high</option>
+              <option value="price-desc">Price: high to low</option>
+            </select>
+          </label>
         </div>
-        <Link href="/categories" className="mc-pill hover:bg-white">
-          Browse categories
-        </Link>
-      </div>
-
-      <form className="mc-card mt-6 grid gap-3 p-4 md:grid-cols-12">
-        <input
-          name="q"
-          defaultValue={q}
-          placeholder="Search gifts..."
-          className="mc-input md:col-span-4"
-        />
-
-        <select
-          name="category"
-          defaultValue={category}
-          className="mc-input md:col-span-3"
-        >
-          <option value="">All categories</option>
-          {categories.map((c: any) => (
-            <option key={c._id.toString()} value={c.slug}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-
-        <input
-          name="minPrice"
-          defaultValue={minPrice}
-          placeholder="Min price"
-          inputMode="decimal"
-          className="mc-input md:col-span-2"
-        />
-        <input
-          name="maxPrice"
-          defaultValue={maxPrice}
-          placeholder="Max price"
-          inputMode="decimal"
-          className="mc-input md:col-span-2"
-        />
-
-        <select
-          name="sort"
-          defaultValue={sort}
-          className="mc-input md:col-span-1"
-        >
-          <option value="newest">Newest</option>
-          <option value="popularity">Popularity</option>
-          <option value="price-asc">Price ↑</option>
-          <option value="price-desc">Price ↓</option>
-        </select>
-
-        <div className="md:col-span-12 flex items-center justify-end gap-2">
-          <button
-            type="submit"
-            className="mc-btn"
-          >
-            Apply
-          </button>
-          <Link
-            href="/products"
-            className="mc-btn-outline"
-          >
-            Reset
-          </Link>
+        <div className="mt-3 flex items-center justify-end gap-2">
+          {hasFilters ? (
+            <Link href="/products" className="mc-btn-ghost h-11">Reset</Link>
+          ) : null}
+          <button type="submit" className="mc-btn h-11">Apply filters</button>
         </div>
       </form>
 
       {databaseUnavailable ? (
-        <div className="mc-card mt-6 border-amber-200/60 bg-amber-50/80 p-4 text-sm text-amber-900">
-          Product data is temporarily unavailable because the database connection failed.
-          The page is still loading, but filters and results will be empty until MongoDB is reachable.
-        </div>
+        <p className="mt-6 rounded-[var(--r)] border border-line bg-surface px-4 py-3 text-sm text-muted">
+          Our catalog is briefly unavailable while we reconnect. Please try again in a moment.
+        </p>
       ) : null}
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {list.map((p) => (
-          <ProductCard key={p.id} product={p} />
-        ))}
+      <div className="mt-8 flex items-center justify-between gap-3">
+        <p className="text-sm text-muted">
+          {list.length} {list.length === 1 ? 'gift' : 'gifts'}
+          {activeCategory ? <> in <span className="text-ink">{activeCategory.name}</span></> : null}
+        </p>
       </div>
 
-      {list.length === 0 ? (
-        <div className="mc-card mt-10 p-8 text-center text-sm text-zinc-600">
-          No products found.
+      {list.length > 0 ? (
+        <div className="mt-5 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
+          {list.map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
         </div>
-      ) : null}
+      ) : (
+        <div className="mt-6 rounded-[var(--r-lg)] border border-dashed border-line-strong bg-surface px-6 py-16 text-center">
+          <p className="font-display text-xl text-ink">Nothing matches yet</p>
+          <p className="mt-2 text-sm text-muted">Try a broader search, or clear the filters to see everything.</p>
+          {hasFilters ? (
+            <Link href="/products" className="mc-btn-outline mt-5">Clear filters</Link>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 }

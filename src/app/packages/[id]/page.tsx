@@ -3,12 +3,9 @@ import Link from 'next/link';
 import { connectToDatabase } from '@/lib/mongoose';
 import { GiftPackage } from '@/models/GiftPackage';
 import { PackagePurchasePanel } from '@/components/package/package-purchase-panel';
+import { Breadcrumb } from '@/components/breadcrumb';
 
-export default async function PackageDetailsPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function PackageDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   await connectToDatabase();
@@ -16,67 +13,61 @@ export default async function PackageDetailsPage({
 
   if (!pkg) {
     return (
-      <div className="mc-container py-10">
-        <div className="mc-card p-8 text-sm text-zinc-600">
-          Package not found.
-        </div>
+      <div className="mc-container py-20 text-center">
+        <h1 className="font-display text-3xl">We can’t find that package</h1>
+        <p className="mt-3 text-muted">It may have sold out or been moved.</p>
+        <Link href="/packages" className="mc-btn mt-6">Back to packages</Link>
       </div>
     );
   }
 
-  const image =
-    (pkg as any).image ||
-    'https://images.unsplash.com/photo-1513883049090-d0b7439799bf?auto=format&fit=crop&w=1200&q=60';
+  const p = pkg as any;
+  const image = p.image || 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=1200&q=70';
+  const items: any[] = p.items ?? [];
 
   return (
-    <div className="mc-container py-10">
-      <div className="flex flex-wrap items-center gap-2 text-sm text-zinc-600">
-        <Link href="/packages" className="mc-pill hover:bg-white">
-          Packages
-        </Link>
-        <span className="text-zinc-400">/</span>
-        <span className="font-medium text-zinc-900">{(pkg as any).name}</span>
-      </div>
+    <div className="mc-container py-8 md:py-12">
+      <Breadcrumb
+        items={[{ href: '/', label: 'Home' }, { href: '/packages', label: 'Gift packages' }, { label: p.name }]}
+      />
 
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <div className="mc-card relative aspect-[4/3] overflow-hidden p-0">
-          <Image src={image} alt={(pkg as any).name} fill sizes="600px" className="object-cover" />
+      <div className="mt-7 grid gap-10 lg:grid-cols-2 lg:gap-14">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--r-xl)] bg-surface">
+          <Image src={image} alt={p.name} fill priority sizes="(max-width: 768px) 100vw, 560px" className="object-cover" />
         </div>
 
-        <div className="space-y-4">
-          <div>
-            <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
-              <span className="mc-text-gradient">{(pkg as any).name}</span>
-            </h1>
-            <p className="mt-2 text-sm text-zinc-600">
-              A curated bundle with everything you need.
-            </p>
-          </div>
+        <div className="lg:sticky lg:top-28 lg:self-start">
+          <span className="mc-pill-blush mc-pill border-transparent">Gift package</span>
+          <h1 className="mt-4 font-display text-[clamp(2rem,4vw,3rem)] leading-[1.05]">{p.name}</h1>
+          <p className="mt-3 text-[1.05rem] leading-relaxed text-muted">
+            A curated bundle, assembled and wrapped by hand as one considered gift.
+          </p>
 
-          <div className="mc-card p-5">
-            <div className="text-sm font-medium">Included items</div>
-            <ul className="mt-3 space-y-2 text-sm text-zinc-700">
-              {((pkg as any).items ?? []).map((it: any, idx: number) => (
-                <li key={idx} className="flex items-center justify-between">
-                  <span>{it.productId?.name ?? 'Item'}</span>
-                  <span className="text-zinc-600">×{it.quantity}</span>
-                </li>
-              ))}
-              {((pkg as any).items ?? []).length === 0 ? (
-                <li className="text-zinc-600">—</li>
-              ) : null}
-            </ul>
-          </div>
+          {items.length > 0 ? (
+            <div className="mt-6 rounded-[var(--r-lg)] border border-line bg-bg p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted">What’s inside</p>
+              <ul className="mt-3 divide-y divide-line">
+                {items.map((it, idx) => (
+                  <li key={idx} className="flex items-center justify-between gap-3 py-2.5 text-sm">
+                    <span className="text-ink">{it.productId?.name ?? 'Gift item'}</span>
+                    <span className="text-muted">×{it.quantity}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
 
-          <PackagePurchasePanel
-            pkg={{
-              id: (pkg as any)._id.toString(),
-              name: (pkg as any).name,
-              image,
-              price: (pkg as any).price,
-              discountPercent: (pkg as any).discountPercent ?? null,
-            }}
-          />
+          <div className="mt-6">
+            <PackagePurchasePanel
+              pkg={{
+                id: p._id.toString(),
+                name: p.name,
+                image,
+                price: p.price,
+                discountPercent: p.discountPercent ?? null,
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -692,7 +692,7 @@ async function main() {
 
   type SeedOrder = {
     email: string;
-    items: ReturnType<typeof productItem>[];
+    items: (ReturnType<typeof productItem> | ReturnType<typeof packageItem>)[];
     paymentMethod: 'cod' | 'card' | 'bank';
     paymentStatus: 'unpaid' | 'paid' | 'refunded';
     status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';

@@ -2,115 +2,106 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { useCart } from '@/components/cart/cart-context';
 import { CartSummary } from '@/components/cart/cart-summary';
+import { QuantityStepper } from '@/components/quantity-stepper';
+import { MoonMark } from '@/components/moon-mark';
 import { formatLkr } from '@/lib/money';
 
+const FALLBACK = 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=400&q=70';
+
 export default function CartPage() {
-  const { items, subtotal, updateQuantity, removeItem, clear } = useCart();
+  const { items, updateQuantity, removeItem, clear, count } = useCart();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    return (
+      <div className="mc-container py-12 md:py-16">
+        <div className="h-9 w-40 animate-pulse rounded bg-surface" />
+        <div className="mt-8 h-64 animate-pulse rounded-[var(--r-lg)] bg-surface" />
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="mc-container py-20">
+        <div className="mx-auto flex max-w-md flex-col items-center text-center">
+          <span className="h-12 w-12 text-primary"><MoonMark /></span>
+          <h1 className="mt-5 font-display text-3xl">Your cart is empty</h1>
+          <p className="mt-3 text-muted">
+            Nothing chosen yet. Browse the shop, or start with a ready-made gift package.
+          </p>
+          <div className="mt-7 flex flex-wrap justify-center gap-3">
+            <Link href="/products" className="mc-btn">Shop gifts</Link>
+            <Link href="/packages" className="mc-btn-outline">Browse packages</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="mc-container py-10">
+    <div className="mc-container py-12 md:py-16">
       <div className="flex items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">
-            <span className="mc-text-gradient">Cart</span>
-          </h1>
-          <p className="mt-1 text-sm text-zinc-600">
-            Review items before checkout.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={clear}
-          className="mc-btn-outline"
-          disabled={items.length === 0}
-        >
-          Clear
+        <h1 className="font-display text-[clamp(2rem,4vw,2.8rem)]">Your cart</h1>
+        <button type="button" onClick={clear} className="mc-btn-ghost text-sm text-muted hover:text-accent">
+          Clear cart
         </button>
       </div>
 
-      <div className="mt-6 grid gap-6 md:grid-cols-3">
-        <div className="mc-card md:col-span-2 overflow-hidden">
-          {items.length === 0 ? (
-            <div className="p-8 text-center text-sm text-zinc-600">
-              Your cart is empty.{' '}
-              <Link href="/products" className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-4 hover:decoration-zinc-400">
-                Browse products
-              </Link>
-            </div>
-          ) : (
-            <div className="divide-y">
-              {items.map((it) => (
-                <div key={it.refId} className="flex gap-4 p-4">
-                  <div className="relative h-20 w-20 overflow-hidden rounded-xl border bg-neutral-50">
-                    <Image
-                      src={it.image || 'https://images.unsplash.com/photo-1513883049090-d0b7439799bf?auto=format&fit=crop&w=400&q=60'}
-                      alt={it.name}
-                      fill
-                      sizes="80px"
-                      className="object-cover"
-                    />
+      <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
+        <ul className="divide-y divide-line border-y border-line">
+          {items.map((it) => {
+            const href = it.itemType === 'package' ? `/packages/${it.refId}` : `/products/${it.refId}`;
+            return (
+              <li key={it.refId} className="flex gap-4 py-5 sm:gap-5">
+                <Link href={href} className="relative h-24 w-20 shrink-0 overflow-hidden rounded-[var(--r)] bg-surface sm:h-28 sm:w-24">
+                  <Image src={it.image || FALLBACK} alt={it.name} fill sizes="96px" className="object-cover" />
+                </Link>
+
+                <div className="flex flex-1 flex-col">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <Link href={href} className="font-display text-lg leading-snug transition-colors hover:text-primary">
+                        {it.name}
+                      </Link>
+                      <p className="mt-0.5 text-xs uppercase tracking-wide text-faint">
+                        {it.itemType === 'package' ? 'Gift package' : 'Gift'}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeItem(it.refId)}
+                      aria-label={`Remove ${it.name}`}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface hover:text-accent"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6L6 18" />
+                      </svg>
+                    </button>
                   </div>
 
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="text-sm font-medium">{it.name}</div>
-                        <div className="mt-1 text-xs text-neutral-600">
-                          {it.itemType === 'product' ? 'Product' : 'Package'}
-                        </div>
-                      </div>
-                      <div className="text-sm font-semibold">
-                        {formatLkr(it.unitPrice * it.quantity)}
-                      </div>
-                    </div>
-
-                    <div className="mt-3 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => updateQuantity(it.refId, it.quantity - 1)}
-                          className="mc-btn-outline h-9 w-9 px-0"
-                        >
-                          −
-                        </button>
-                        <input
-                          type="number"
-                          value={it.quantity}
-                          min={1}
-                          max={99}
-                          onChange={(e) => updateQuantity(it.refId, Math.max(1, Number(e.target.value) || 1))}
-                          className="mc-input h-9 w-16 px-2 text-center"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => updateQuantity(it.refId, it.quantity + 1)}
-                          className="mc-btn-outline h-9 w-9 px-0"
-                        >
-                          +
-                        </button>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => removeItem(it.refId)}
-                        className="mc-btn-outline"
-                      >
-                        Remove
-                      </button>
+                  <div className="mt-auto flex items-end justify-between gap-3 pt-3">
+                    <QuantityStepper
+                      value={it.quantity}
+                      onChange={(v) => updateQuantity(it.refId, v)}
+                      max={99}
+                    />
+                    <div className="text-right">
+                      <p className="font-semibold text-ink">{formatLkr(it.unitPrice * it.quantity)}</p>
+                      {it.quantity > 1 ? (
+                        <p className="text-xs text-faint">{formatLkr(it.unitPrice)} each</p>
+                      ) : null}
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-
-          <div className="border-t border-white/50 p-4 text-right text-sm text-zinc-600">
-            Subtotal:{' '}
-            <span className="font-semibold text-zinc-900">{formatLkr(subtotal)}</span>
-          </div>
-        </div>
+              </li>
+            );
+          })}
+        </ul>
 
         <CartSummary />
       </div>

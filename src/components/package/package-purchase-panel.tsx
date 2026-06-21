@@ -1,12 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { AddToCartButton } from '@/components/cart/add-to-cart-button';
+import { QuantityStepper } from '@/components/quantity-stepper';
 import { formatLkr } from '@/lib/money';
-
-function discountedPrice(price: number, discountPercent?: number | null) {
-  if (!discountPercent) return price;
-  return Math.round(price * (1 - discountPercent / 100) * 100) / 100;
-}
+import { applyDiscount } from '@/lib/pricing';
 
 export function PackagePurchasePanel({
   pkg,
@@ -19,33 +17,54 @@ export function PackagePurchasePanel({
     discountPercent?: number | null;
   };
 }) {
-  const effectivePrice = discountedPrice(pkg.price, pkg.discountPercent);
+  const [qty, setQty] = useState(1);
+  const effectivePrice = applyDiscount(pkg.price, pkg.discountPercent);
 
   return (
-    <div className="mc-card mc-card-hover p-5">
-      <div className="text-sm font-semibold">Add package</div>
-      <div className="mt-3 flex items-center justify-between">
-        <div className="text-sm text-neutral-600">Price</div>
-        <div className="text-lg font-extrabold">
-          <span className="mc-text-gradient">{formatLkr(effectivePrice)}</span>
+    <div className="rounded-[var(--r-lg)] border border-line bg-surface p-6">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <p className="text-xs uppercase tracking-[0.1em] text-muted">Package price</p>
+          <div className="mt-1 flex items-baseline gap-2.5">
+            <p className="font-display text-[2rem] leading-none text-ink">{formatLkr(effectivePrice)}</p>
+            {pkg.discountPercent ? (
+              <span className="text-sm text-faint line-through">{formatLkr(pkg.price)}</span>
+            ) : null}
+          </div>
         </div>
+        {pkg.discountPercent ? (
+          <span className="mc-pill border-transparent bg-accent text-white">Save {pkg.discountPercent}%</span>
+        ) : null}
       </div>
-      {pkg.discountPercent ? (
-        <div className="mt-1 text-xs text-neutral-600">
-          Save {pkg.discountPercent}% — was {formatLkr(pkg.price)}
-        </div>
-      ) : null}
-      <div className="mt-4">
+
+      <div className="mt-6 flex items-center justify-between gap-4">
+        <span className="text-sm font-medium text-ink">Quantity</span>
+        <QuantityStepper value={qty} onChange={setQty} max={20} />
+      </div>
+
+      <div className="mt-5">
         <AddToCartButton
-          item={{
-            itemType: 'package',
-            refId: pkg.id,
-            name: pkg.name,
-            image: pkg.image,
-            unitPrice: effectivePrice,
-          }}
+          fullWidth
+          quantity={qty}
+          label="Add package to cart"
+          item={{ itemType: 'package', refId: pkg.id, name: pkg.name, image: pkg.image, unitPrice: effectivePrice }}
         />
       </div>
+
+      <ul className="mt-6 space-y-2 border-t border-line pt-5 text-sm text-muted">
+        <li className="flex items-center gap-2.5">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4 shrink-0 text-primary">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" />
+          </svg>
+          Assembled and wrapped as one gift
+        </li>
+        <li className="flex items-center gap-2.5">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4 shrink-0 text-primary">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" />
+          </svg>
+          Delivered island-wide across Sri Lanka
+        </li>
+      </ul>
     </div>
   );
 }
