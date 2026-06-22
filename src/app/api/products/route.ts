@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import type { SortOrder } from 'mongoose';
-import { connectToDatabase } from '@/lib/mongoose';
+import { ensureDatabase } from '@/lib/api';
 import { requireAdmin } from '@/lib/server-auth';
 import { Category } from '@/models/Category';
 import { Product } from '@/models/Product';
@@ -41,7 +41,8 @@ export async function GET(req: Request) {
   const maxPrice = url.searchParams.get('maxPrice');
   const sort = url.searchParams.get('sort');
 
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const filter: any = {};
 
@@ -74,10 +75,12 @@ export async function GET(req: Request) {
       price: p.price,
       images: p.images,
       stock: p.stock,
-      category: p.categoryId ? { name: p.categoryId.name, slug: p.categoryId.slug } : null,
+      category: p.categoryId
+        ? { name: p.categoryId.name, slug: p.categoryId.slug }
+        : null,
       isFeatured: p.isFeatured,
       popularity: p.popularity,
-    }))
+    })),
   );
 }
 
@@ -96,17 +99,25 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
-  const category = await Category.findOne({ slug: parsed.data.categorySlug }).lean();
+  const category = await Category.findOne({
+    slug: parsed.data.categorySlug,
+  }).lean();
   if (!category) {
     return NextResponse.json({ error: 'Invalid category' }, { status: 400 });
   }
 
-  const slug = parsed.data.slug ? slugify(parsed.data.slug) : slugify(parsed.data.name);
+  const slug = parsed.data.slug
+    ? slugify(parsed.data.slug)
+    : slugify(parsed.data.name);
   const exists = await Product.findOne({ slug }).lean();
   if (exists) {
-    return NextResponse.json({ error: 'Product slug already exists' }, { status: 409 });
+    return NextResponse.json(
+      { error: 'Product slug already exists' },
+      { status: 409 },
+    );
   }
 
   const created = await Product.create({

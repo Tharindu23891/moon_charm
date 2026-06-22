@@ -2,26 +2,52 @@
 
 import Link from 'next/link';
 import { useCart } from '@/components/cart/cart-context';
+import { formatLkr } from '@/lib/money';
+import { cn } from '@/lib/cn';
+import { Button } from '@/components/ui/button';
 
 export function CartSummary() {
-  const { subtotal } = useCart();
+  const { subtotal, count } = useCart();
+  const empty = count === 0;
 
   return (
-    <div className="rounded-2xl border bg-white p-5">
-      <div className="text-sm font-medium">Order summary</div>
-      <div className="mt-4 flex items-center justify-between text-sm">
-        <span className="text-neutral-600">Subtotal</span>
-        <span className="font-medium">${subtotal.toFixed(2)}</span>
+    <div className="rounded-[var(--r-lg)] border border-line bg-surface p-6 lg:sticky lg:top-28">
+      <h2 className="font-display text-xl">Order summary</h2>
+
+      <dl className="mt-5 space-y-3 text-sm">
+        <div className="flex items-center justify-between">
+          <dt className="text-muted-foreground">
+            Subtotal · {count} {count === 1 ? 'item' : 'items'}
+          </dt>
+          <dd className="font-medium text-ink">{formatLkr(subtotal)}</dd>
+        </div>
+        <div className="flex items-center justify-between">
+          <dt className="text-muted-foreground">Delivery</dt>
+          <dd className="text-muted-foreground">Confirmed at checkout</dd>
+        </div>
+      </dl>
+
+      <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
+        <span className="font-medium">Total</span>
+        <span className="font-display text-xl text-ink">
+          {formatLkr(subtotal)}
+        </span>
       </div>
-      <div className="mt-2 flex items-center justify-between text-sm">
-        <span className="text-neutral-600">Total</span>
-        <span className="font-semibold">${subtotal.toFixed(2)}</span>
-      </div>
-      <Link
-        href="/checkout"
-        className="mt-4 inline-flex w-full items-center justify-center rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+
+      <Button
+        asChild
+        size="lg"
+        className={cn('mt-6 w-full', empty && 'pointer-events-none opacity-50')}
       >
-        Proceed to checkout
+        <Link href="/checkout" aria-disabled={empty}>
+          Proceed to checkout
+        </Link>
+      </Button>
+      <Link
+        href="/products"
+        className="mt-3 block text-center text-sm text-muted-foreground transition-colors hover:text-ink"
+      >
+        Continue shopping
       </Link>
     </div>
   );

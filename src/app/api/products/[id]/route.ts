@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { connectToDatabase } from '@/lib/mongoose';
+import { ensureDatabase } from '@/lib/api';
 import { requireAdmin } from '@/lib/server-auth';
 import { Category } from '@/models/Category';
 import { Product } from '@/models/Product';
@@ -21,10 +21,11 @@ const updateProductSchema = z
 
 export async function GET(
   _req: Request,
-  ctx: { params: Promise<{ id: string }> }
+  ctx: { params: Promise<{ id: string }> },
 ) {
   const { id } = await ctx.params;
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const product = await Product.findById(id).populate('categoryId').lean();
   if (!product) {
@@ -53,7 +54,7 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  ctx: { params: Promise<{ id: string }> }
+  ctx: { params: Promise<{ id: string }> },
 ) {
   try {
     await requireAdmin();
@@ -70,12 +71,15 @@ export async function PATCH(
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const update: any = { ...parsed.data };
 
   if (parsed.data.categorySlug) {
-    const category = await Category.findOne({ slug: parsed.data.categorySlug }).lean();
+    const category = await Category.findOne({
+      slug: parsed.data.categorySlug,
+    }).lean();
     if (!category) {
       return NextResponse.json({ error: 'Invalid category' }, { status: 400 });
     }
@@ -83,7 +87,9 @@ export async function PATCH(
     delete update.categorySlug;
   }
 
-  const updated = await Product.findByIdAndUpdate(id, update, { new: true }).lean();
+  const updated = await Product.findByIdAndUpdate(id, update, {
+    new: true,
+  }).lean();
   if (!updated) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
@@ -93,7 +99,7 @@ export async function PATCH(
 
 export async function DELETE(
   _req: Request,
-  ctx: { params: Promise<{ id: string }> }
+  ctx: { params: Promise<{ id: string }> },
 ) {
   try {
     await requireAdmin();
@@ -104,7 +110,8 @@ export async function DELETE(
   }
 
   const { id } = await ctx.params;
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
   const deleted = await Product.findByIdAndDelete(id).lean();
   if (!deleted) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });

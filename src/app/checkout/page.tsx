@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { z } from 'zod';
@@ -8,6 +9,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useCart } from '@/components/cart/cart-context';
+import { formatLkr } from '@/lib/money';
+import { cn } from '@/lib/cn';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 const checkoutSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
@@ -19,7 +24,6 @@ const checkoutSchema = z.object({
   state: z.string(),
   postalCode: z.string().min(1, 'Postal code is required'),
   country: z.string().min(1, 'Country is required'),
-  paymentMethod: z.enum(['cod', 'card', 'bank']),
 });
 
 type CheckoutValues = z.infer<typeof checkoutSchema>;
@@ -27,10 +31,15 @@ type CheckoutValues = z.infer<typeof checkoutSchema>;
 export default function CheckoutPage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const { items, subtotal, clear } = useCart();
+  const { items, subtotal, clear, count } = useCart();
   const [submitting, setSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-  const defaultEmail = useMemo(() => session?.user?.email ?? '', [session?.user?.email]);
+  const defaultEmail = useMemo(
+    () => session?.user?.email ?? '',
+    [session?.user?.email],
+  );
 
   const form = useForm<CheckoutValues>({
     resolver: zodResolver(checkoutSchema),
@@ -43,18 +52,15 @@ export default function CheckoutPage() {
       city: '',
       state: '',
       postalCode: '',
-      country: 'United States',
-      paymentMethod: 'cod',
+      country: 'Sri Lanka',
     },
   });
 
   useEffect(() => {
-    if (defaultEmail) {
+    if (defaultEmail)
       form.setValue('email', defaultEmail, { shouldValidate: true });
-    }
-    if (session?.user?.name) {
+    if (session?.user?.name)
       form.setValue('fullName', session.user.name, { shouldValidate: true });
-    }
   }, [defaultEmail, session?.user?.name, form]);
 
   async function onSubmit(values: CheckoutValues) {
@@ -65,7 +71,6 @@ export default function CheckoutPage() {
 
     setSubmitting(true);
     try {
-      // Sync local cart -> server cart
       const cartRes = await fetch('/api/cart', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -79,7 +84,9 @@ export default function CheckoutPage() {
       });
 
       if (!cartRes.ok) {
-        const msg = (await cartRes.json().catch(() => null))?.error ?? 'Failed to sync cart';
+        const msg =
+          (await cartRes.json().catch(() => null))?.error ??
+          'Failed to sync cart';
         toast.error(msg);
         return;
       }
@@ -88,7 +95,7 @@ export default function CheckoutPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          paymentMethod: values.paymentMethod,
+          paymentMethod: 'bank',
           address: {
             fullName: values.fullName,
             email: values.email,
@@ -104,139 +111,196 @@ export default function CheckoutPage() {
       });
 
       if (!orderRes.ok) {
-        const msg = (await orderRes.json().catch(() => null))?.error ?? 'Failed to place order';
+        const msg =
+          (await orderRes.json().catch(() => null))?.error ??
+          'Failed to place order';
         toast.error(msg);
         return;
       }
 
+      const { id } = (await orderRes.json().catch(() => ({}))) as {
+        id?: string;
+      };
+
       clear();
-      toast.success('Order placed');
-      router.push('/orders');
+      toast.success('Order placed. Thank you.');
+      // Order page is the hub: bank details, receipt upload, and WhatsApp.
+      router.push(id ? `/orders/${id}?placed=1` : '/orders');
     } finally {
       setSubmitting(false);
     }
   }
 
-  return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-10">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Checkout</h1>
-        <p className="mt-1 text-sm text-neutral-600">
-          Enter delivery details and confirm your order.
+  if (mounted && items.length === 0) {
+    return (
+      <div className="mc-container py-20 text-center">
+        <h1 className="font-display text-3xl">Your cart is empty</h1>
+        <p className="mt-3 text-muted-foreground">
+          Add a gift or two, then come back to check out.
         </p>
+        <Button asChild className="mt-6">
+          <Link href="/products">Shop gifts</Link>
+        </Button>
       </div>
+    );
+  }
 
-      <div className="mt-6 grid gap-6 md:grid-cols-3">
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="md:col-span-2 rounded-2xl border bg-white p-5"
-        >
-          <div className="text-sm font-medium">Customer details</div>
+  return (
+    <div className="mc-container py-12 md:py-16">
+      <h1 className="font-display text-[clamp(2rem,4vw,2.8rem)]">Checkout</h1>
+      <p className="mt-2 text-muted-foreground">
+        Tell us where it’s going and how you’d like to pay.
+      </p>
 
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <Field label="Full name" error={form.formState.errors.fullName?.message}>
-              <input
-                {...form.register('fullName')}
-                className="w-full rounded-lg border px-3 py-2 text-sm"
-              />
-            </Field>
-
-            <Field label="Email" error={form.formState.errors.email?.message}>
-              <input
-                {...form.register('email')}
-                className="w-full rounded-lg border px-3 py-2 text-sm"
-              />
-            </Field>
-
-            <Field label="Phone" error={form.formState.errors.phone?.message}>
-              <input
-                {...form.register('phone')}
-                className="w-full rounded-lg border px-3 py-2 text-sm"
-              />
-            </Field>
-          </div>
-
-          <div className="mt-6 text-sm font-medium">Delivery address</div>
-          <div className="mt-4 grid gap-3">
-            <Field label="Address line 1" error={form.formState.errors.line1?.message}>
-              <input
-                {...form.register('line1')}
-                className="w-full rounded-lg border px-3 py-2 text-sm"
-              />
-            </Field>
-            <Field label="Address line 2" error={form.formState.errors.line2?.message}>
-              <input
-                {...form.register('line2')}
-                className="w-full rounded-lg border px-3 py-2 text-sm"
-              />
-            </Field>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="City" error={form.formState.errors.city?.message}>
-                <input
-                  {...form.register('city')}
-                  className="w-full rounded-lg border px-3 py-2 text-sm"
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]"
+      >
+        <div className="space-y-10">
+          <fieldset>
+            <legend className="font-display text-xl">Your details</legend>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <Field
+                label="Full name"
+                error={form.formState.errors.fullName?.message}
+              >
+                <Input {...form.register('fullName')} autoComplete="name" />
+              </Field>
+              <Field label="Email" error={form.formState.errors.email?.message}>
+                <Input
+                  {...form.register('email')}
+                  autoComplete="email"
+                  inputMode="email"
                 />
               </Field>
-              <Field label="State" error={form.formState.errors.state?.message}>
-                <input
-                  {...form.register('state')}
-                  className="w-full rounded-lg border px-3 py-2 text-sm"
-                />
-              </Field>
-              <Field label="Postal code" error={form.formState.errors.postalCode?.message}>
-                <input
-                  {...form.register('postalCode')}
-                  className="w-full rounded-lg border px-3 py-2 text-sm"
-                />
-              </Field>
-              <Field label="Country" error={form.formState.errors.country?.message}>
-                <input
-                  {...form.register('country')}
-                  className="w-full rounded-lg border px-3 py-2 text-sm"
+              <Field
+                label="Phone"
+                error={form.formState.errors.phone?.message}
+                className="sm:col-span-2"
+              >
+                <Input
+                  {...form.register('phone')}
+                  autoComplete="tel"
+                  inputMode="tel"
                 />
               </Field>
             </div>
-          </div>
+          </fieldset>
 
-          <div className="mt-6 text-sm font-medium">Payment method</div>
-          <div className="mt-4">
-            <select
-              {...form.register('paymentMethod')}
-              className="w-full rounded-lg border px-3 py-2 text-sm"
-            >
-              <option value="cod">Cash on delivery</option>
-              <option value="card">Card</option>
-              <option value="bank">Bank transfer</option>
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mt-6 inline-flex items-center justify-center rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300"
-          >
-            {submitting ? 'Placing order…' : 'Place order'}
-          </button>
-        </form>
-
-        <div className="rounded-2xl border bg-white p-5">
-          <div className="text-sm font-medium">Order summary</div>
-          <div className="mt-3 space-y-2 text-sm text-neutral-700">
-            {items.map((it) => (
-              <div key={it.refId} className="flex items-center justify-between gap-3">
-                <span className="truncate">{it.quantity}× {it.name}</span>
-                <span className="font-medium">${(it.unitPrice * it.quantity).toFixed(2)}</span>
+          <fieldset>
+            <legend className="font-display text-xl">Delivery address</legend>
+            <div className="mt-5 grid gap-4">
+              <Field
+                label="Address line 1"
+                error={form.formState.errors.line1?.message}
+              >
+                <Input
+                  {...form.register('line1')}
+                  autoComplete="address-line1"
+                />
+              </Field>
+              <Field
+                label="Address line 2 (optional)"
+                error={form.formState.errors.line2?.message}
+              >
+                <Input
+                  {...form.register('line2')}
+                  autoComplete="address-line2"
+                />
+              </Field>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="City" error={form.formState.errors.city?.message}>
+                  <Input
+                    {...form.register('city')}
+                    autoComplete="address-level2"
+                  />
+                </Field>
+                <Field
+                  label="District / State"
+                  error={form.formState.errors.state?.message}
+                >
+                  <Input
+                    {...form.register('state')}
+                    autoComplete="address-level1"
+                  />
+                </Field>
+                <Field
+                  label="Postal code"
+                  error={form.formState.errors.postalCode?.message}
+                >
+                  <Input
+                    {...form.register('postalCode')}
+                    autoComplete="postal-code"
+                  />
+                </Field>
+                <Field
+                  label="Country"
+                  error={form.formState.errors.country?.message}
+                >
+                  <Input
+                    {...form.register('country')}
+                    autoComplete="country-name"
+                  />
+                </Field>
               </div>
-            ))}
-            {items.length === 0 ? <div className="text-neutral-600">—</div> : null}
-          </div>
-          <div className="mt-4 flex items-center justify-between text-sm">
-            <span className="text-neutral-600">Total</span>
-            <span className="text-lg font-semibold">${subtotal.toFixed(2)}</span>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend className="font-display text-xl">Payment</legend>
+            <div className="mt-5 rounded-[var(--r)] border border-line bg-surface p-5">
+              <p className="text-sm font-semibold text-ink">Bank transfer</p>
+              <p className="mt-1.5 text-sm text-muted-foreground">
+                After you place your order, we’ll show our bank account details
+                and a reference number. Make the transfer, then upload your
+                receipt on the order page and we’ll confirm it from our side.
+              </p>
+            </div>
+          </fieldset>
+        </div>
+
+        {/* Summary */}
+        <div className="lg:sticky lg:top-28 lg:self-start">
+          <div className="rounded-[var(--r-lg)] border border-line bg-surface p-6">
+            <h2 className="font-display text-xl">Your order</h2>
+            <ul className="mt-4 space-y-3 text-sm">
+              {items.map((it) => (
+                <li
+                  key={it.refId}
+                  className="flex items-start justify-between gap-3"
+                >
+                  <span className="text-muted-foreground">
+                    <span className="text-ink">{it.quantity}×</span> {it.name}
+                  </span>
+                  <span className="shrink-0 font-medium text-ink">
+                    {formatLkr(it.unitPrice * it.quantity)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-5 flex items-center justify-between border-t border-line pt-4">
+              <span className="font-medium">
+                Total · {count} {count === 1 ? 'item' : 'items'}
+              </span>
+              <span className="font-display text-xl text-ink">
+                {formatLkr(subtotal)}
+              </span>
+            </div>
+
+            <Button
+              type="submit"
+              size="lg"
+              disabled={submitting}
+              className="mt-6 w-full"
+            >
+              {submitting ? 'Placing order…' : 'Place order'}
+            </Button>
+            <p className="mt-3 text-center text-xs text-faint">
+              We’ll wrap it by hand and confirm delivery for your area.
+            </p>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
@@ -244,17 +308,21 @@ export default function CheckoutPage() {
 function Field({
   label,
   error,
+  className,
   children,
 }: {
   label: string;
   error?: string;
+  className?: string;
   children: React.ReactNode;
 }) {
   return (
-    <label className="grid gap-1 text-sm">
-      <span className="text-neutral-700">{label}</span>
+    <label className={cn('block', className)}>
+      <span className="mc-label">{label}</span>
       {children}
-      {error ? <span className="text-xs text-red-600">{error}</span> : null}
+      {error ? (
+        <span className="mt-1 block text-xs text-danger">{error}</span>
+      ) : null}
     </label>
   );
 }

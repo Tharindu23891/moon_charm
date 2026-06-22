@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { connectToDatabase } from '@/lib/mongoose';
+import { ensureDatabase } from '@/lib/api';
 import { requireUser } from '@/lib/server-auth';
 import { Cart } from '@/models/Cart';
 import { GiftPackage } from '@/models/GiftPackage';
@@ -13,7 +13,7 @@ const cartUpsertSchema = z.object({
       itemType: z.enum(['product', 'package']),
       refId: z.string().min(1),
       quantity: z.number().int().min(1).max(99),
-    })
+    }),
   ),
 });
 
@@ -25,7 +25,8 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
   const cart = await Cart.findOne({ userId }).lean();
 
   return NextResponse.json({
@@ -55,7 +56,8 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const productIds = parsed.data.items
     .filter((i) => i.itemType === 'product')
@@ -104,7 +106,7 @@ export async function PUT(req: Request) {
   const cart = await Cart.findOneAndUpdate(
     { userId },
     { $set: { userId, items } },
-    { upsert: true, new: true }
+    { upsert: true, new: true },
   ).lean();
 
   return NextResponse.json({
@@ -128,7 +130,12 @@ export async function DELETE() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  await connectToDatabase();
-  await Cart.findOneAndUpdate({ userId }, { $set: { items: [] } }, { upsert: true });
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
+  await Cart.findOneAndUpdate(
+    { userId },
+    { $set: { items: [] } },
+    { upsert: true },
+  );
   return NextResponse.json({ ok: true });
 }

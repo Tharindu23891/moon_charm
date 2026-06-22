@@ -2,58 +2,115 @@ import Link from 'next/link';
 import { connectToDatabase } from '@/lib/mongoose';
 import { getSessionUser } from '@/lib/server-auth';
 import { Order } from '@/models/Order';
+import { formatLkr } from '@/lib/money';
+import { OrderStatusBadge } from '@/components/order-status-badge';
+import { PaymentStatusBadge } from '@/components/payment-status-badge';
+import { Button } from '@/components/ui/button';
+
+export const metadata = { title: 'Your orders' };
 
 export default async function OrdersPage() {
   const { userId, role } = await getSessionUser();
-  if (!userId) return null;
+
+  if (!userId) {
+    return (
+      <div className="mc-container py-20 text-center">
+        <h1 className="font-display text-3xl">Please sign in</h1>
+        <p className="mt-3 text-muted-foreground">
+          Sign in to see your order history.
+        </p>
+        <Button asChild className="mt-6">
+          <Link href="/login?next=/orders">Sign in</Link>
+        </Button>
+      </div>
+    );
+  }
 
   await connectToDatabase();
-
   const filter = role === 'admin' ? {} : { userId };
-  const orders = await Order.find(filter).sort({ createdAt: -1 }).limit(200).lean();
+  const orders = await Order.find(filter)
+    .sort({ createdAt: -1 })
+    .limit(200)
+    .lean();
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-10">
-      <div className="flex items-end justify-between gap-4">
+    <div className="mc-container py-12 md:py-16">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Orders</h1>
-          <p className="mt-1 text-sm text-neutral-600">Order history and status.</p>
+          <h1 className="font-display text-[clamp(2rem,4vw,2.8rem)]">
+            {role === 'admin' ? 'All orders' : 'Your orders'}
+          </h1>
+          <p className="mt-2 text-muted-foreground">
+            {role === 'admin'
+              ? 'Every order placed across the shop.'
+              : 'Everything you’ve sent, and where it is now.'}
+          </p>
         </div>
-        <Link href="/products" className="text-sm text-neutral-700 hover:text-neutral-900">
-          Continue shopping
-        </Link>
+        <Button asChild variant="outline">
+          <Link href="/products">Continue shopping</Link>
+        </Button>
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-2xl border bg-white">
-        {orders.length === 0 ? (
-          <div className="p-8 text-center text-sm text-neutral-600">No orders yet.</div>
-        ) : (
-          <table className="w-full text-left text-sm">
-            <thead className="border-b bg-neutral-50 text-xs text-neutral-600">
-              <tr>
-                <th className="px-4 py-3">Order</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Payment</th>
-                <th className="px-4 py-3">Total</th>
-                <th className="px-4 py-3">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((o: any) => (
-                <tr key={o._id.toString()} className="border-b last:border-0">
-                  <td className="px-4 py-3 font-medium">{o._id.toString().slice(-8)}</td>
-                  <td className="px-4 py-3">{o.status}</td>
-                  <td className="px-4 py-3">{o.paymentStatus}</td>
-                  <td className="px-4 py-3">${Number(o.total).toFixed(2)}</td>
-                  <td className="px-4 py-3 text-neutral-600">
-                    {new Date(o.createdAt).toLocaleDateString()}
-                  </td>
+      {orders.length === 0 ? (
+        <div className="mt-10 rounded-[var(--r-lg)] border border-dashed border-line-strong bg-surface px-6 py-16 text-center">
+          <p className="font-display text-xl text-ink">No orders yet</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            When you place your first order, it will appear here.
+          </p>
+          <Button asChild className="mt-6">
+            <Link href="/products">Find a gift</Link>
+          </Button>
+        </div>
+      ) : (
+        <div className="mt-8 overflow-hidden rounded-[var(--r-lg)] border border-line">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] text-left text-sm">
+              <thead className="border-b border-line bg-surface text-xs tracking-wide text-muted-foreground uppercase">
+                <tr>
+                  <th className="px-5 py-3.5 font-semibold">Order</th>
+                  <th className="px-5 py-3.5 font-semibold">Status</th>
+                  <th className="px-5 py-3.5 font-semibold">Payment</th>
+                  <th className="px-5 py-3.5 font-semibold">Total</th>
+                  <th className="px-5 py-3.5 font-semibold">Placed</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+              </thead>
+              <tbody className="divide-y divide-line">
+                {orders.map((o: any) => (
+                  <tr
+                    key={o._id.toString()}
+                    className="transition-colors hover:bg-surface/60"
+                  >
+                    <td className="px-5 py-4 font-medium">
+                      <Link
+                        href={`/orders/${o._id.toString()}`}
+                        className="text-primary underline-offset-2 hover:underline"
+                      >
+                        #{o._id.toString().slice(-8).toUpperCase()}
+                      </Link>
+                    </td>
+                    <td className="px-5 py-4">
+                      <OrderStatusBadge status={o.status} />
+                    </td>
+                    <td className="px-5 py-4">
+                      <PaymentStatusBadge status={o.paymentStatus} />
+                    </td>
+                    <td className="px-5 py-4 font-semibold text-ink">
+                      {formatLkr(Number(o.total))}
+                    </td>
+                    <td className="px-5 py-4 text-muted-foreground">
+                      {new Date(o.createdAt).toLocaleDateString('en-LK', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

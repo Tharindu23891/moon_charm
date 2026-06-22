@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { connectToDatabase } from '@/lib/mongoose';
+import { ensureDatabase } from '@/lib/api';
 import { requireAdmin } from '@/lib/server-auth';
 import { Category } from '@/models/Category';
 import { slugify } from '@/lib/slugify';
@@ -14,7 +14,7 @@ const updateCategorySchema = z
 
 export async function PATCH(
   req: Request,
-  ctx: { params: Promise<{ id: string }> }
+  ctx: { params: Promise<{ id: string }> },
 ) {
   try {
     await requireAdmin();
@@ -30,20 +30,29 @@ export async function PATCH(
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const update: any = {};
   if (parsed.data.name) update.name = parsed.data.name;
   if (parsed.data.slug) update.slug = slugify(parsed.data.slug);
 
   if (update.slug) {
-    const exists = await Category.findOne({ slug: update.slug, _id: { $ne: id } }).lean();
+    const exists = await Category.findOne({
+      slug: update.slug,
+      _id: { $ne: id },
+    }).lean();
     if (exists) {
-      return NextResponse.json({ error: 'Category slug already exists' }, { status: 409 });
+      return NextResponse.json(
+        { error: 'Category slug already exists' },
+        { status: 409 },
+      );
     }
   }
 
-  const updated = await Category.findByIdAndUpdate(id, update, { new: true }).lean();
+  const updated = await Category.findByIdAndUpdate(id, update, {
+    new: true,
+  }).lean();
   if (!updated) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
@@ -53,7 +62,7 @@ export async function PATCH(
 
 export async function DELETE(
   _req: Request,
-  ctx: { params: Promise<{ id: string }> }
+  ctx: { params: Promise<{ id: string }> },
 ) {
   try {
     await requireAdmin();
@@ -63,7 +72,8 @@ export async function DELETE(
   }
 
   const { id } = await ctx.params;
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const deleted = await Category.findByIdAndDelete(id).lean();
   if (!deleted) {

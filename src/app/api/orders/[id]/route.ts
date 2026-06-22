@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongoose';
+import { ensureDatabase } from '@/lib/api';
 import { getSessionUser } from '@/lib/server-auth';
 import { Order } from '@/models/Order';
 
 export async function GET(
   _req: Request,
-  ctx: { params: Promise<{ id: string }> }
+  ctx: { params: Promise<{ id: string }> },
 ) {
   const { userId, role } = await getSessionUser();
   if (!userId) {
@@ -13,7 +13,8 @@ export async function GET(
   }
 
   const { id } = await ctx.params;
-  await connectToDatabase();
+  const dbError = await ensureDatabase();
+  if (dbError) return dbError;
 
   const order = await Order.findById(id).lean();
   if (!order) {

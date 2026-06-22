@@ -1,11 +1,354 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
-html,
-body {
-  height: 100%;
+/* =========================================================================
+   The Moon Charm — design tokens
+   Deep-indigo "blue" identity, drawn from the logo ground (#190D61). Bright
+   canvas; the blue carries through ink, surfaces, buttons + dark sections,
+   with a sparing champagne-gold accent on the indigo grounds.
+   ========================================================================= */
+
+@theme {
+  /* Brand surfaces, ink, lines (OKLCH) — cool, faintly blue-tinted neutrals */
+  --color-bg: oklch(1 0 0);
+  --color-surface: oklch(0.977 0.006 280);
+  --color-surface-warm: oklch(0.957 0.012 278);
+  --color-ink: oklch(0.23 0.04 280);
+  --color-faint: oklch(0.52 0.035 280);
+  --color-line: oklch(0.905 0.013 280);
+  --color-line-strong: oklch(0.84 0.02 280);
+
+  /* Deep-indigo dark ground (footer, dark sections) + text on it */
+  --color-espresso: oklch(0.225 0.1 278);
+  --color-on-dark: oklch(0.96 0.012 285);
+
+  /* Brand accents */
+  --color-honey: oklch(0.72 0.15 256); /* light sky-blue accent (was champagne gold) */
+  --color-claret: oklch(0.46 0.19 277); /* royal-indigo secondary accent */
+  --color-claret-hover: oklch(0.4 0.18 277);
+  --color-blush: oklch(0.93 0.03 274); /* pale blue mist tint */
+  --color-success: oklch(0.52 0.1 150);
+  --color-danger: oklch(0.52 0.17 25);
+
+  /* shadcn/ui token surface, themed to the brand. shadcn's neutral roles map to
+     our cool surfaces; primary is the logo's deep indigo (#190D61). */
+  --color-background: oklch(1 0 0);
+  --color-foreground: oklch(0.23 0.04 280);
+  --color-card: oklch(1 0 0);
+  --color-card-foreground: oklch(0.23 0.04 280);
+  --color-popover: oklch(1 0 0);
+  --color-popover-foreground: oklch(0.23 0.04 280);
+  --color-primary: oklch(0.546 0.245 262.881); /* vivid blue #155dfc */
+  --color-primary-foreground: oklch(0.99 0.01 255);
+  --color-primary-hover: oklch(0.48 0.235 263);
+  --color-secondary: oklch(0.977 0.006 280);
+  --color-secondary-foreground: oklch(0.23 0.04 280);
+  --color-muted: oklch(0.977 0.006 280);
+  --color-muted-foreground: oklch(0.5 0.03 280);
+  --color-accent: oklch(0.957 0.012 278);
+  --color-accent-foreground: oklch(0.23 0.04 280);
+  --color-destructive: oklch(0.52 0.17 25);
+  --color-destructive-foreground: oklch(0.99 0.005 280);
+  --color-border: oklch(0.905 0.013 280);
+  --color-input: oklch(0.84 0.02 280);
+  --color-ring: oklch(0.546 0.245 262.881);
+
+  /* Type families (wired to next/font variables in layout.tsx) */
+  --font-sans:
+    var(--font-hanken), ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    sans-serif;
+  --font-display:
+    var(--font-spectral), ui-serif, Georgia, 'Times New Roman', serif;
 }
 
-body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* shadcn radius scale, derived from --radius */
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --container: 76rem;
+  --container-wide: 90rem;
+
+  --r-sm: 0.5rem;
+  --r: 0.75rem;
+  --r-lg: 1.125rem;
+  --r-xl: 1.5rem;
+
+  /* shadcn radius base */
+  --radius: 0.625rem;
+
+  --shadow-sm: 0 1px 2px rgb(20 16 70 / 0.06);
+  --shadow: 0 6px 24px rgb(20 16 70 / 0.08);
+  --shadow-lg: 0 18px 48px rgb(20 16 70 / 0.12);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --z-dropdown: 40;
+  --z-sticky: 50;
+  --z-backdrop: 60;
+  --z-modal: 70;
+  --z-toast: 80;
+}
+
+/* =========================================================================
+   Base
+   ========================================================================= */
+
+@layer base {
+  html {
+    height: 100%;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100%;
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    color: var(--color-ink);
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--color-blush);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  img {
+    color: transparent;
+  }
+}
+
+/* =========================================================================
+   Components
+   ========================================================================= */
+
+@layer components {
+  .mc-container {
+    width: 100%;
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .mc-container {
+      padding-inline: 2rem;
+    }
+  }
+
+  .mc-container-wide {
+    max-width: var(--container-wide);
+  }
+
+  .mc-section {
+    padding-block: clamp(3.5rem, 8vw, 7rem);
+  }
+
+  /* Display heading helper */
+  .mc-display {
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  /* A single, deliberate kicker — used sparingly, never on every section */
+  .mc-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+  }
+
+  .mc-eyebrow::before {
+    content: '';
+    width: 1.75rem;
+    height: 1px;
+    background: var(--color-primary);
+    opacity: 0.6;
+  }
+
+  /* Eyebrow placed over a dark / photographic background */
+  .mc-eyebrow.is-on-dark {
+    color: var(--color-on-dark);
+  }
+
+  .mc-eyebrow.is-on-dark::before {
+    background: var(--color-on-dark);
+  }
+
+  /* Form label (paired with shadcn Input/Textarea/Select) */
+  .mc-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 0.4rem;
+  }
+
+  /* Cards (no glass) */
+  .mc-card {
+    border-radius: var(--r-lg);
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-line);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Subtle hover lift for standalone cards. Uses the standalone `translate`
+     property so it never competes with the reveal's transform animation. */
+  .mc-lift {
+    transition:
+      translate 0.35s var(--ease-out),
+      box-shadow 0.35s var(--ease-out),
+      border-color 0.35s var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .mc-lift:hover {
+      translate: 0 -6px;
+      box-shadow: var(--shadow-lg);
+      border-color: color-mix(
+        in oklab,
+        var(--color-primary) 30%,
+        var(--color-line)
+      );
+    }
+  }
+
+  /* Hairline divider, optionally honey-tinted */
+  .mc-rule {
+    height: 1px;
+    background-color: var(--color-line);
+    border: 0;
+  }
+
+  /* Animated underline link (nav) */
+  .mc-navlink {
+    position: relative;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--color-muted-foreground);
+    transition: color 0.25s var(--ease-out);
+  }
+
+  .mc-navlink::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -0.4rem;
+    height: 1.5px;
+    width: 0;
+    background-color: var(--color-primary);
+    transition: width 0.3s var(--ease-out);
+  }
+
+  .mc-navlink:hover,
+  .mc-navlink[data-active='true'] {
+    color: var(--color-ink);
+  }
+
+  .mc-navlink:hover::after,
+  .mc-navlink[data-active='true']::after {
+    width: 100%;
+  }
+}
+
+/* =========================================================================
+   Utilities + motion
+   ========================================================================= */
+
+@layer utilities {
+  .mc-prose {
+    max-width: 68ch;
+  }
+
+  /* Scroll reveals, hero orchestration, image zoom-settles, the cart-badge pop
+     and the navbar mark intro are all Motion-driven now (see
+     src/components/motion + Reveal). Motion honours prefers-reduced-motion via
+     <MotionConfig reducedMotion="user"> plus per-primitive skips. CSS keeps the
+     hover lift below, which is cheaper and interruptible as a state transition. */
+
+  /* House artwork (src/components/art): a gentle, low-amplitude twinkle on a
+     few stars/sparkles and a slow ken-burns drift on the wide hero. Both are
+     purely decorative and switch off under prefers-reduced-motion. */
+  .mc-tw {
+    animation: mc-twinkle var(--tw-dur, 5s) ease-in-out infinite;
+    animation-delay: var(--tw-delay, 0s);
+  }
+  .mc-art-drift {
+    animation: mc-art-drift 34s ease-in-out infinite alternate;
+    transform-origin: center;
+  }
+  @keyframes mc-twinkle {
+    0%,
+    100% {
+      opacity: var(--tw-min, 0.4);
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  @keyframes mc-art-drift {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.07);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mc-lift {
+      transition: none;
+    }
+    .mc-lift:hover {
+      translate: 0;
+    }
+
+    .mc-tw,
+    .mc-art-drift {
+      animation: none;
+    }
+
+    html {
+      scroll-behavior: auto;
+    }
+  }
 }

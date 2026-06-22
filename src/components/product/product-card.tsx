@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { AddToCartButton } from '@/components/cart/add-to-cart-button';
+import { formatLkr } from '@/lib/money';
 
 export type ProductListItem = {
   id: string;
@@ -12,39 +13,46 @@ export type ProductListItem = {
   category?: { name: string; slug: string } | null;
 };
 
-export function ProductCard({ product }: { product: ProductListItem }) {
-  const image = product.images?.[0] || 'https://images.unsplash.com/photo-1520975958225-2a44e04e0a4b?auto=format&fit=crop&w=800&q=60';
+const FALLBACK_IMAGE =
+  'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=70';
+
+export function ProductCard({
+  product,
+}: Readonly<{ product: ProductListItem }>) {
+  const image = product.images?.[0] || FALLBACK_IMAGE;
+  const soldOut = product.stock <= 0;
 
   return (
-    <div className="rounded-2xl border bg-white p-4">
-      <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-neutral-50">
-        <Image src={image} alt={product.name} fill className="object-cover" />
-      </div>
+    <article className="group flex flex-col">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--r-lg)] bg-surface">
+        <Link
+          href={`/products/${product.id}`}
+          aria-label={`View ${product.name}`}
+          className="absolute inset-0"
+        >
+          <Image
+            src={image}
+            alt={product.name}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 320px"
+            className="object-cover transition-transform duration-700 ease-[var(--ease-out)] group-hover:scale-[1.04]"
+          />
+        </Link>
 
-      <div className="mt-4 space-y-2">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="text-sm font-semibold leading-5">{product.name}</div>
-            <div className="mt-1 text-xs text-neutral-600">{product.category?.name ?? '—'}</div>
-          </div>
-          <div className="text-sm font-semibold">${product.price.toFixed(2)}</div>
-        </div>
+        {product.category?.name ? (
+          <span className="absolute top-3 left-3 rounded-full bg-bg/85 px-2.5 py-1 text-[0.7rem] font-medium text-ink backdrop-blur-sm">
+            {product.category.name}
+          </span>
+        ) : null}
 
-        <p className="text-sm text-neutral-600 line-clamp-2">{product.shortDescription}</p>
-
-        <div className="flex items-center justify-between gap-3 pt-2">
-          <div className="text-xs text-neutral-600">
-            {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
-          </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href={`/products/${product.id}`}
-              className="rounded-lg border px-3 py-2 text-sm hover:bg-neutral-50"
-            >
-              View
-            </Link>
+        {soldOut ? (
+          <span className="absolute top-3 right-3 rounded-full bg-ink/80 px-2.5 py-1 text-[0.7rem] font-semibold text-white">
+            Sold out
+          </span>
+        ) : (
+          <div className="absolute right-3 bottom-3 translate-y-1 opacity-0 transition-[opacity,transform] duration-300 ease-[var(--ease-out)] group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100">
             <AddToCartButton
-              disabled={product.stock <= 0}
+              variant="icon"
               item={{
                 itemType: 'product',
                 refId: product.id,
@@ -54,8 +62,36 @@ export function ProductCard({ product }: { product: ProductListItem }) {
               }}
             />
           </div>
-        </div>
+        )}
       </div>
-    </div>
+
+      <div className="mt-3.5 flex flex-1 flex-col">
+        <h3 className="font-display text-[1.15rem] leading-snug">
+          <Link
+            href={`/products/${product.id}`}
+            className="transition-colors hover:text-primary"
+          >
+            {product.name}
+          </Link>
+        </h3>
+        <p className="mt-1 text-[0.95rem] font-semibold text-ink">
+          {formatLkr(product.price)}
+        </p>
+
+        {product.shortDescription ? (
+          <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">
+            {product.shortDescription}
+          </p>
+        ) : null}
+
+        <p className="mt-auto pt-2 text-xs text-faint">
+          {soldOut
+            ? 'Currently unavailable'
+            : product.stock <= 5
+              ? `Only ${product.stock} left`
+              : 'In stock'}
+        </p>
+      </div>
+    </article>
   );
 }

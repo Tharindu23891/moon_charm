@@ -9,15 +9,20 @@ const CartItemSchema = new Schema(
     unitPrice: { type: Number, required: true, min: 0 },
     quantity: { type: Number, required: true, min: 1 },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const CartSchema = new Schema(
   {
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      unique: true,
+    },
     items: { type: [CartItemSchema], default: [] },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export type CartDoc = InferSchemaType<typeof CartSchema> & {

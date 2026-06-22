@@ -9,7 +9,19 @@ const OrderItemSchema = new Schema(
     unitPrice: { type: Number, required: true, min: 0 },
     quantity: { type: Number, required: true, min: 1 },
   },
-  { _id: false }
+  { _id: false },
+);
+
+// Stored as a base64 data URL on the order (same approach as product images).
+// Marked select:false on the order so the blob never loads in list queries.
+const ReceiptSchema = new Schema(
+  {
+    data: { type: String, required: true },
+    filename: { type: String, default: '' },
+    contentType: { type: String, default: '' },
+    uploadedAt: { type: Date, default: Date.now },
+  },
+  { _id: false },
 );
 
 const AddressSchema = new Schema(
@@ -24,7 +36,7 @@ const AddressSchema = new Schema(
     postalCode: { type: String, required: true, trim: true },
     country: { type: String, required: true, trim: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const OrderSchema = new Schema(
@@ -41,16 +53,29 @@ const OrderSchema = new Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ['unpaid', 'paid', 'refunded'],
+      enum: ['unpaid', 'under_review', 'paid', 'rejected', 'refunded'],
       default: 'unpaid',
     },
+    // Cheap existence flag so list/admin views can show "receipt uploaded"
+    // without loading the (select:false) blob.
+    receiptUploaded: { type: Boolean, default: false },
+    receipt: { type: ReceiptSchema, select: false, default: null },
+    // Optional note from admin, e.g. why a receipt was rejected.
+    paymentNote: { type: String, default: '' },
     status: {
       type: String,
-      enum: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'],
+      enum: [
+        'pending',
+        'confirmed',
+        'processing',
+        'shipped',
+        'delivered',
+        'cancelled',
+      ],
       default: 'pending',
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export type OrderDoc = InferSchemaType<typeof OrderSchema> & {

@@ -1,6 +1,26 @@
+import { Suspense } from 'react';
 import { connectToDatabase } from '@/lib/mongoose';
 import { GiftPackage } from '@/models/GiftPackage';
-import { PackageCard, type PackageListItem } from '@/components/package/package-card';
+import {
+  PackageCard,
+  type PackageListItem,
+} from '@/components/package/package-card';
+import { PageHeader } from '@/components/page-header';
+import { SortSelect } from '@/components/sort-select';
+
+const sortOptions = [
+  { value: 'newest', label: 'Newest first' },
+  { value: 'popularity', label: 'Most loved' },
+  { value: 'price-asc', label: 'Price: low to high' },
+  { value: 'price-desc', label: 'Price: high to low' },
+];
+
+export const metadata = {
+  title: 'Gift packages',
+  description:
+    'Curated gift packages from The Moon Charm, hand-assembled and wrapped as one considered gift for birthdays, anniversaries, weddings, and more.',
+  alternates: { canonical: '/packages' },
+};
 
 export default async function PackagesPage({
   searchParams,
@@ -10,72 +30,84 @@ export default async function PackagesPage({
   const sp = await searchParams;
   const sort = (Array.isArray(sp.sort) ? sp.sort[0] : sp.sort) ?? 'newest';
 
-  await connectToDatabase();
+  let list: PackageListItem[] = [];
+  let databaseUnavailable = false;
 
-  const sortMap: Record<string, any> = {
-    newest: { createdAt: -1 },
-    popularity: { popularity: -1 },
-    'price-asc': { price: 1 },
-    'price-desc': { price: -1 },
-  };
+  try {
+    await connectToDatabase();
+    const sortMap: Record<string, any> = {
+      newest: { createdAt: -1 },
+      popularity: { popularity: -1 },
+      'price-asc': { price: 1 },
+      'price-desc': { price: -1 },
+    };
+    const packages = await GiftPackage.find({})
+      .sort(sortMap[sort] ?? sortMap.newest)
+      .limit(200)
+      .populate('items.productId')
+      .lean();
 
-  const packages = await GiftPackage.find({})
-    .sort(sortMap[sort] ?? sortMap.newest)
-    .limit(200)
-    .populate('items.productId')
-    .lean();
-
-  const list: PackageListItem[] = packages.map((p: any) => ({
-    id: p._id.toString(),
-    name: p.name,
-    image: p.image,
-    price: p.price,
-    discountPercent: p.discountPercent ?? null,
-    items: (p.items ?? []).map((it: any) => ({
-      name: it.productId?.name ?? null,
-      quantity: it.quantity,
-    })),
-  }));
+    list = packages.map((p: any) => ({
+      id: p._id.toString(),
+      name: p.name,
+      image: p.image,
+      price: p.price,
+      discountPercent: p.discountPercent ?? null,
+      items: (p.items ?? []).map((it: any) => ({
+        name: it.productId?.name ?? null,
+        quantity: it.quantity,
+      })),
+    }));
+  } catch (error) {
+    databaseUnavailable = true;
+    console.error('Failed to load packages page data from MongoDB', error);
+  }
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-10">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Packages</h1>
-        <p className="mt-1 text-sm text-neutral-600">Curated bundles and gift boxes.</p>
-      </div>
-
-      <div className="mt-6 flex items-center justify-end">
-        <form>
-          <select
-            name="sort"
-            defaultValue={sort}
-            className="rounded-lg border bg-white px-3 py-2 text-sm"
+    <div className="mc-container py-12 md:py-16">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <PageHeader
+          eyebrow="Ready to give"
+          title="Gift packages"
+          description="Hand-assembled bundles, wrapped as a single gift and priced a little gentler than buying each piece alone."
+        />
+        <div className="shrink-0">
+          <Suspense
+            fallback={
+              <div className="h-11 w-full rounded-[var(--r)] border border-line bg-surface sm:w-56" />
+            }
           >
-            <option value="newest">Newest</option>
-            <option value="popularity">Popularity</option>
-            <option value="price-asc">Price ↑</option>
-            <option value="price-desc">Price ↓</option>
-          </select>
-          <button
-            type="submit"
-            className="ml-2 rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
-          >
-            Apply
-          </button>
-        </form>
-      </div>
-
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {list.map((p) => (
-          <PackageCard key={p.id} pkg={p} />
-        ))}
-      </div>
-
-      {list.length === 0 ? (
-        <div className="mt-10 rounded-2xl border bg-white p-8 text-center text-sm text-neutral-600">
-          No packages found.
+            <SortSelect
+              options={sortOptions}
+              defaultValue="newest"
+              label="Sort packages"
+              className="w-full sm:w-56"
+            />
+          </Suspense>
         </div>
+      </div>
+
+      {databaseUnavailable ? (
+        <p className="mt-6 rounded-[var(--r)] border border-line bg-surface px-4 py-3 text-sm text-muted-foreground">
+          Packages are briefly unavailable while we reconnect. Please try again
+          in a moment.
+        </p>
       ) : null}
+
+      {list.length > 0 ? (
+        <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
+          {list.map((p) => (
+            <PackageCard key={p.id} pkg={p} />
+          ))}
+        </div>
+      ) : (
+        <div className="mt-10 rounded-[var(--r-lg)] border border-dashed border-line-strong bg-surface px-6 py-16 text-center">
+          <p className="font-display text-xl text-ink">No packages just yet</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            New bundles are added often. Check back soon.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

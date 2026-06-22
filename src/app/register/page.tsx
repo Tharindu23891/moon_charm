@@ -2,15 +2,23 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import { getProviders, signIn } from 'next-auth/react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { useEffect, useState } from 'react';
+import {
+  AuthShell,
+  AuthField,
+  GoogleButton,
+} from '@/components/auth/auth-shell';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 const registerSchema = z.object({
   name: z.string().min(1, 'Name is required').max(80),
-  email: z.string().email('Valid email is required'),
+  email: z.email({ message: 'Valid email is required' }),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
@@ -18,6 +26,19 @@ type RegisterValues = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [googleEnabled, setGoogleEnabled] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    getProviders()
+      .then(
+        (providers) => alive && setGoogleEnabled(Boolean(providers?.google)),
+      )
+      .catch(() => alive && setGoogleEnabled(false));
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -32,7 +53,8 @@ export default function RegisterPage() {
     });
 
     if (!res.ok) {
-      const msg = (await res.json().catch(() => null))?.error ?? 'Registration failed';
+      const msg =
+        (await res.json().catch(() => null))?.error ?? 'Registration failed';
       toast.error(msg);
       return;
     }
@@ -42,81 +64,75 @@ export default function RegisterPage() {
       password: values.password,
       redirect: false,
     });
-
     if (!login || login.error) {
       toast.success('Account created');
       router.push('/login');
       return;
     }
-
-    toast.success('Welcome');
+    toast.success('Welcome to The Moon Charm');
     router.push('/');
   }
 
   return (
-    <div className="mx-auto w-full max-w-md px-4 py-12">
-      <div className="rounded-2xl border bg-white p-6">
-        <h1 className="text-xl font-semibold tracking-tight">Register</h1>
-        <p className="mt-1 text-sm text-neutral-600">Create your account.</p>
-
-        <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 grid gap-3">
-          <Field label="Name" error={form.formState.errors.name?.message}>
-            <input
-              {...form.register('name')}
-              className="w-full rounded-lg border px-3 py-2 text-sm"
-            />
-          </Field>
-
-          <Field label="Email" error={form.formState.errors.email?.message}>
-            <input
-              type="email"
-              {...form.register('email')}
-              className="w-full rounded-lg border px-3 py-2 text-sm"
-            />
-          </Field>
-
-          <Field label="Password" error={form.formState.errors.password?.message}>
-            <input
-              type="password"
-              {...form.register('password')}
-              className="w-full rounded-lg border px-3 py-2 text-sm"
-            />
-          </Field>
-
-          <button
-            type="submit"
-            disabled={form.formState.isSubmitting}
-            className="mt-2 inline-flex items-center justify-center rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:bg-neutral-300"
-          >
-            {form.formState.isSubmitting ? 'Creating…' : 'Create account'}
-          </button>
-        </form>
-
-        <div className="mt-4 text-sm text-neutral-600">
+    <AuthShell
+      title="Create your account"
+      subtitle="Save your details, track orders, and gift with ease."
+      footer={
+        <>
           Already have an account?{' '}
-          <Link href="/login" className="text-neutral-900 underline">
-            Login
+          <Link
+            href="/login"
+            className="font-semibold text-primary hover:text-primary-hover"
+          >
+            Sign in
           </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
+        </>
+      }
+    >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+        <AuthField label="Name" error={form.formState.errors.name?.message}>
+          <Input autoComplete="name" {...form.register('name')} />
+        </AuthField>
+        <AuthField label="Email" error={form.formState.errors.email?.message}>
+          <Input
+            type="email"
+            autoComplete="email"
+            {...form.register('email')}
+          />
+        </AuthField>
+        <AuthField
+          label="Password"
+          error={form.formState.errors.password?.message}
+        >
+          <Input
+            type="password"
+            autoComplete="new-password"
+            {...form.register('password')}
+          />
+        </AuthField>
+        <Button
+          type="submit"
+          size="lg"
+          disabled={form.formState.isSubmitting}
+          className="mt-1 w-full"
+        >
+          {form.formState.isSubmitting ? 'Creating…' : 'Create account'}
+        </Button>
+      </form>
 
-function Field({
-  label,
-  error,
-  children,
-}: {
-  label: string;
-  error?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="grid gap-1 text-sm">
-      <span className="text-neutral-700">{label}</span>
-      {children}
-      {error ? <span className="text-xs text-red-600">{error}</span> : null}
-    </label>
+      {googleEnabled ? (
+        <>
+          <div className="my-5 flex items-center gap-3 text-xs text-faint">
+            <span className="h-px flex-1 bg-line" />
+            or
+            <span className="h-px flex-1 bg-line" />
+          </div>
+          <GoogleButton
+            label="Continue with Google"
+            onClick={() => signIn('google', { callbackUrl: '/' })}
+          />
+        </>
+      ) : null}
+    </AuthShell>
   );
 }

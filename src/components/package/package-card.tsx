@@ -1,6 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { AddToCartButton } from '@/components/cart/add-to-cart-button';
+import { Badge } from '@/components/ui/badge';
+import { formatLkr } from '@/lib/money';
+import { applyDiscount } from '@/lib/pricing';
 
 export type PackageListItem = {
   id: string;
@@ -11,53 +14,47 @@ export type PackageListItem = {
   items: { name?: string | null; quantity: number }[];
 };
 
-function discountedPrice(price: number, discountPercent?: number | null) {
-  if (!discountPercent) return price;
-  return Math.round(price * (1 - discountPercent / 100) * 100) / 100;
-}
+const FALLBACK_IMAGE =
+  'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=800&q=70';
 
 export function PackageCard({ pkg }: { pkg: PackageListItem }) {
-  const image =
-    pkg.image ||
-    'https://images.unsplash.com/photo-1513883049090-d0b7439799bf?auto=format&fit=crop&w=800&q=60';
-
-  const effectivePrice = discountedPrice(pkg.price, pkg.discountPercent);
+  const image = pkg.image || FALLBACK_IMAGE;
+  const effectivePrice = applyDiscount(pkg.price, pkg.discountPercent);
+  const includes = pkg.items
+    .slice(0, 3)
+    .map((it) => `${it.quantity}× ${it.name ?? 'gift'}`)
+    .join(' · ');
 
   return (
-    <div className="rounded-2xl border bg-white p-4">
-      <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-neutral-50">
-        <Image src={image} alt={pkg.name} fill className="object-cover" />
-      </div>
+    <article className="group flex flex-col">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--r-lg)] bg-surface">
+        <Link
+          href={`/packages/${pkg.id}`}
+          aria-label={`View ${pkg.name}`}
+          className="absolute inset-0"
+        >
+          <Image
+            src={image}
+            alt={pkg.name}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 320px"
+            className="object-cover transition-transform duration-700 ease-[var(--ease-out)] group-hover:scale-[1.04]"
+          />
+        </Link>
 
-      <div className="mt-4 space-y-2">
-        <div className="flex items-start justify-between gap-3">
-          <div className="text-sm font-semibold leading-5">{pkg.name}</div>
-          <div className="text-right">
-            <div className="text-sm font-semibold">${effectivePrice.toFixed(2)}</div>
-            {pkg.discountPercent ? (
-              <div className="text-xs text-neutral-600">{pkg.discountPercent}% off</div>
-            ) : null}
-          </div>
-        </div>
+        <Badge variant="blush" className="absolute top-3 left-3">
+          Gift package
+        </Badge>
 
-        <div className="text-sm text-neutral-600">
-          Includes:{' '}
-          {pkg.items.length > 0
-            ? pkg.items
-                .slice(0, 3)
-                .map((it) => `${it.quantity}× ${it.name ?? 'Item'}`)
-                .join(', ')
-            : '—'}
-        </div>
+        {pkg.discountPercent ? (
+          <Badge variant="claret" className="absolute top-3 right-3">
+            Save {pkg.discountPercent}%
+          </Badge>
+        ) : null}
 
-        <div className="flex items-center justify-between gap-3 pt-2">
-          <Link
-            href={`/packages/${pkg.id}`}
-            className="rounded-lg border px-3 py-2 text-sm hover:bg-neutral-50"
-          >
-            View
-          </Link>
+        <div className="absolute right-3 bottom-3 translate-y-1 opacity-0 transition-[opacity,transform] duration-300 ease-[var(--ease-out)] group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100">
           <AddToCartButton
+            variant="icon"
             item={{
               itemType: 'package',
               refId: pkg.id,
@@ -68,6 +65,35 @@ export function PackageCard({ pkg }: { pkg: PackageListItem }) {
           />
         </div>
       </div>
-    </div>
+
+      <div className="mt-3.5 flex flex-1 flex-col">
+        <h3 className="font-display text-[1.15rem] leading-snug">
+          <Link
+            href={`/packages/${pkg.id}`}
+            className="transition-colors hover:text-primary"
+          >
+            {pkg.name}
+          </Link>
+        </h3>
+        <span className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          <span className="text-[0.95rem] font-semibold text-ink">
+            {formatLkr(effectivePrice)}
+          </span>
+          {pkg.discountPercent ? (
+            <span className="text-xs text-faint line-through">
+              {formatLkr(pkg.price)}
+            </span>
+          ) : null}
+        </span>
+
+        <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">
+          {includes ? (
+            <>Includes {includes}</>
+          ) : (
+            'A curated bundle, ready to gift.'
+          )}
+        </p>
+      </div>
+    </article>
   );
 }
