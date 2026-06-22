@@ -152,16 +152,18 @@ function ImagesSection({
           {imagePreviews.map((src, idx) => (
             <div key={`${src}-${idx}`} className="group relative aspect-square overflow-hidden rounded-[var(--r)] border border-line bg-surface">
               <Image src={src} alt={imageFiles[idx]?.name ?? 'Selected image'} fill sizes="120px" className="object-cover" unoptimized />
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon-xs"
                 onClick={() => onRemove(idx)}
                 aria-label="Remove image"
-                className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-ink/70 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                className="absolute right-1.5 top-1.5 rounded-full bg-ink/70 text-white opacity-0 transition-opacity hover:bg-ink hover:text-white group-hover:opacity-100"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-3.5 w-3.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6 6 18" />
                 </svg>
-              </button>
+              </Button>
             </div>
           ))}
         </div>

@@ -8,7 +8,14 @@ import { PageHeader } from '@/components/page-header';
 import { ProductFilters } from '@/components/product-filters';
 import { Button } from '@/components/ui/button';
 
-export const metadata = { title: 'Shop all gifts' };
+export const metadata = {
+  title: 'Shop all gifts',
+  description:
+    'Browse every gift from The Moon Charm. Filter individual pieces by occasion, price, or search for something specific. Island-wide delivery across Sri Lanka.',
+  // Self-referencing canonical without query params so filtered/sorted views
+  // collapse to one indexable page.
+  alternates: { canonical: '/products' },
+};
 
 function getParam(searchParams: Record<string, string | string[] | undefined>, key: string) {
   const v = searchParams[key];

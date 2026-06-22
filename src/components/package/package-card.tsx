@@ -44,7 +44,7 @@ export function PackageCard({ pkg }: { pkg: PackageListItem }) {
           <Badge variant="claret" className="absolute right-3 top-3">Save {pkg.discountPercent}%</Badge>
         ) : null}
 
-        <div className="absolute bottom-3 right-3 translate-y-1 opacity-0 transition-all duration-300 ease-[var(--ease-out)] group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100">
+        <div className="absolute bottom-3 right-3 translate-y-1 opacity-0 transition-[opacity,transform] duration-300 ease-[var(--ease-out)] group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100">
           <AddToCartButton
             variant="icon"
             item={{ itemType: 'package', refId: pkg.id, name: pkg.name, image, unitPrice: effectivePrice }}

@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/cn';
+import { Button } from '@/components/ui/button';
 
 type ProductImageGalleryProps = {
   images: string[];
@@ -24,26 +25,30 @@ export function ProductImageGallery({ images, productName }: Readonly<ProductIma
   return (
     <div>
       <div className="group relative aspect-[4/5] overflow-hidden rounded-[var(--r-xl)] bg-surface">
-        <Image src={activeImage} alt={productName} fill priority sizes="(max-width: 768px) 100vw, 560px" className="object-cover" />
+        <Image key={activeIndex} src={activeImage} alt={productName} fill priority sizes="(max-width: 768px) 100vw, 560px" className="mc-image-in object-cover" />
 
         {hasMultiple ? (
           <>
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="icon"
               aria-label="Previous image"
               onClick={prev}
-              className="absolute left-3 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-line bg-bg/85 text-ink opacity-0 shadow-[var(--shadow-sm)] backdrop-blur-sm transition-all hover:bg-bg focus-visible:opacity-100 group-hover:opacity-100"
+              className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-bg/85 opacity-0 backdrop-blur-sm transition-[opacity,background-color,border-color] focus-visible:opacity-100 group-hover:opacity-100"
             >
               <Chevron dir="left" />
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="outline"
+              size="icon"
               aria-label="Next image"
               onClick={next}
-              className="absolute right-3 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-line bg-bg/85 text-ink opacity-0 shadow-[var(--shadow-sm)] backdrop-blur-sm transition-all hover:bg-bg focus-visible:opacity-100 group-hover:opacity-100"
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-bg/85 opacity-0 backdrop-blur-sm transition-[opacity,background-color,border-color] focus-visible:opacity-100 group-hover:opacity-100"
             >
               <Chevron dir="right" />
-            </button>
+            </Button>
           </>
         ) : null}
       </div>
@@ -51,19 +56,20 @@ export function ProductImageGallery({ images, productName }: Readonly<ProductIma
       {hasMultiple ? (
         <div className="mt-3 grid grid-cols-5 gap-2.5">
           {galleryImages.slice(0, 10).map((src, index) => (
-            <button
+            <Button
               key={`${src}-${index}`}
               type="button"
+              variant="ghost"
               onClick={() => setActiveIndex(index)}
               aria-label={`View image ${index + 1}`}
               aria-current={index === activeIndex}
               className={cn(
-                'relative aspect-square overflow-hidden rounded-[var(--r)] bg-surface transition',
+                'relative aspect-square h-auto overflow-hidden rounded-[var(--r)] bg-surface p-0 transition-[box-shadow,opacity] duration-200 hover:bg-surface',
                 index === activeIndex ? 'ring-2 ring-primary ring-offset-2 ring-offset-bg' : 'opacity-70 hover:opacity-100',
               )}
             >
               <Image src={src} alt={`${productName} ${index + 1}`} fill sizes="120px" className="object-cover" />
-            </button>
+            </Button>
           ))}
         </div>
       ) : null}

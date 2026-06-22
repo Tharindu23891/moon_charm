@@ -4,6 +4,7 @@ import { PageHeader } from '@/components/page-header';
 export const metadata = {
   title: 'Contact',
   description: 'Talk to The Moon Charm about custom gifts, packages, and occasions.',
+  alternates: { canonical: '/contact' },
 };
 
 const details = [

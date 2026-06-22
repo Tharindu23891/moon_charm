@@ -12,7 +12,12 @@ const sortOptions = [
   { value: 'price-desc', label: 'Price: high to low' },
 ];
 
-export const metadata = { title: 'Gift packages' };
+export const metadata = {
+  title: 'Gift packages',
+  description:
+    'Curated gift packages from The Moon Charm, hand-assembled and wrapped as one considered gift for birthdays, anniversaries, weddings, and more.',
+  alternates: { canonical: '/packages' },
+};
 
 export default async function PackagesPage({
   searchParams,

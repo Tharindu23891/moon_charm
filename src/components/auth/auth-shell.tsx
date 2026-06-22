@@ -31,7 +31,7 @@ export function AuthShell({
           />
           <div className="absolute inset-0 bg-gradient-to-t from-espresso/85 via-espresso/15 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 p-8">
-            <span className="h-8 w-8 text-honey"><MoonMark /></span>
+            <span className="inline-flex h-8 w-8 text-honey"><MoonMark /></span>
             <p className="mt-3 max-w-xs font-display text-[1.6rem] leading-snug text-on-dark">
               The best gifts feel like someone was paying attention.
             </p>

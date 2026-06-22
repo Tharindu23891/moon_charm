@@ -73,16 +73,18 @@ export default function CartPage() {
                         {it.itemType === 'package' ? 'Gift package' : 'Gift'}
                       </p>
                     </div>
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon-sm"
                       onClick={() => removeItem(it.refId)}
                       aria-label={`Remove ${it.name}`}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-surface hover:text-claret"
+                      className="rounded-full text-muted-foreground hover:text-claret"
                     >
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6L6 18" />
                       </svg>
-                    </button>
+                    </Button>
                   </div>
 
                   <div className="mt-auto flex items-end justify-between gap-3 pt-3">

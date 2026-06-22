@@ -139,7 +139,9 @@ export default function AdminPackagesPage() {
                   {form.items.map((it, idx) => (
                     <li key={idx} className="flex items-center justify-between gap-2 text-ink">
                       <span>{it.quantity}× {products.find((p) => p.id === it.productId)?.name ?? it.productId}</span>
-                      <button type="button" onClick={() => removeItem(idx)} aria-label="Remove item" className="text-faint transition-colors hover:text-claret">×</button>
+                      <Button type="button" variant="ghost" size="icon-xs" onClick={() => removeItem(idx)} aria-label="Remove item" className="rounded-full text-faint hover:text-claret">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-3.5 w-3.5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6 6 18" /></svg>
+                      </Button>
                     </li>
                   ))}
                 </ul>

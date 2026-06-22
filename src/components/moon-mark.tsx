@@ -1,20 +1,26 @@
 import { cn } from '@/lib/cn';
 
-/** The Moon Charm crescent, set inside a thin charm ring. Inherits currentColor. */
+/**
+ * The Moon Charm — a crescent moon set inside a fine charm ring with a single
+ * bead (brand mark, Direction A). Inherits currentColor: use text-primary on
+ * light surfaces, white on the primary/ink fills.
+ */
 export function MoonMark({ className }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 32 32"
+      viewBox="0 0 100 100"
       fill="none"
       aria-hidden="true"
       className={cn('h-full w-full', className)}
     >
-      <circle cx="16" cy="16" r="14.5" stroke="currentColor" strokeWidth="1" opacity="0.45" />
-      <path
-        d="M21.6 20.9a7.4 7.4 0 0 1-9.3-10.6 0.6 0.6 0 0 0-0.74-0.84A8.6 8.6 0 1 0 22.6 21.7a0.6 0.6 0 0 0-0.97-0.78z"
-        fill="currentColor"
-      />
-      <circle cx="22.3" cy="10.6" r="1.15" fill="currentColor" />
+      <circle className="mc-mark-ring" cx="50" cy="50" r="46" stroke="currentColor" strokeWidth="1.8" />
+      <mask id="moon-charm-crescent">
+        <rect width="100" height="100" fill="#000" />
+        <circle cx="49" cy="52" r="27" fill="#fff" />
+        <circle cx="61" cy="43" r="23" fill="#000" />
+      </mask>
+      <rect className="mc-mark-body" width="100" height="100" fill="currentColor" mask="url(#moon-charm-crescent)" />
+      <circle className="mc-mark-body" cx="67" cy="35" r="3.1" fill="currentColor" />
     </svg>
   );
 }

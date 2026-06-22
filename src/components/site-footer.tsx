@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { BrandName } from '@/components/brand-name';
 import { MoonMark } from '@/components/moon-mark';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 const shopLinks = [
   { href: '/products', label: 'All gifts' },
@@ -56,19 +58,14 @@ export function SiteFooter() {
               Seasonal arrivals and gifting ideas, a few times a year. Never noise.
             </p>
             <form className="mt-4 flex gap-2" aria-label="Newsletter signup">
-              <input
+              <Input
                 type="email"
                 required
                 placeholder="you@example.com"
                 aria-label="Email address"
-                className="h-11 w-full rounded-[var(--r)] border border-white/15 bg-white/5 px-3.5 text-sm text-on-dark placeholder:text-on-dark/45 outline-none transition focus:border-honey/60 focus:bg-white/10"
+                className="border-white/15 bg-white/5 text-on-dark placeholder:text-on-dark/45 shadow-none focus-visible:border-honey/60 focus-visible:ring-honey/25"
               />
-              <button
-                type="submit"
-                className="h-11 shrink-0 rounded-[var(--r)] bg-honey px-4 text-sm font-semibold text-espresso transition hover:brightness-105"
-              >
-                Join
-              </button>
+              <Button type="submit" className="h-11 shrink-0 bg-honey text-espresso hover:bg-honey/90">Join</Button>
             </form>
           </div>
         </div>

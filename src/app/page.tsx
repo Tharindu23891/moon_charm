@@ -12,6 +12,10 @@ import { MoonMark } from '@/components/moon-mark';
 import { OccasionTile } from '@/components/occasion-tile';
 import { Button } from '@/components/ui/button';
 
+export const metadata = {
+  alternates: { canonical: '/' },
+};
+
 const HERO_IMAGE =
   'https://images.unsplash.com/photo-1512909006721-3d6018887383?auto=format&fit=crop&w=1100&q=75';
 const STORY_IMAGE =
@@ -64,24 +68,24 @@ export default async function HomePage() {
       <section className="relative overflow-hidden">
         <div className="mc-container grid items-center gap-12 pb-14 pt-8 md:pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:pb-24">
           <div className="max-w-xl">
-            <span className="mc-eyebrow mc-animate-rise">A gift house · Sri Lanka</span>
-            <h1 className="mc-display mt-5 text-[clamp(2.75rem,6vw,5rem)] mc-animate-rise" style={{ animationDelay: '90ms' }}>
+            <span className="mc-eyebrow">A gift house · Sri Lanka</span>
+            <h1 className="mc-display mt-5 text-[clamp(2.75rem,6vw,5rem)] mc-animate-rise">
               Gifts made to be <span className="italic text-primary">remembered</span>.
             </h1>
-            <p className="mc-prose mt-6 text-[1.15rem] leading-relaxed text-muted-foreground mc-animate-rise" style={{ animationDelay: '180ms' }}>
+            <p className="mc-prose mt-6 text-[1.15rem] leading-relaxed text-muted-foreground mc-animate-rise" style={{ animationDelay: '70ms' }}>
               We assemble each package by hand and send it island-wide, so the thought you
               put in is exactly what arrives at the door.
             </p>
-            <div className="mt-9 flex flex-wrap items-center gap-3 mc-animate-rise" style={{ animationDelay: '270ms' }}>
+            <div className="mt-9 flex flex-wrap items-center gap-3">
               <Button asChild size="lg"><Link href="/products">Shop gifts</Link></Button>
               <Button asChild size="lg" variant="outline"><Link href="/packages">Explore gift packages</Link></Button>
             </div>
-            <p className="mt-7 text-sm text-faint mc-animate-rise" style={{ animationDelay: '360ms' }}>
+            <p className="mt-7 text-sm text-faint">
               Hand-wrapped · Gift note included · Delivered anywhere in Sri Lanka
             </p>
           </div>
 
-          <div className="relative mc-animate-rise" style={{ animationDelay: '200ms' }}>
+          <div className="relative mc-animate-rise" style={{ animationDelay: '120ms' }}>
             <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--r-xl)] bg-surface shadow-[var(--shadow-lg)]">
               <Image
                 src={HERO_IMAGE}

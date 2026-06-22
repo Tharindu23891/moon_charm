@@ -71,7 +71,7 @@ export function SiteNavbar() {
       <div className="mc-container flex h-[4.75rem] items-center justify-between gap-6">
         <Link href="/" className="group flex shrink-0 items-center gap-2.5" aria-label="The Moon Charm home">
           <span className="h-8 w-8 text-primary transition-transform duration-500 group-hover:-rotate-12">
-            <MoonMark />
+            <MoonMark className="mc-mark-draw" />
           </span>
           <BrandName noWrap className="text-[1.15rem] leading-none" />
         </Link>
@@ -99,7 +99,10 @@ export function SiteNavbar() {
               <circle cx="17.5" cy="20" r="1.4" />
             </svg>
             {count > 0 ? (
-              <span className="absolute right-0.5 top-0.5 inline-flex h-[1.1rem] min-w-[1.1rem] items-center justify-center rounded-full bg-claret px-1 text-[0.65rem] font-bold text-white">
+              <span
+                key={count}
+                className="mc-badge-in absolute right-0.5 top-0.5 inline-flex h-[1.1rem] min-w-[1.1rem] items-center justify-center rounded-full bg-claret px-1 text-[0.65rem] font-bold text-white"
+              >
                 {count}
               </span>
             ) : null}
@@ -192,13 +195,14 @@ export function SiteNavbar() {
                         <Link href="/admin" className="rounded-[var(--r)] px-3 py-2.5 text-[0.95rem] font-medium text-ink hover:bg-surface">Admin</Link>
                       </SheetClose>
                     ) : null}
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
                       onClick={() => { setMobileOpen(false); signOut({ callbackUrl: '/' }); }}
-                      className="rounded-[var(--r)] px-3 py-2.5 text-left text-[0.95rem] font-medium text-muted-foreground hover:bg-surface hover:text-ink"
+                      className="h-auto w-full justify-start rounded-[var(--r)] px-3 py-2.5 text-[0.95rem] font-medium text-muted-foreground hover:bg-surface hover:text-ink"
                     >
                       Sign out
-                    </button>
+                    </Button>
                   </>
                 )}
               </nav>

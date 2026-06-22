@@ -1,24 +1,73 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Suspense } from 'react';
+import { Suspense, cache } from 'react';
 import { connectToDatabase } from '@/lib/mongoose';
 import { Product } from '@/models/Product';
 import { ProductPurchasePanel } from '@/components/product/product-purchase-panel';
 import { ProductCard } from '@/components/product/product-card';
 import { ProductImageGallery } from '@/components/product/product-image-gallery';
 import { Breadcrumb } from '@/components/breadcrumb';
+import { JsonLd } from '@/components/json-ld';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { siteConfig, absoluteUrl } from '@/lib/site';
+
+// Cached so generateMetadata and the page body share one DB round-trip per
+// request instead of querying the same product twice.
+const getProduct = cache(async (id: string) => {
+  try {
+    await connectToDatabase();
+    return await Product.findById(id)
+      .select('name description shortDescription images price stock categoryId')
+      .populate({ path: 'categoryId', select: 'name slug' })
+      .lean();
+  } catch {
+    return null;
+  }
+});
+
+export async function generateMetadata({
+  params,
+}: Readonly<{ params: Promise<{ id: string }> }>): Promise<Metadata> {
+  const { id } = await params;
+  const product = (await getProduct(id)) as any;
+
+  if (!product) {
+    return { title: 'Gift not found', robots: { index: false, follow: true } };
+  }
+
+  const url = absoluteUrl(`/products/${id}`);
+  const description = (product.shortDescription || product.description || siteConfig.description)
+    .toString()
+    .slice(0, 200);
+  const image = product.images?.[0];
+
+  return {
+    title: product.name,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: 'website',
+      title: product.name,
+      description,
+      url,
+      ...(image ? { images: [{ url: image, alt: product.name }] } : {}),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: product.name,
+      description,
+      ...(image ? { images: [image] } : {}),
+    },
+  };
+}
 
 export default async function ProductDetailsPage({
   params,
 }: Readonly<{ params: Promise<{ id: string }> }>) {
   const { id } = await params;
 
-  await connectToDatabase();
-  const product = await Product.findById(id)
-    .select('name description shortDescription images price stock categoryId')
-    .populate({ path: 'categoryId', select: 'name slug' })
-    .lean();
+  const product = await getProduct(id);
 
   if (!product) {
     return (
@@ -34,9 +83,41 @@ export default async function ProductDetailsPage({
   const images: string[] = p.images ?? [];
   const heroImage = images[0] || 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=1200&q=70';
   const categoryId = p.categoryId?._id?.toString() as string | undefined;
+  const productUrl = absoluteUrl(`/products/${id}`);
+
+  const productLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: p.name,
+    description: p.shortDescription || p.description,
+    image: images.length > 0 ? images : [heroImage],
+    url: productUrl,
+    ...(p.categoryId?.name ? { category: p.categoryId.name } : {}),
+    offers: {
+      '@type': 'Offer',
+      url: productUrl,
+      priceCurrency: siteConfig.currency,
+      price: p.price,
+      availability:
+        p.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      seller: { '@id': absoluteUrl('/#organization') },
+    },
+  };
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: absoluteUrl('/') },
+      { '@type': 'ListItem', position: 2, name: 'Shop', item: absoluteUrl('/products') },
+      { '@type': 'ListItem', position: 3, name: p.name, item: productUrl },
+    ],
+  };
 
   return (
     <div className="mc-container py-8 md:py-12">
+      <JsonLd data={productLd} />
+      <JsonLd data={breadcrumbLd} />
       <Breadcrumb
         items={[{ href: '/', label: 'Home' }, { href: '/products', label: 'Shop' }, { label: p.name }]}
       />

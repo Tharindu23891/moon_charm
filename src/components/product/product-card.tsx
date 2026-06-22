@@ -44,7 +44,7 @@ export function ProductCard({ product }: Readonly<{ product: ProductListItem }>)
             Sold out
           </span>
         ) : (
-          <div className="absolute bottom-3 right-3 translate-y-1 opacity-0 transition-all duration-300 ease-[var(--ease-out)] group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100">
+          <div className="absolute bottom-3 right-3 translate-y-1 opacity-0 transition-[opacity,transform] duration-300 ease-[var(--ease-out)] group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100">
             <AddToCartButton
               variant="icon"
               item={{ itemType: 'product', refId: product.id, name: product.name, image, unitPrice: product.price }}
