@@ -6,16 +6,13 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useCart } from '@/components/cart/cart-context';
 import { formatLkr } from '@/lib/money';
-import { buildOrderWhatsAppMessage } from '@/lib/whatsapp-link';
 import { cn } from '@/lib/cn';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const checkoutSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
@@ -27,16 +24,9 @@ const checkoutSchema = z.object({
   state: z.string(),
   postalCode: z.string().min(1, 'Postal code is required'),
   country: z.string().min(1, 'Country is required'),
-  paymentMethod: z.enum(['cod', 'card', 'bank']),
 });
 
 type CheckoutValues = z.infer<typeof checkoutSchema>;
-
-const paymentMethods = [
-  { value: 'cod', label: 'Cash on delivery', hint: 'Pay when it arrives' },
-  { value: 'card', label: 'Card', hint: 'Pay securely by card' },
-  { value: 'bank', label: 'Bank transfer', hint: 'We’ll send details' },
-] as const;
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -63,7 +53,6 @@ export default function CheckoutPage() {
       state: '',
       postalCode: '',
       country: 'Sri Lanka',
-      paymentMethod: 'cod',
     },
   });
 
@@ -106,7 +95,7 @@ export default function CheckoutPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          paymentMethod: values.paymentMethod,
+          paymentMethod: 'bank',
           address: {
             fullName: values.fullName,
             email: values.email,
@@ -129,38 +118,14 @@ export default function CheckoutPage() {
         return;
       }
 
-      // Pre-build the WhatsApp message from the order while the cart is still
-      // populated, then stash it for the success page to open in WhatsApp.
-      const message = buildOrderWhatsAppMessage({
-        fullName: values.fullName,
-        phone: values.phone,
-        email: values.email,
-        paymentMethod: values.paymentMethod,
-        address: {
-          line1: values.line1,
-          line2: values.line2,
-          city: values.city,
-          state: values.state,
-          postalCode: values.postalCode,
-          country: values.country,
-        },
-        items: items.map((it) => ({
-          name: it.name,
-          quantity: it.quantity,
-          unitPrice: it.unitPrice,
-        })),
-        total: subtotal,
-      });
-      try {
-        sessionStorage.setItem('mc_order_wa', message);
-      } catch {
-        // sessionStorage can be unavailable (private mode); the success page
-        // falls back gracefully.
-      }
+      const { id } = (await orderRes.json().catch(() => ({}))) as {
+        id?: string;
+      };
 
       clear();
       toast.success('Order placed. Thank you.');
-      router.push('/checkout/success');
+      // Order page is the hub: bank details, receipt upload, and WhatsApp.
+      router.push(id ? `/orders/${id}?placed=1` : '/orders');
     } finally {
       setSubmitting(false);
     }
@@ -283,35 +248,14 @@ export default function CheckoutPage() {
 
           <fieldset>
             <legend className="font-display text-xl">Payment</legend>
-            <Controller
-              control={form.control}
-              name="paymentMethod"
-              render={({ field }) => (
-                <RadioGroup
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  className="mt-5 grid gap-3 sm:grid-cols-3"
-                >
-                  {paymentMethods.map((m) => (
-                    <Label
-                      key={m.value}
-                      htmlFor={`pay-${m.value}`}
-                      className="flex cursor-pointer flex-col items-start gap-1.5 rounded-[var(--r)] border border-line p-4 transition-colors hover:border-line-strong has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-blush/50 has-[[data-state=checked]]:ring-1 has-[[data-state=checked]]:ring-primary"
-                    >
-                      <span className="flex items-center gap-2">
-                        <RadioGroupItem id={`pay-${m.value}`} value={m.value} />
-                        <span className="text-sm font-semibold text-ink">
-                          {m.label}
-                        </span>
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {m.hint}
-                      </span>
-                    </Label>
-                  ))}
-                </RadioGroup>
-              )}
-            />
+            <div className="mt-5 rounded-[var(--r)] border border-line bg-surface p-5">
+              <p className="text-sm font-semibold text-ink">Bank transfer</p>
+              <p className="mt-1.5 text-sm text-muted-foreground">
+                After you place your order, we’ll show our bank account details
+                and a reference number. Make the transfer, then upload your
+                receipt on the order page and we’ll confirm it from our side.
+              </p>
+            </div>
           </fieldset>
         </div>
 

@@ -6,6 +6,8 @@ import { toast } from 'sonner';
 import { formatLkr } from '@/lib/money';
 import { AdminHeader, AdminPanel } from '@/components/admin/admin-ui';
 import { OrderStatusBadge } from '@/components/order-status-badge';
+import { PaymentStatusBadge } from '@/components/payment-status-badge';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -19,6 +21,7 @@ type Order = {
   status: string;
   paymentStatus: string;
   paymentMethod: string;
+  receiptUploaded: boolean;
   total: number;
   createdAt: string;
 };
@@ -71,18 +74,36 @@ export default function AdminOrdersPage() {
     load();
   }, [load]);
 
-  async function updateStatus(id: string, status: string) {
+  async function patchOrder(id: string, body: Record<string, string>) {
     const res = await fetch(`/api/admin/orders/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status }),
+      body: JSON.stringify(body),
     });
     if (!res.ok) {
       toast.error('Update failed');
-      return;
+      return false;
     }
-    toast.success('Order updated');
     await load();
+    return true;
+  }
+
+  async function updateStatus(id: string, status: string) {
+    if (await patchOrder(id, { status })) toast.success('Order updated');
+  }
+
+  async function approvePayment(id: string) {
+    if (await patchOrder(id, { paymentStatus: 'paid', status: 'confirmed' }))
+      toast.success('Payment approved');
+  }
+
+  async function rejectPayment(id: string) {
+    const note = window.prompt(
+      'Reason for rejecting this receipt? (optional, shown to the customer)',
+    );
+    if (note === null) return; // cancelled
+    if (await patchOrder(id, { paymentStatus: 'rejected', paymentNote: note }))
+      toast.success('Receipt rejected');
   }
 
   return (
@@ -122,13 +143,57 @@ export default function AdminOrdersPage() {
                       className="transition-colors hover:bg-surface/60"
                     >
                       <td className="px-5 py-3.5 font-medium text-ink">
-                        #{o.id.slice(-8)}
+                        <a
+                          href={`/orders/${o.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-primary hover:underline"
+                        >
+                          #{o.id.slice(-8).toUpperCase()}
+                        </a>
                       </td>
                       <td className="px-5 py-3.5">
                         <OrderStatusBadge status={o.status} />
                       </td>
-                      <td className="px-5 py-3.5 text-muted-foreground capitalize">
-                        {o.paymentStatus}
+                      <td className="px-5 py-3.5">
+                        <div className="flex flex-col items-start gap-2">
+                          <PaymentStatusBadge status={o.paymentStatus} />
+                          {o.receiptUploaded ? (
+                            <div className="flex flex-wrap items-center gap-2">
+                              <a
+                                href={`/api/orders/${o.id}/receipt`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs font-medium text-primary underline-offset-2 hover:underline"
+                              >
+                                View receipt
+                              </a>
+                              {o.paymentStatus !== 'paid' ? (
+                                <>
+                                  <Button
+                                    size="sm"
+                                    className="h-7 px-2.5 text-xs"
+                                    onClick={() => approvePayment(o.id)}
+                                  >
+                                    Approve
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-7 px-2.5 text-xs"
+                                    onClick={() => rejectPayment(o.id)}
+                                  >
+                                    Reject
+                                  </Button>
+                                </>
+                              ) : null}
+                            </div>
+                          ) : (
+                            <span className="text-xs text-faint">
+                              No receipt yet
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-5 py-3.5 text-right text-ink tabular-nums">
                         {formatLkr(Number(o.total))}

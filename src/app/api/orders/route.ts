@@ -4,6 +4,9 @@ import { ensureDatabase } from '@/lib/api';
 import { getSessionUser, requireUser } from '@/lib/server-auth';
 import { Cart } from '@/models/Cart';
 import { Order } from '@/models/Order';
+import { sendOwnerEmail } from '@/lib/mailer';
+import { formatLkr } from '@/lib/money';
+import { siteConfig } from '@/lib/site';
 
 const placeOrderSchema = z.object({
   paymentMethod: z.enum(['cod', 'card', 'bank']),
@@ -41,6 +44,7 @@ export async function GET() {
       status: o.status,
       paymentStatus: o.paymentStatus,
       paymentMethod: o.paymentMethod,
+      receiptUploaded: Boolean(o.receiptUploaded),
       total: o.total,
       createdAt: o.createdAt,
     })),
@@ -100,6 +104,45 @@ export async function POST(req: Request) {
     { $set: { items: [] } },
     { upsert: true },
   );
+
+  // Alert the shop owner that a new order came in, so they don't have to watch
+  // the admin dashboard. Best-effort: never fail the order over a notification.
+  const ref = `#${order._id.toString().slice(-8).toUpperCase()}`;
+  const { address } = parsed.data;
+  try {
+    await sendOwnerEmail(
+      `New order ${ref} — ${formatLkr(total)}`,
+      [
+        `A new order was just placed.`,
+        '',
+        `Order: ${ref}`,
+        `Customer: ${address.fullName} (${address.phone})`,
+        `Email: ${address.email}`,
+        '',
+        'Items:',
+        ...items.map((it) => `- ${it.quantity}x ${it.name}`),
+        '',
+        `Total: ${formatLkr(total)}`,
+        `Payment: Bank transfer (awaiting receipt)`,
+        '',
+        'Deliver to:',
+        [
+          address.line1,
+          address.line2,
+          address.city,
+          address.state,
+          address.postalCode,
+          address.country,
+        ]
+          .filter(Boolean)
+          .join(', '),
+        '',
+        `Review it: ${siteConfig.url}/admin/orders`,
+      ].join('\n'),
+    );
+  } catch (err) {
+    console.error('[orders] owner email failed:', err);
+  }
 
   return NextResponse.json({ id: order._id.toString() }, { status: 201 });
 }

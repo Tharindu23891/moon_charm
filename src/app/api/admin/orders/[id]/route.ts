@@ -16,7 +16,10 @@ const updateOrderSchema = z
         'cancelled',
       ])
       .optional(),
-    paymentStatus: z.enum(['unpaid', 'paid', 'refunded']).optional(),
+    paymentStatus: z
+      .enum(['unpaid', 'under_review', 'paid', 'rejected', 'refunded'])
+      .optional(),
+    paymentNote: z.string().max(300).optional(),
   })
   .refine((v) => Object.keys(v).length > 0, { message: 'No fields' });
 

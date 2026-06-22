@@ -33,6 +33,15 @@ export const siteConfig = {
   ],
 } as const;
 
+// Bank transfer details shown to customers at checkout. TODO: replace these
+// placeholders with the real account before going live.
+export const bankDetails = {
+  bankName: 'Bank of Ceylon',
+  accountName: 'The Moon Charm',
+  accountNumber: '0000 0000 0000',
+  branch: 'Kuliyapitiya',
+} as const;
+
 /** Build an absolute URL from a site-relative path. */
 export function absoluteUrl(path = '/') {
   return new URL(path, siteConfig.url).toString();

@@ -4,6 +4,7 @@ import { getSessionUser } from '@/lib/server-auth';
 import { Order } from '@/models/Order';
 import { formatLkr } from '@/lib/money';
 import { OrderStatusBadge } from '@/components/order-status-badge';
+import { PaymentStatusBadge } from '@/components/payment-status-badge';
 import { Button } from '@/components/ui/button';
 
 export const metadata = { title: 'Your orders' };
@@ -79,14 +80,19 @@ export default async function OrdersPage() {
                     key={o._id.toString()}
                     className="transition-colors hover:bg-surface/60"
                   >
-                    <td className="px-5 py-4 font-medium text-ink">
-                      #{o._id.toString().slice(-8)}
+                    <td className="px-5 py-4 font-medium">
+                      <Link
+                        href={`/orders/${o._id.toString()}`}
+                        className="text-primary underline-offset-2 hover:underline"
+                      >
+                        #{o._id.toString().slice(-8).toUpperCase()}
+                      </Link>
                     </td>
                     <td className="px-5 py-4">
                       <OrderStatusBadge status={o.status} />
                     </td>
-                    <td className="px-5 py-4 text-muted-foreground capitalize">
-                      {o.paymentStatus}
+                    <td className="px-5 py-4">
+                      <PaymentStatusBadge status={o.paymentStatus} />
                     </td>
                     <td className="px-5 py-4 font-semibold text-ink">
                       {formatLkr(Number(o.total))}

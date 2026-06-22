@@ -6,10 +6,12 @@ import { formatLkr } from '@/lib/money';
 // Nothing here is secret: the number is public and the link is client-side.
 
 export type OrderForWhatsApp = {
+  reference?: string;
   fullName: string;
   phone: string;
   email: string;
   paymentMethod: 'cod' | 'card' | 'bank';
+  receiptStatus?: string;
   address: {
     line1: string;
     line2?: string;
@@ -30,12 +32,9 @@ const paymentLabels: Record<string, string> = {
 
 export function buildOrderWhatsAppMessage(order: OrderForWhatsApp): string {
   const { address: addr } = order;
-  const lines = [
-    'Hi The Moon Charm! I’d like to confirm my order 🌙',
-    '',
-    `Name: ${order.fullName}`,
-    `Phone: ${order.phone}`,
-  ];
+  const lines = ['Hi The Moon Charm! I’d like to confirm my order 🌙', ''];
+  if (order.reference) lines.push(`Order: ${order.reference}`);
+  lines.push(`Name: ${order.fullName}`, `Phone: ${order.phone}`);
   if (order.email) lines.push(`Email: ${order.email}`);
   lines.push('', 'Items:');
   for (const it of order.items) {
@@ -47,6 +46,9 @@ export function buildOrderWhatsAppMessage(order: OrderForWhatsApp): string {
     '',
     `Total: ${formatLkr(order.total)}`,
     `Payment: ${paymentLabels[order.paymentMethod] ?? order.paymentMethod}`,
+  );
+  if (order.receiptStatus) lines.push(`Receipt: ${order.receiptStatus}`);
+  lines.push(
     '',
     'Deliver to:',
     [addr.line1, addr.line2].filter(Boolean).join(', '),
