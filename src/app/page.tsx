@@ -328,7 +328,7 @@ export default async function HomePage() {
                 <figure className="flex h-full flex-col">
                   <span
                     aria-hidden
-                    className="font-display text-5xl leading-none text-honey"
+                    className="font-display text-5xl leading-none text-primary"
                   >
                     “
                   </span>

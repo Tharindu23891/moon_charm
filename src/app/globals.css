@@ -3,53 +3,55 @@
 
 /* =========================================================================
    The Moon Charm — design tokens
-   Warm, romantic, editorial luxury. Bright canvas; warmth from brand + image.
+   Deep-indigo "blue" identity, drawn from the logo ground (#190D61). Bright
+   canvas; the blue carries through ink, surfaces, buttons + dark sections,
+   with a sparing champagne-gold accent on the indigo grounds.
    ========================================================================= */
 
 @theme {
-  /* Brand surfaces, ink, lines (OKLCH) */
+  /* Brand surfaces, ink, lines (OKLCH) — cool, faintly blue-tinted neutrals */
   --color-bg: oklch(1 0 0);
-  --color-surface: oklch(0.976 0.008 75);
-  --color-surface-warm: oklch(0.955 0.013 70);
-  --color-ink: oklch(0.22 0.012 60);
-  --color-faint: oklch(0.54 0.015 60);
-  --color-line: oklch(0.9 0.008 70);
-  --color-line-strong: oklch(0.84 0.01 65);
+  --color-surface: oklch(0.977 0.006 280);
+  --color-surface-warm: oklch(0.957 0.012 278);
+  --color-ink: oklch(0.23 0.04 280);
+  --color-faint: oklch(0.52 0.035 280);
+  --color-line: oklch(0.905 0.013 280);
+  --color-line-strong: oklch(0.84 0.02 280);
 
-  /* Warm dark ground (footer, dark sections) + text on it */
-  --color-espresso: oklch(0.255 0.03 58);
-  --color-on-dark: oklch(0.95 0.011 80);
+  /* Deep-indigo dark ground (footer, dark sections) + text on it */
+  --color-espresso: oklch(0.225 0.1 278);
+  --color-on-dark: oklch(0.96 0.012 285);
 
   /* Brand accents */
-  --color-honey: oklch(0.8 0.14 72);
-  --color-claret: oklch(0.4 0.125 16);
-  --color-claret-hover: oklch(0.34 0.12 16);
-  --color-blush: oklch(0.945 0.022 24);
-  --color-success: oklch(0.5 0.09 140);
+  --color-honey: oklch(0.72 0.15 256); /* light sky-blue accent (was champagne gold) */
+  --color-claret: oklch(0.46 0.19 277); /* royal-indigo secondary accent */
+  --color-claret-hover: oklch(0.4 0.18 277);
+  --color-blush: oklch(0.93 0.03 274); /* pale blue mist tint */
+  --color-success: oklch(0.52 0.1 150);
   --color-danger: oklch(0.52 0.17 25);
 
-  /* shadcn/ui token surface, themed to the brand. The mood lives in the
-     brand accents + imagery; shadcn's neutral roles map to our warm surfaces. */
+  /* shadcn/ui token surface, themed to the brand. shadcn's neutral roles map to
+     our cool surfaces; primary is the logo's deep indigo (#190D61). */
   --color-background: oklch(1 0 0);
-  --color-foreground: oklch(0.22 0.012 60);
+  --color-foreground: oklch(0.23 0.04 280);
   --color-card: oklch(1 0 0);
-  --color-card-foreground: oklch(0.22 0.012 60);
+  --color-card-foreground: oklch(0.23 0.04 280);
   --color-popover: oklch(1 0 0);
-  --color-popover-foreground: oklch(0.22 0.012 60);
-  --color-primary: oklch(0.5 0.115 54);
-  --color-primary-foreground: oklch(0.99 0.005 80);
-  --color-primary-hover: oklch(0.44 0.115 52);
-  --color-secondary: oklch(0.976 0.008 75);
-  --color-secondary-foreground: oklch(0.22 0.012 60);
-  --color-muted: oklch(0.976 0.008 75);
-  --color-muted-foreground: oklch(0.44 0.016 55);
-  --color-accent: oklch(0.976 0.008 75);
-  --color-accent-foreground: oklch(0.22 0.012 60);
+  --color-popover-foreground: oklch(0.23 0.04 280);
+  --color-primary: oklch(0.546 0.245 262.881); /* vivid blue #155dfc */
+  --color-primary-foreground: oklch(0.99 0.01 255);
+  --color-primary-hover: oklch(0.48 0.235 263);
+  --color-secondary: oklch(0.977 0.006 280);
+  --color-secondary-foreground: oklch(0.23 0.04 280);
+  --color-muted: oklch(0.977 0.006 280);
+  --color-muted-foreground: oklch(0.5 0.03 280);
+  --color-accent: oklch(0.957 0.012 278);
+  --color-accent-foreground: oklch(0.23 0.04 280);
   --color-destructive: oklch(0.52 0.17 25);
-  --color-destructive-foreground: oklch(0.99 0.005 80);
-  --color-border: oklch(0.9 0.008 70);
-  --color-input: oklch(0.84 0.01 65);
-  --color-ring: oklch(0.5 0.115 54);
+  --color-destructive-foreground: oklch(0.99 0.005 280);
+  --color-border: oklch(0.905 0.013 280);
+  --color-input: oklch(0.84 0.02 280);
+  --color-ring: oklch(0.546 0.245 262.881);
 
   /* Type families (wired to next/font variables in layout.tsx) */
   --font-sans:
@@ -79,9 +81,9 @@
   /* shadcn radius base */
   --radius: 0.625rem;
 
-  --shadow-sm: 0 1px 2px rgb(54 38 22 / 0.05);
-  --shadow: 0 6px 24px rgb(54 38 22 / 0.07);
-  --shadow-lg: 0 18px 48px rgb(54 38 22 / 0.1);
+  --shadow-sm: 0 1px 2px rgb(20 16 70 / 0.06);
+  --shadow: 0 6px 24px rgb(20 16 70 / 0.08);
+  --shadow-lg: 0 18px 48px rgb(20 16 70 / 0.12);
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
@@ -203,6 +205,15 @@
     opacity: 0.6;
   }
 
+  /* Eyebrow placed over a dark / photographic background */
+  .mc-eyebrow.is-on-dark {
+    color: var(--color-on-dark);
+  }
+
+  .mc-eyebrow.is-on-dark::before {
+    background: var(--color-on-dark);
+  }
+
   /* Form label (paired with shadcn Input/Textarea/Select) */
   .mc-label {
     display: block;
@@ -218,6 +229,27 @@
     background-color: var(--color-bg);
     border: 1px solid var(--color-line);
     box-shadow: var(--shadow-sm);
+  }
+
+  /* Subtle hover lift for standalone cards. Uses the standalone `translate`
+     property so it never competes with the reveal's transform animation. */
+  .mc-lift {
+    transition:
+      translate 0.35s var(--ease-out),
+      box-shadow 0.35s var(--ease-out),
+      border-color 0.35s var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .mc-lift:hover {
+      translate: 0 -6px;
+      box-shadow: var(--shadow-lg);
+      border-color: color-mix(
+        in oklab,
+        var(--color-primary) 30%,
+        var(--color-line)
+      );
+    }
   }
 
   /* Hairline divider, optionally honey-tinted */
@@ -287,6 +319,17 @@
       opacity: 1;
       transform: none;
     }
+
+    /* Story image: settles out of a gentle zoom as its reveal enters view. */
+    .js-reveal .mc-story-img {
+      transform: scale(1.08);
+      transition: transform 0.9s var(--ease-out);
+      will-change: transform;
+    }
+
+    .js-reveal .mc-reveal.is-visible .mc-story-img {
+      transform: scale(1);
+    }
   }
 
   @keyframes mc-rise {
@@ -302,6 +345,31 @@
 
   .mc-animate-rise {
     animation: mc-rise 0.34s var(--ease-out) both;
+  }
+
+  /* Staggered entrance for hero copy (eyebrow → heading → lede). */
+  .mc-rise-1 {
+    animation: mc-rise 0.5s var(--ease-out) 0.05s both;
+  }
+  .mc-rise-2 {
+    animation: mc-rise 0.5s var(--ease-out) 0.16s both;
+  }
+  .mc-rise-3 {
+    animation: mc-rise 0.5s var(--ease-out) 0.27s both;
+  }
+
+  /* Cinematic hero: the background photo settles out of a slow zoom on load. */
+  @keyframes mc-hero-zoom {
+    from {
+      transform: scale(1.08);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  .mc-hero-img {
+    animation: mc-hero-zoom 1.8s var(--ease-out) both;
   }
 
   /* Crossfade for the product gallery's main image (keyed on active index). */
@@ -339,15 +407,6 @@
   /* One-shot "draw-on" of the moon mark on first load (brand signature moment).
      Plays once; persists across client-side navigation because the navbar lives
      in the root layout and never remounts. */
-  @keyframes mc-mark-ring {
-    from {
-      stroke-dashoffset: 290;
-    }
-    to {
-      stroke-dashoffset: 0;
-    }
-  }
-
   @keyframes mc-mark-fill {
     from {
       opacity: 0;
@@ -357,22 +416,27 @@
     }
   }
 
-  .mc-mark-draw .mc-mark-ring {
-    stroke-dasharray: 290;
-    animation: mc-mark-ring 1s var(--ease-out) both;
-  }
-
   .mc-mark-draw .mc-mark-body {
-    animation: mc-mark-fill 0.55s var(--ease-out) 0.45s both;
+    animation: mc-mark-fill 0.7s var(--ease-out) 0.05s both;
   }
 
   @media (prefers-reduced-motion: reduce) {
     .mc-animate-rise,
+    .mc-rise-1,
+    .mc-rise-2,
+    .mc-rise-3,
+    .mc-hero-img,
     .mc-image-in,
     .mc-badge-in,
-    .mc-mark-draw .mc-mark-ring,
     .mc-mark-draw .mc-mark-body {
       animation: none;
+    }
+
+    .mc-lift {
+      transition: none;
+    }
+    .mc-lift:hover {
+      translate: 0;
     }
 
     html {

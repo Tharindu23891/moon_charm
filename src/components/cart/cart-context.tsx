@@ -96,6 +96,7 @@ export function CartProvider({
         return;
       }
 
+      let message = 'Added to cart';
       setItems((prev) => {
         let foundIndex = -1;
         for (let index = 0; index < prev.length; index += 1) {
@@ -106,11 +107,10 @@ export function CartProvider({
         }
 
         if (foundIndex === -1) {
-          toast.success('Added to cart');
           return [...prev, { ...item, quantity }];
         }
 
-        toast.success('Updated cart quantity');
+        message = 'Updated cart quantity';
         const next = prev.slice();
         const existing = next[foundIndex];
         next[foundIndex] = {
@@ -119,6 +119,7 @@ export function CartProvider({
         };
         return next;
       });
+      toast.success(message);
     },
     [canAddToCart],
   );

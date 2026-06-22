@@ -47,18 +47,16 @@ export function AboutHero() {
         fill
         priority
         sizes="100vw"
-        className="object-cover"
+        className="mc-hero-img object-cover"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-espresso via-espresso/55 to-espresso/10" />
       <div className="mc-container relative pt-28 pb-14 md:pb-20">
-        <div className="mc-animate-rise max-w-2xl">
-          <span className="mc-eyebrow text-honey before:bg-honey">
-            Our story
-          </span>
-          <h1 className="mt-5 font-display text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.02] text-on-dark">
+        <div className="max-w-2xl">
+          <span className="mc-rise-1 mc-eyebrow is-on-dark">Our story</span>
+          <h1 className="mc-rise-2 mt-5 font-display text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.02] text-on-dark">
             Made by hand, in Kuliyapitiya
           </h1>
-          <p className="mt-5 max-w-xl text-[1.1rem] leading-relaxed text-on-dark/80">
+          <p className="mc-rise-3 mt-5 max-w-xl text-[1.1rem] leading-relaxed text-on-dark/80">
             The Moon Charm is a small gift house with an old-fashioned belief: a
             gift should feel like the person who sent it was thinking of you.
           </p>
@@ -72,27 +70,29 @@ export function StorySection() {
   return (
     <section className="mc-container mc-section">
       <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-        <Reveal className="order-2 lg:order-1">
-          <h2 className="text-[clamp(1.8rem,3.5vw,2.6rem)] leading-tight">
-            It started at a kitchen table
-          </h2>
+        <div className="order-2 lg:order-1">
+          <Reveal>
+            <h2 className="text-[clamp(1.8rem,3.5vw,2.6rem)] leading-tight">
+              It started at a kitchen table
+            </h2>
+          </Reveal>
           <div className="mc-prose mt-5 space-y-4 text-[1.05rem] leading-relaxed text-muted-foreground">
-            <p>
+            <Reveal as="p" delay={120}>
               The first gifts were chocolate bouquets, wrapped late at night for
               friends’ birthdays. People kept asking where they came from. They
               came from a table in Kuliyapitiya, and a little stubbornness about
               getting the details right.
-            </p>
-            <p>
+            </Reveal>
+            <Reveal as="p" delay={220}>
               That has not changed. A person still chooses the pieces, folds the
               paper, ties the ribbon, and writes your note. Nothing is
               mass-produced, and nothing is rushed out the door.
-            </p>
-            <p>
+            </Reveal>
+            <Reveal as="p" delay={320}>
               When it arrives, it looks like someone cared. Because someone did.
-            </p>
+            </Reveal>
           </div>
-        </Reveal>
+        </div>
         <Reveal className="order-1 lg:order-2">
           <div className="relative aspect-[5/4] overflow-hidden rounded-[var(--r-xl)] bg-surface shadow-[var(--shadow)]">
             <Image
@@ -100,7 +100,7 @@ export function StorySection() {
               alt="Hands presenting a gift wrapped in brown paper"
               fill
               sizes="(max-width: 1024px) 100vw, 560px"
-              className="object-cover"
+              className="mc-story-img object-cover"
             />
           </div>
         </Reveal>
@@ -120,11 +120,17 @@ export function ValuesSection() {
         </Reveal>
         <div className="mt-10 grid gap-px overflow-hidden rounded-[var(--r-lg)] border border-line bg-line sm:grid-cols-3">
           {values.map((v, i) => (
-            <Reveal key={v.title} delay={i * 90} className="bg-bg p-7 md:p-8">
-              <span className="inline-block h-7 w-7 text-honey">
+            <Reveal
+              key={v.title}
+              delay={i * 90}
+              className="group bg-bg p-7 md:p-8"
+            >
+              <span className="inline-block h-7 w-7 text-primary transition-transform duration-300 ease-out group-hover:-rotate-6 group-hover:scale-110">
                 <MoonMark />
               </span>
-              <h3 className="mt-5 font-display text-xl">{v.title}</h3>
+              <h3 className="mt-5 font-display text-xl transition-colors duration-300 group-hover:text-primary">
+                {v.title}
+              </h3>
               <p className="mt-2 text-[0.95rem] leading-relaxed text-muted-foreground">
                 {v.body}
               </p>
@@ -140,23 +146,24 @@ export function MissionVisionSection() {
   return (
     <section className="mc-container mc-section">
       <div className="grid gap-6 md:grid-cols-2 md:gap-8">
-        <Reveal className="rounded-[var(--r-lg)] border border-line bg-surface p-8 md:p-10">
-          <span className="mc-eyebrow">Mission</span>
-          <p className="mt-5 font-display text-[1.45rem] leading-snug text-ink">
-            To make giving feel personal again. We curate and assemble gifts
-            that carry real thought, and deliver them with the care we would
-            want for our own.
-          </p>
+        <Reveal>
+          <div className="mc-lift h-full rounded-[var(--r-lg)] border border-line bg-surface p-8 md:p-10">
+            <span className="mc-eyebrow">Mission</span>
+            <p className="mt-5 font-display text-[1.45rem] leading-snug text-ink">
+              To make giving feel personal again. We curate and assemble gifts
+              that carry real thought, and deliver them with the care we would
+              want for our own.
+            </p>
+          </div>
         </Reveal>
-        <Reveal
-          delay={90}
-          className="rounded-[var(--r-lg)] border border-line bg-surface p-8 md:p-10"
-        >
-          <span className="mc-eyebrow">Vision</span>
-          <p className="mt-5 font-display text-[1.45rem] leading-snug text-ink">
-            To be the gift house Sri Lanka trusts for the moments that matter,
-            known less for what we sell than for how it makes people feel.
-          </p>
+        <Reveal delay={90}>
+          <div className="mc-lift h-full rounded-[var(--r-lg)] border border-line bg-surface p-8 md:p-10">
+            <span className="mc-eyebrow">Vision</span>
+            <p className="mt-5 font-display text-[1.45rem] leading-snug text-ink">
+              To be the gift house Sri Lanka trusts for the moments that matter,
+              known less for what we sell than for how it makes people feel.
+            </p>
+          </div>
         </Reveal>
       </div>
     </section>
@@ -178,13 +185,13 @@ export function MomentsGallery() {
             delay={i * 90}
             className={i === 0 ? 'col-span-2 md:col-span-1' : ''}
           >
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--r-lg)] bg-surface">
+            <div className="group relative aspect-[4/5] overflow-hidden rounded-[var(--r-lg)] bg-surface">
               <Image
                 src={m.src}
                 alt={m.alt}
                 fill
                 sizes="(max-width: 768px) 100vw, 360px"
-                className="object-cover"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
               />
             </div>
           </Reveal>
@@ -199,7 +206,7 @@ export function AboutCTA() {
     <section className="mc-container mc-section pt-0">
       <Reveal>
         <div className="flex flex-col items-center gap-6 rounded-[var(--r-xl)] bg-espresso px-6 py-14 text-center text-on-dark">
-          <span className="h-9 w-9 text-honey">
+          <span className="h-9 w-9 text-primary">
             <MoonMark />
           </span>
           <h2 className="max-w-xl text-[clamp(1.7rem,3vw,2.4rem)] leading-tight text-on-dark">
@@ -210,11 +217,7 @@ export function AboutCTA() {
             you.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Button
-              asChild
-              size="lg"
-              className="bg-honey text-espresso hover:bg-honey/90"
-            >
+            <Button asChild size="lg">
               <Link href="/products">Shop gifts</Link>
             </Button>
             <Link

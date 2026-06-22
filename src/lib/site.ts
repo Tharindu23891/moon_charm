@@ -16,6 +16,9 @@ export const siteConfig = {
   locale: 'en_LK',
   currency: 'LKR',
   twitter: '@themooncharm',
+  // WhatsApp number in wa.me format: country code + number, digits only, no "+".
+  // whatsapp: '94781769568', // original public number (+94 78 176 95 68) — uncomment to revert
+  whatsapp: '94703495386', // temporary: 070 349 5386
   keywords: [
     'gift shop Sri Lanka',
     'gift packages',

@@ -24,7 +24,7 @@ export function SiteFooter() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2.5">
-              <span className="h-7 w-7 text-honey">
+              <span className="h-7 w-7 text-primary">
                 <MoonMark />
               </span>
               <BrandName noWrap className="text-[1.2rem]" />
@@ -78,11 +78,11 @@ export function SiteFooter() {
                 required
                 placeholder="you@example.com"
                 aria-label="Email address"
-                className="border-white/15 bg-white/5 text-on-dark shadow-none placeholder:text-on-dark/45 focus-visible:border-honey/60 focus-visible:ring-honey/25"
+                className="border-white/15 bg-white/5 text-on-dark shadow-none placeholder:text-on-dark/45 focus-visible:border-primary focus-visible:ring-primary/30"
               />
               <Button
                 type="submit"
-                className="h-11 shrink-0 bg-honey text-espresso hover:bg-honey/90"
+                className="h-11 shrink-0"
               >
                 Join
               </Button>
@@ -159,7 +159,7 @@ function Social({
     <a
       href={href}
       aria-label={label}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-on-dark/75 transition-colors hover:border-honey/50 hover:text-honey"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-on-dark/75 transition-colors hover:border-primary hover:text-primary"
     >
       <svg
         viewBox="0 0 24 24"

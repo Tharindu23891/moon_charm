@@ -1,14 +1,9 @@
 import { NextResponse } from 'next/server';
-import { z } from 'zod';
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
+import { contactSchema } from '@/lib/contact-schema';
 
-const contactSchema = z.object({
-  name: z.string().min(1).max(120),
-  email: z.string().email(),
-  phone: z.string().max(40).optional().default(''),
-  eventDate: z.string().max(60).optional().default(''),
-  message: z.string().min(5).max(2000),
-});
+// Nodemailer needs the Node.js runtime (it opens an SMTP socket), not Edge.
+export const runtime = 'nodejs';
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
@@ -17,18 +12,20 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.RESEND_FROM_EMAIL;
-  const toEmail = process.env.RESEND_TO_EMAIL;
+  const gmailUser = process.env.GMAIL_USER;
+  // Google shows App Passwords in spaced groups ("abcd efgh ..."); the spaces
+  // are display-only, so strip them in case they were pasted in.
+  const gmailPassword = process.env.GMAIL_APP_PASSWORD?.replace(/\s+/g, '');
+  // Defaults to the authenticated inbox if no separate recipient is set.
+  const toEmail = process.env.CONTACT_TO_EMAIL || gmailUser;
 
-  if (!apiKey || !fromEmail || !toEmail) {
+  if (!gmailUser || !gmailPassword) {
     return NextResponse.json(
       { error: 'Email service is not configured' },
       { status: 500 },
     );
   }
 
-  const resend = new Resend(apiKey);
   const { name, email, phone, eventDate, message } = parsed.data;
 
   const text = [
@@ -41,10 +38,20 @@ export async function POST(req: Request) {
     message,
   ].join('\n');
 
+  // Gmail SMTP. Auth uses an App Password (Google account needs 2FA enabled).
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: { user: gmailUser, pass: gmailPassword },
+  });
+
   try {
-    await resend.emails.send({
-      from: fromEmail,
-      to: [toEmail],
+    await transporter.sendMail({
+      // Gmail forces the From to the authenticated account, so we keep the
+      // address as gmailUser and only set a friendly display name.
+      from: `The Moon Charm <${gmailUser}>`,
+      to: toEmail,
       replyTo: email,
       subject: `New contact request from ${name}`,
       text,

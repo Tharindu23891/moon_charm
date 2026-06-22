@@ -88,7 +88,7 @@ export default async function ProfilePage() {
         href="/products"
         className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-ink"
       >
-        <span className="h-5 w-5 text-honey">
+        <span className="h-5 w-5 text-primary">
           <MoonMark />
         </span>
         Continue shopping

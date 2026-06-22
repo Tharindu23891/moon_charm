@@ -1,113 +1,162 @@
 'use client';
 
-import { useState } from 'react';
-import { cn } from '@/lib/cn';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+
+import { contactSchema, type ContactValues } from '@/lib/contact-schema';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 
-type SubmitStatus = 'idle' | 'loading' | 'success' | 'error';
+const labelClass = 'text-[0.82rem] font-semibold text-ink';
 
 export function ContactForm() {
-  const [status, setStatus] = useState<SubmitStatus>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
+  const form = useForm<ContactValues>({
+    resolver: zodResolver(contactSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      phone: '',
+      eventDate: '',
+      message: '',
+    },
+  });
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setStatus('loading');
-    setErrorMessage('');
-
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-    const payload = {
-      name: String(formData.get('name') ?? ''),
-      email: String(formData.get('email') ?? ''),
-      phone: String(formData.get('phone') ?? ''),
-      eventDate: String(formData.get('eventDate') ?? ''),
-      message: String(formData.get('message') ?? ''),
-    };
-
+  async function onSubmit(values: ContactValues) {
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(values),
       });
+
       if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        throw new Error(data?.error ?? 'Unable to send your message.');
+        const message =
+          (await response.json().catch(() => null))?.error ??
+          'Unable to send your message.';
+        toast.error(message);
+        return;
       }
-      setStatus('success');
+
+      toast.success('Thank you. We’ll be in touch within a day.');
       form.reset();
-    } catch (error) {
-      setStatus('error');
-      setErrorMessage(
-        error instanceof Error ? error.message : 'Something went wrong.',
-      );
+    } catch {
+      toast.error('Something went wrong. Please try again.');
     }
-  };
+  }
 
   return (
-    <form className="grid gap-4" onSubmit={handleSubmit}>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block">
-          <span className="mc-label">Your name</span>
-          <Input type="text" autoComplete="name" name="name" required />
-        </label>
-        <label className="block">
-          <span className="mc-label">
-            Phone <span className="font-normal text-faint">(optional)</span>
-          </span>
-          <Input type="tel" autoComplete="tel" name="phone" />
-        </label>
-      </div>
-      <label className="block">
-        <span className="mc-label">Email</span>
-        <Input type="email" autoComplete="email" name="email" required />
-      </label>
-      <label className="block">
-        <span className="mc-label">
-          Occasion date{' '}
-          <span className="font-normal text-faint">(optional)</span>
-        </span>
-        <Input
-          type="text"
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="grid gap-4"
+        noValidate
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className={labelClass}>Your name</FormLabel>
+                <FormControl>
+                  <Input type="text" autoComplete="name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className={labelClass}>
+                  Phone{' '}
+                  <span className="font-normal text-faint">(optional)</span>
+                </FormLabel>
+                <FormControl>
+                  <Input type="tel" autoComplete="tel" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className={labelClass}>Email</FormLabel>
+              <FormControl>
+                <Input type="email" autoComplete="email" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="eventDate"
-          placeholder="e.g. 14 February, or “next week”"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className={labelClass}>
+                Occasion date{' '}
+                <span className="font-normal text-faint">(optional)</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  placeholder="e.g. 14 February, or “next week”"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </label>
-      <label className="block">
-        <span className="mc-label">Tell us about the occasion</span>
-        <Textarea
-          className="min-h-[130px]"
+
+        <FormField
+          control={form.control}
           name="message"
-          required
-          placeholder="Who is it for, the feeling you’re after, any budget in mind…"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className={labelClass}>
+                Tell us about the occasion
+              </FormLabel>
+              <FormControl>
+                <Textarea
+                  className="min-h-[130px]"
+                  placeholder="Who is it for, the feeling you’re after, any budget in mind…"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </label>
 
-      <Button
-        type="submit"
-        size="lg"
-        className="mt-1 self-start"
-        disabled={status === 'loading'}
-      >
-        {status === 'loading' ? 'Sending…' : 'Send your message'}
-      </Button>
-
-      <p
-        aria-live="polite"
-        className={cn(
-          'text-sm',
-          status === 'success' && 'text-[var(--color-success)]',
-          status === 'error' && 'text-danger',
-        )}
-      >
-        {status === 'success'
-          ? 'Thank you. We’ll be in touch within a day.'
-          : null}
-        {status === 'error' ? errorMessage : null}
-      </p>
-    </form>
+        <Button
+          type="submit"
+          size="lg"
+          className="mt-1 self-start"
+          disabled={form.formState.isSubmitting}
+        >
+          {form.formState.isSubmitting ? 'Sending…' : 'Send your message'}
+        </Button>
+      </form>
+    </Form>
   );
 }

@@ -10,6 +10,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useCart } from '@/components/cart/cart-context';
 import { formatLkr } from '@/lib/money';
+import { buildOrderWhatsAppMessage } from '@/lib/whatsapp-link';
 import { cn } from '@/lib/cn';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -128,9 +129,38 @@ export default function CheckoutPage() {
         return;
       }
 
+      // Pre-build the WhatsApp message from the order while the cart is still
+      // populated, then stash it for the success page to open in WhatsApp.
+      const message = buildOrderWhatsAppMessage({
+        fullName: values.fullName,
+        phone: values.phone,
+        email: values.email,
+        paymentMethod: values.paymentMethod,
+        address: {
+          line1: values.line1,
+          line2: values.line2,
+          city: values.city,
+          state: values.state,
+          postalCode: values.postalCode,
+          country: values.country,
+        },
+        items: items.map((it) => ({
+          name: it.name,
+          quantity: it.quantity,
+          unitPrice: it.unitPrice,
+        })),
+        total: subtotal,
+      });
+      try {
+        sessionStorage.setItem('mc_order_wa', message);
+      } catch {
+        // sessionStorage can be unavailable (private mode); the success page
+        // falls back gracefully.
+      }
+
       clear();
       toast.success('Order placed. Thank you.');
-      router.push('/orders');
+      router.push('/checkout/success');
     } finally {
       setSubmitting(false);
     }

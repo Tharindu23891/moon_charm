@@ -7,7 +7,7 @@ export function OccasionTile({ name, slug }: { name: string; slug: string }) {
       href={`/products?category=${encodeURIComponent(slug)}`}
       className="group flex min-h-[160px] flex-col justify-between rounded-[var(--r-lg)] border border-line bg-bg p-6 transition-[transform,border-color,box-shadow] duration-300 ease-[var(--ease-out)] hover:-translate-y-1 hover:border-line-strong hover:shadow-[var(--shadow)]"
     >
-      <span className="h-6 w-6 text-honey transition-transform duration-500 group-hover:-rotate-12">
+      <span className="h-6 w-6 text-primary transition-transform duration-500 group-hover:-rotate-12">
         <MoonMark />
       </span>
       <div>

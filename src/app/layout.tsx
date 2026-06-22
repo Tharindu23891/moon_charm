@@ -135,7 +135,7 @@ export default function RootLayout({
             <SiteFooter />
           </div>
           <Toaster
-            position="top-center"
+            position="bottom-right"
             toastOptions={{
               style: {
                 background: 'var(--color-bg)',
