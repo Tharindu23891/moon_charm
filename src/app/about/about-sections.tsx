@@ -1,27 +1,11 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { Reveal } from '@/components/reveal';
+import { Stagger, StaggerItem } from '@/components/motion/stagger';
 import { MoonMark } from '@/components/moon-mark';
+import { CharmArt, type CharmArtVariant } from '@/components/art/charm-art';
 import { Button } from '@/components/ui/button';
 
-const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1457089328109-e5d9bd499191?auto=format&fit=crop&w=1800&q=75';
-const STORY_IMAGE =
-  'https://images.unsplash.com/photo-1512909006721-3d6018887383?auto=format&fit=crop&w=1100&q=75';
-const MOMENTS = [
-  {
-    src: 'https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?auto=format&fit=crop&w=800&q=75',
-    alt: 'Two ceramic vases with a sprig of blossom',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=75',
-    alt: 'A long table dressed with flowers for a celebration',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?auto=format&fit=crop&w=800&q=75',
-    alt: 'A bouquet of peach roses and dried flowers',
-  },
-];
+const MOMENTS: CharmArtVariant[] = ['moment-1', 'moment-2', 'moment-3'];
 
 const values = [
   {
@@ -40,27 +24,30 @@ const values = [
 
 export function AboutHero() {
   return (
-    <section className="relative flex min-h-[58vh] items-end overflow-hidden">
-      <Image
-        src={HERO_IMAGE}
-        alt="Warm roses in soft afternoon light"
-        fill
-        priority
-        sizes="100vw"
-        className="mc-hero-img object-cover"
-      />
+    <section className="relative flex min-h-[58vh] items-end overflow-hidden bg-espresso">
+      <div className="mc-art-drift absolute inset-0">
+        <CharmArt variant="hero-wide" className="h-full w-full" />
+      </div>
       <div className="absolute inset-0 bg-gradient-to-t from-espresso via-espresso/55 to-espresso/10" />
       <div className="mc-container relative pt-28 pb-14 md:pb-20">
-        <div className="max-w-2xl">
-          <span className="mc-rise-1 mc-eyebrow is-on-dark">Our story</span>
-          <h1 className="mc-rise-2 mt-5 font-display text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.02] text-on-dark">
+        <Stagger className="max-w-2xl">
+          <StaggerItem as="span" className="mc-eyebrow is-on-dark block">
+            Our story
+          </StaggerItem>
+          <StaggerItem
+            as="h1"
+            className="mt-5 font-display text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.02] text-on-dark"
+          >
             Made by hand, in Kuliyapitiya
-          </h1>
-          <p className="mc-rise-3 mt-5 max-w-xl text-[1.1rem] leading-relaxed text-on-dark/80">
+          </StaggerItem>
+          <StaggerItem
+            as="p"
+            className="mt-5 max-w-xl text-[1.1rem] leading-relaxed text-on-dark/80"
+          >
             The Moon Charm is a small gift house with an old-fashioned belief: a
             gift should feel like the person who sent it was thinking of you.
-          </p>
-        </div>
+          </StaggerItem>
+        </Stagger>
       </div>
     </section>
   );
@@ -94,14 +81,8 @@ export function StorySection() {
           </div>
         </div>
         <Reveal className="order-1 lg:order-2">
-          <div className="relative aspect-[5/4] overflow-hidden rounded-[var(--r-xl)] bg-surface shadow-[var(--shadow)]">
-            <Image
-              src={STORY_IMAGE}
-              alt="Hands presenting a gift wrapped in brown paper"
-              fill
-              sizes="(max-width: 1024px) 100vw, 560px"
-              className="mc-story-img object-cover"
-            />
+          <div className="relative aspect-[5/4] overflow-hidden rounded-[var(--r-xl)] bg-espresso shadow-[var(--shadow)]">
+            <CharmArt variant="story" className="absolute inset-0" />
           </div>
         </Reveal>
       </div>
@@ -179,19 +160,16 @@ export function MomentsGallery() {
         </h2>
       </Reveal>
       <div className="mt-9 grid grid-cols-2 gap-4 md:grid-cols-3">
-        {MOMENTS.map((m, i) => (
+        {MOMENTS.map((variant, i) => (
           <Reveal
-            key={m.src}
+            key={variant}
             delay={i * 90}
             className={i === 0 ? 'col-span-2 md:col-span-1' : ''}
           >
-            <div className="group relative aspect-[4/5] overflow-hidden rounded-[var(--r-lg)] bg-surface">
-              <Image
-                src={m.src}
-                alt={m.alt}
-                fill
-                sizes="(max-width: 768px) 100vw, 360px"
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+            <div className="group relative aspect-[4/5] overflow-hidden rounded-[var(--r-lg)] bg-espresso">
+              <CharmArt
+                variant={variant}
+                className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-[1.06]"
               />
             </div>
           </Reveal>

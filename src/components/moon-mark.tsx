@@ -4,8 +4,9 @@ import { cn } from '@/lib/cn';
  * The Moon Charm brand mark — the butterfly + calligraphic "T" monogram lifted
  * from the master logo (vectorised from public/logo.jpeg). Inherits
  * currentColor: use text-primary on light surfaces, text-on-dark / white on the
- * deep-indigo grounds. The single path carries the .mc-mark-body hook so the
- * navbar's one-shot reveal (.mc-mark-draw) still plays.
+ * deep-indigo grounds. Kept a pure (server) SVG so it stays cheap to reuse
+ * everywhere; the navbar's one-shot intro is applied with Motion at that call
+ * site rather than baked in here.
  */
 export function MoonMark({ className }: { className?: string }) {
   return (

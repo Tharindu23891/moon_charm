@@ -1,75 +1,46 @@
 'use client';
 
-import { useEffect, useRef, useState, type ElementType } from 'react';
-import { cn } from '@/lib/cn';
+import { type ReactNode } from 'react';
+import { useReducedMotion } from 'motion/react';
+import { motionTags, type MotionTag } from '@/components/motion/tags';
+import { enterHidden, enterShown, revealSpring } from '@/components/motion/transitions';
 
 type RevealProps = {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   /** Stagger delay in milliseconds. */
   delay?: number;
   /** Element to render. Defaults to a div. */
-  as?: ElementType;
+  as?: MotionTag;
 };
 
 /**
- * Reveals its children with a gentle fade-and-rise as they scroll into view.
+ * Reveals its children with a gentle fade-rise-and-focus as they scroll into
+ * view: opacity + translateY + a small blur that resolves, so content
+ * "materialises" rather than just fading. Plays once.
  *
- * The motion is purely additive: content is visible by default (see `.mc-reveal`
- * in globals.css, which only hides under `.js-reveal` set by the inline script in
- * the root layout, and never under reduced-motion). If JS never runs, the observer
- * never fires, or the user prefers reduced motion, the content simply shows.
+ * Reduced-motion users get the final state immediately with no animation (the
+ * content renders in place), so nothing is ever hidden behind motion they have
+ * asked not to see.
  */
-export function Reveal({ children, className, delay = 0, as }: RevealProps) {
-  const Tag = (as ?? 'div') as ElementType;
-  const ref = useRef<HTMLElement>(null);
-  const [shown, setShown] = useState(false);
+export function Reveal({ children, className, delay = 0, as = 'div' }: RevealProps) {
+  const reduce = useReducedMotion();
+  const MotionTag = motionTags[as];
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const reduce =
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (reduce || typeof IntersectionObserver === 'undefined') {
-      setShown(true);
-      return;
-    }
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setShown(true);
-            io.disconnect();
-            break;
-          }
-        }
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
-    );
-
-    io.observe(el);
-    // Safety net: if the observer never fires (background tab, odd renderer),
-    // reveal anyway so nothing ships blank.
-    const fallback = window.setTimeout(() => setShown(true), 1600);
-
-    return () => {
-      io.disconnect();
-      window.clearTimeout(fallback);
-    };
-  }, []);
+  if (reduce) {
+    const Tag = as;
+    return <Tag className={className}>{children}</Tag>;
+  }
 
   return (
-    <Tag
-      ref={ref}
-      data-reveal=""
-      className={cn('mc-reveal', shown && 'is-visible', className)}
-      style={delay ? { transitionDelay: `${delay}ms` } : undefined}
+    <MotionTag
+      className={className}
+      initial={enterHidden}
+      whileInView={enterShown}
+      viewport={{ once: true, amount: 0.15, margin: '0px 0px -8% 0px' }}
+      transition={{ ...revealSpring, delay: delay / 1000 }}
     >
       {children}
-    </Tag>
+    </MotionTag>
   );
 }

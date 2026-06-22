@@ -1,11 +1,8 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { MoonMark } from '@/components/moon-mark';
 import { BrandName } from '@/components/brand-name';
+import { CharmArt } from '@/components/art/charm-art';
 import { Button } from '@/components/ui/button';
-
-const AUTH_IMAGE =
-  'https://images.unsplash.com/photo-1487530811176-3780de880c2d?auto=format&fit=crop&w=900&q=75';
 
 export function AuthShell({
   title,
@@ -21,14 +18,8 @@ export function AuthShell({
   return (
     <div className="mc-container py-12 md:py-16">
       <div className="mx-auto grid max-w-5xl overflow-hidden rounded-[var(--r-xl)] border border-line shadow-[var(--shadow)] lg:grid-cols-2">
-        <div className="relative hidden min-h-[600px] lg:block">
-          <Image
-            src={AUTH_IMAGE}
-            alt="A bouquet of peach roses and dried flowers"
-            fill
-            sizes="50vw"
-            className="object-cover"
-          />
+        <div className="relative hidden min-h-[600px] bg-espresso lg:block">
+          <CharmArt variant="hero" className="absolute inset-0" />
           <div className="absolute inset-0 bg-gradient-to-t from-espresso/85 via-espresso/15 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 p-8">
             <span className="inline-flex h-8 w-8 text-primary">

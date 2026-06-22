@@ -4,10 +4,12 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
+import { motion } from 'motion/react';
 import { Menu } from 'lucide-react';
 import { useCart } from '@/components/cart/cart-context';
 import { BrandName } from '@/components/brand-name';
 import { MoonMark } from '@/components/moon-mark';
+import { popSpring, easeOut } from '@/components/motion/transitions';
 import { cn } from '@/lib/cn';
 import { Button } from '@/components/ui/button';
 import {
@@ -79,7 +81,14 @@ export function SiteNavbar() {
           aria-label="The Moon Charm home"
         >
           <span className="h-8 w-8 text-primary transition-transform duration-500 group-hover:-rotate-12">
-            <MoonMark className="mc-mark-draw" />
+            <motion.span
+              className="block h-full w-full"
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: easeOut }}
+            >
+              <MoonMark />
+            </motion.span>
           </span>
           <BrandName noWrap className="text-[1.15rem] leading-none" />
         </Link>
@@ -124,12 +133,17 @@ export function SiteNavbar() {
               <circle cx="17.5" cy="20" r="1.4" />
             </svg>
             {count > 0 ? (
-              <span
+              // Keyed on count so it re-mounts and re-pops each time the count
+              // changes — clear feedback that an item landed in the cart.
+              <motion.span
                 key={count}
-                className="mc-badge-in absolute top-0.5 right-0.5 inline-flex h-[1.1rem] min-w-[1.1rem] items-center justify-center rounded-full bg-claret px-1 text-[0.65rem] font-bold text-white"
+                className="absolute top-0.5 right-0.5 inline-flex h-[1.1rem] min-w-[1.1rem] items-center justify-center rounded-full bg-claret px-1 text-[0.65rem] font-bold text-white"
+                initial={{ scale: 0.6, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={popSpring}
               >
                 {count}
-              </span>
+              </motion.span>
             ) : null}
           </Link>
 

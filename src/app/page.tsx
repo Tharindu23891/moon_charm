@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { connectToDatabase } from '@/lib/mongoose';
 import { Category } from '@/models/Category';
@@ -8,18 +7,15 @@ import { ProductCard } from '@/components/product/product-card';
 import { PackageCard } from '@/components/package/package-card';
 import { SectionHeading } from '@/components/section-heading';
 import { Reveal } from '@/components/reveal';
+import { Stagger, StaggerItem } from '@/components/motion/stagger';
 import { MoonMark } from '@/components/moon-mark';
 import { OccasionTile } from '@/components/occasion-tile';
+import { CharmArt } from '@/components/art/charm-art';
 import { Button } from '@/components/ui/button';
 
 export const metadata = {
   alternates: { canonical: '/' },
 };
-
-const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1512909006721-3d6018887383?auto=format&fit=crop&w=1100&q=75';
-const STORY_IMAGE =
-  'https://images.unsplash.com/photo-1487530811176-3780de880c2d?auto=format&fit=crop&w=1100&q=75';
 
 const trustPoints = [
   'Hand-assembled packages',
@@ -78,46 +74,41 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="mc-container grid items-center gap-12 pt-8 pb-14 md:pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:pb-24">
-          <div className="max-w-xl">
-            <span className="mc-eyebrow">A gift house · Sri Lanka</span>
-            <h1 className="mc-display mc-animate-rise mt-5 text-[clamp(2.75rem,6vw,5rem)]">
+          <Stagger className="max-w-xl">
+            <StaggerItem as="span" className="mc-eyebrow block">
+              A gift house · Sri Lanka
+            </StaggerItem>
+            <StaggerItem
+              as="h1"
+              className="mc-display mt-5 text-[clamp(2.75rem,6vw,5rem)]"
+            >
               Gifts made to be{' '}
               <span className="text-primary italic">remembered</span>.
-            </h1>
-            <p
-              className="mc-prose mc-animate-rise mt-6 text-[1.15rem] leading-relaxed text-muted-foreground"
-              style={{ animationDelay: '70ms' }}
+            </StaggerItem>
+            <StaggerItem
+              as="p"
+              className="mc-prose mt-6 text-[1.15rem] leading-relaxed text-muted-foreground"
             >
               We assemble each package by hand and send it island-wide, so the
               thought you put in is exactly what arrives at the door.
-            </p>
-            <div className="mt-9 flex flex-wrap items-center gap-3">
+            </StaggerItem>
+            <StaggerItem className="mt-9 flex flex-wrap items-center gap-3">
               <Button asChild size="lg">
                 <Link href="/products">Shop gifts</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link href="/packages">Explore gift packages</Link>
               </Button>
-            </div>
-            <p className="mt-7 text-sm text-faint">
+            </StaggerItem>
+            <StaggerItem as="p" className="mt-7 text-sm text-faint">
               Hand-wrapped · Gift note included · Delivered anywhere in Sri
               Lanka
-            </p>
-          </div>
+            </StaggerItem>
+          </Stagger>
 
-          <div
-            className="mc-animate-rise relative"
-            style={{ animationDelay: '120ms' }}
-          >
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--r-xl)] bg-surface shadow-[var(--shadow-lg)]">
-              <Image
-                src={HERO_IMAGE}
-                alt="Hands presenting a gift wrapped in brown paper and ribbon"
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 520px"
-                className="object-cover"
-              />
+          <Reveal className="relative" delay={200}>
+            <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--r-xl)] bg-espresso shadow-[var(--shadow-lg)]">
+              <CharmArt variant="hero" className="absolute inset-0" />
             </div>
             <div className="absolute -bottom-5 left-5 hidden items-center gap-3 rounded-[var(--r)] border border-line bg-bg px-4 py-3 shadow-[var(--shadow)] sm:flex">
               <span className="h-7 w-7 text-primary">
@@ -132,7 +123,7 @@ export default async function HomePage() {
                 </p>
               </div>
             </div>
-          </div>
+          </Reveal>
         </div>
 
         {/* Trust strip */}
@@ -296,14 +287,8 @@ export default async function HomePage() {
           </Reveal>
 
           <Reveal className="order-1 lg:order-2">
-            <div className="relative aspect-[5/4] overflow-hidden rounded-[var(--r-xl)] bg-surface shadow-[var(--shadow)]">
-              <Image
-                src={STORY_IMAGE}
-                alt="A romantic bouquet of peach roses and dried flowers"
-                fill
-                sizes="(max-width: 1024px) 100vw, 560px"
-                className="object-cover"
-              />
+            <div className="relative aspect-[5/4] overflow-hidden rounded-[var(--r-xl)] bg-espresso shadow-[var(--shadow)]">
+              <CharmArt variant="story" className="absolute inset-0" />
             </div>
           </Reveal>
         </div>

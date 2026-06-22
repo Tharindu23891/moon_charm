@@ -2,7 +2,9 @@
 
 import { useMemo, useState } from 'react';
 import Image from 'next/image';
+import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/cn';
+import { easeOut } from '@/components/motion/transitions';
 import { Button } from '@/components/ui/button';
 
 type ProductImageGalleryProps = {
@@ -34,15 +36,28 @@ export function ProductImageGallery({
   return (
     <div>
       <div className="group relative aspect-[4/5] overflow-hidden rounded-[var(--r-xl)] bg-surface">
-        <Image
-          key={activeIndex}
-          src={activeImage}
-          alt={productName}
-          fill
-          priority
-          sizes="(max-width: 768px) 100vw, 560px"
-          className="mc-image-in object-cover"
-        />
+        {/* Crossfade: the entering frame settles out of a slight zoom while the
+            previous one fades beneath it. Exit is opacity-only (subtler than
+            the enter), so attention follows the arriving image. */}
+        <AnimatePresence initial={false}>
+          <motion.div
+            key={activeIndex}
+            className="absolute inset-0"
+            initial={{ opacity: 0, scale: 1.03 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35, ease: easeOut }}
+          >
+            <Image
+              src={activeImage}
+              alt={productName}
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 560px"
+              className="object-cover"
+            />
+          </motion.div>
+        </AnimatePresence>
 
         {hasMultiple ? (
           <>

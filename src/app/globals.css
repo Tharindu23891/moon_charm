@@ -299,144 +299,52 @@
     max-width: 68ch;
   }
 
-  /* Reveal-on-scroll. Visible by default; only hidden when JS has flagged
-     `.js-reveal` on <html> AND the user has not asked for reduced motion. */
-  .mc-reveal {
-    opacity: 1;
+  /* Scroll reveals, hero orchestration, image zoom-settles, the cart-badge pop
+     and the navbar mark intro are all Motion-driven now (see
+     src/components/motion + Reveal). Motion honours prefers-reduced-motion via
+     <MotionConfig reducedMotion="user"> plus per-primitive skips. CSS keeps the
+     hover lift below, which is cheaper and interruptible as a state transition. */
+
+  /* House artwork (src/components/art): a gentle, low-amplitude twinkle on a
+     few stars/sparkles and a slow ken-burns drift on the wide hero. Both are
+     purely decorative and switch off under prefers-reduced-motion. */
+  .mc-tw {
+    animation: mc-twinkle var(--tw-dur, 5s) ease-in-out infinite;
+    animation-delay: var(--tw-delay, 0s);
   }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .js-reveal .mc-reveal {
-      opacity: 0;
-      transform: translateY(16px);
-      transition:
-        opacity 0.5s var(--ease-out),
-        transform 0.5s var(--ease-out);
-      will-change: opacity, transform;
+  .mc-art-drift {
+    animation: mc-art-drift 34s ease-in-out infinite alternate;
+    transform-origin: center;
+  }
+  @keyframes mc-twinkle {
+    0%,
+    100% {
+      opacity: var(--tw-min, 0.4);
     }
-
-    .js-reveal .mc-reveal.is-visible {
+    50% {
       opacity: 1;
-      transform: none;
     }
-
-    /* Story image: settles out of a gentle zoom as its reveal enters view. */
-    .js-reveal .mc-story-img {
-      transform: scale(1.08);
-      transition: transform 0.9s var(--ease-out);
-      will-change: transform;
-    }
-
-    .js-reveal .mc-reveal.is-visible .mc-story-img {
+  }
+  @keyframes mc-art-drift {
+    from {
       transform: scale(1);
     }
-  }
-
-  @keyframes mc-rise {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
     to {
-      opacity: 1;
-      transform: none;
+      transform: scale(1.07);
     }
-  }
-
-  .mc-animate-rise {
-    animation: mc-rise 0.34s var(--ease-out) both;
-  }
-
-  /* Staggered entrance for hero copy (eyebrow → heading → lede). */
-  .mc-rise-1 {
-    animation: mc-rise 0.5s var(--ease-out) 0.05s both;
-  }
-  .mc-rise-2 {
-    animation: mc-rise 0.5s var(--ease-out) 0.16s both;
-  }
-  .mc-rise-3 {
-    animation: mc-rise 0.5s var(--ease-out) 0.27s both;
-  }
-
-  /* Cinematic hero: the background photo settles out of a slow zoom on load. */
-  @keyframes mc-hero-zoom {
-    from {
-      transform: scale(1.08);
-    }
-    to {
-      transform: scale(1);
-    }
-  }
-
-  .mc-hero-img {
-    animation: mc-hero-zoom 1.8s var(--ease-out) both;
-  }
-
-  /* Crossfade for the product gallery's main image (keyed on active index). */
-  @keyframes mc-image-in {
-    from {
-      opacity: 0;
-      transform: scale(1.03);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
-  .mc-image-in {
-    animation: mc-image-in 0.28s var(--ease-out) both;
-  }
-
-  /* Pop-in for the cart count badge (keyed on count, so it replays on change). */
-  @keyframes mc-badge-in {
-    from {
-      opacity: 0;
-      transform: scale(0.6);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
-  .mc-badge-in {
-    animation: mc-badge-in 0.22s var(--ease-out) both;
-  }
-
-  /* One-shot "draw-on" of the moon mark on first load (brand signature moment).
-     Plays once; persists across client-side navigation because the navbar lives
-     in the root layout and never remounts. */
-  @keyframes mc-mark-fill {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  .mc-mark-draw .mc-mark-body {
-    animation: mc-mark-fill 0.7s var(--ease-out) 0.05s both;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .mc-animate-rise,
-    .mc-rise-1,
-    .mc-rise-2,
-    .mc-rise-3,
-    .mc-hero-img,
-    .mc-image-in,
-    .mc-badge-in,
-    .mc-mark-draw .mc-mark-body {
-      animation: none;
-    }
-
     .mc-lift {
       transition: none;
     }
     .mc-lift:hover {
       translate: 0;
+    }
+
+    .mc-tw,
+    .mc-art-drift {
+      animation: none;
     }
 
     html {

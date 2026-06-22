@@ -110,10 +110,6 @@ const websiteLd = {
   },
 };
 
-// Flag reveal animations only when JS runs and motion is welcome. Runs before
-// paint so revealed content never flashes; without it, content stays visible.
-const revealFlag = `try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('js-reveal')}}catch(e){}`;
-
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -125,7 +121,6 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
     >
       <body>
-        <script dangerouslySetInnerHTML={{ __html: revealFlag }} />
         <JsonLd data={organizationLd} />
         <JsonLd data={websiteLd} />
         <Providers>
