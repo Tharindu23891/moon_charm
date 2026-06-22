@@ -10,7 +10,13 @@ type QuantityStepperProps = Readonly<{
   disabled?: boolean;
 }>;
 
-export function QuantityStepper({ value, onChange, min = 1, max = 99, disabled }: QuantityStepperProps) {
+export function QuantityStepper({
+  value,
+  onChange,
+  min = 1,
+  max = 99,
+  disabled,
+}: QuantityStepperProps) {
   const set = (v: number) => onChange(Math.min(max, Math.max(min, v)));
 
   return (
@@ -26,7 +32,10 @@ export function QuantityStepper({ value, onChange, min = 1, max = 99, disabled }
       >
         −
       </Button>
-      <span className="min-w-10 text-center text-sm font-semibold tabular-nums" aria-live="polite">
+      <span
+        className="min-w-10 text-center text-sm font-semibold tabular-nums"
+        aria-live="polite"
+      >
         {value}
       </span>
       <Button

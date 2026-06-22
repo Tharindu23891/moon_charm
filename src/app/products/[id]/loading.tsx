@@ -8,7 +8,10 @@ export default function ProductDetailsLoading() {
           <div className="aspect-[4/5] animate-pulse rounded-[var(--r-xl)] bg-surface" />
           <div className="mt-3 grid grid-cols-5 gap-2.5">
             {[1, 2, 3, 4, 5].map((item) => (
-              <div key={item} className="aspect-square animate-pulse rounded-[var(--r)] bg-surface" />
+              <div
+                key={item}
+                className="aspect-square animate-pulse rounded-[var(--r)] bg-surface"
+              />
             ))}
           </div>
         </div>

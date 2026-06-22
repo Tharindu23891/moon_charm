@@ -5,11 +5,21 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { AdminHeader, AdminPanel, AdminField } from '@/components/admin/admin-ui';
+import {
+  AdminHeader,
+  AdminPanel,
+  AdminField,
+} from '@/components/admin/admin-ui';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 type Category = { id: string; name: string; slug: string };
 
@@ -48,15 +58,32 @@ function FieldsSection({
   return (
     <>
       <AdminField label="Name" error={fieldErrors.name}>
-        <Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
+        <Input
+          value={form.name}
+          onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+        />
       </AdminField>
 
-      <AdminField label="Short description" error={fieldErrors.shortDescription}>
-        <Input value={form.shortDescription} onChange={(e) => setForm((f) => ({ ...f, shortDescription: e.target.value }))} />
+      <AdminField
+        label="Short description"
+        error={fieldErrors.shortDescription}
+      >
+        <Input
+          value={form.shortDescription}
+          onChange={(e) =>
+            setForm((f) => ({ ...f, shortDescription: e.target.value }))
+          }
+        />
       </AdminField>
 
       <AdminField label="Full description" error={fieldErrors.description}>
-        <Textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} rows={6} />
+        <Textarea
+          value={form.description}
+          onChange={(e) =>
+            setForm((f) => ({ ...f, description: e.target.value }))
+          }
+          rows={6}
+        />
       </AdminField>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -79,18 +106,29 @@ function FieldsSection({
         </AdminField>
 
         <AdminField label="Quantity in stock" error={fieldErrors.stock}>
-          <Input type="number" min={0} step={1} value={form.stock} onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))} />
+          <Input
+            type="number"
+            min={0}
+            step={1}
+            value={form.stock}
+            onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))}
+          />
         </AdminField>
       </div>
 
       <AdminField label="Category" error={fieldErrors.categorySlug}>
-        <Select value={form.categorySlug || undefined} onValueChange={(v) => setForm((f) => ({ ...f, categorySlug: v }))}>
+        <Select
+          value={form.categorySlug || undefined}
+          onValueChange={(v) => setForm((f) => ({ ...f, categorySlug: v }))}
+        >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
           <SelectContent>
             {categories.map((c) => (
-              <SelectItem key={c.id} value={c.slug}>{c.name}</SelectItem>
+              <SelectItem key={c.id} value={c.slug}>
+                {c.name}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -127,11 +165,25 @@ function ImagesSection({
       </p>
 
       <label className="flex cursor-pointer flex-col items-center justify-center rounded-[var(--r)] border border-dashed border-line-strong bg-surface px-4 py-7 text-center transition-colors hover:border-primary">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-7 w-7 text-muted-foreground">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0L8 8m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          className="h-7 w-7 text-muted-foreground"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 16V4m0 0L8 8m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"
+          />
         </svg>
         <span className="mt-2 text-sm font-medium text-ink">Choose images</span>
-        <span className="text-xs text-faint">{imageFiles.length > 0 ? `${imageFiles.length} selected` : 'PNG or JPG'}</span>
+        <span className="text-xs text-faint">
+          {imageFiles.length > 0
+            ? `${imageFiles.length} selected`
+            : 'PNG or JPG'}
+        </span>
         <input
           ref={imageInputRef}
           type="file"
@@ -150,18 +202,38 @@ function ImagesSection({
       {imagePreviews.length > 0 ? (
         <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-5">
           {imagePreviews.map((src, idx) => (
-            <div key={`${src}-${idx}`} className="group relative aspect-square overflow-hidden rounded-[var(--r)] border border-line bg-surface">
-              <Image src={src} alt={imageFiles[idx]?.name ?? 'Selected image'} fill sizes="120px" className="object-cover" unoptimized />
+            <div
+              key={`${src}-${idx}`}
+              className="group relative aspect-square overflow-hidden rounded-[var(--r)] border border-line bg-surface"
+            >
+              <Image
+                src={src}
+                alt={imageFiles[idx]?.name ?? 'Selected image'}
+                fill
+                sizes="120px"
+                className="object-cover"
+                unoptimized
+              />
               <Button
                 type="button"
                 variant="ghost"
                 size="icon-xs"
                 onClick={() => onRemove(idx)}
                 aria-label="Remove image"
-                className="absolute right-1.5 top-1.5 rounded-full bg-ink/70 text-white opacity-0 transition-opacity hover:bg-ink hover:text-white group-hover:opacity-100"
+                className="absolute top-1.5 right-1.5 rounded-full bg-ink/70 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-ink hover:text-white"
               >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-3.5 w-3.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6 6 18" />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="h-3.5 w-3.5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 6l12 12M18 6 6 18"
+                  />
                 </svg>
               </Button>
             </div>
@@ -173,7 +245,9 @@ function ImagesSection({
 }
 
 function mergeImageFiles(existing: File[], added: File[]) {
-  const seen = new Set(existing.map((f) => `${f.name}:${f.size}:${f.lastModified}`));
+  const seen = new Set(
+    existing.map((f) => `${f.name}:${f.size}:${f.lastModified}`),
+  );
   const merged = [...existing];
   for (const f of added) {
     const key = `${f.name}:${f.size}:${f.lastModified}`;
@@ -203,7 +277,14 @@ function getNextAfterUnauthorized(mode: 'create' | 'edit', productId?: string) {
 }
 
 function getDefaultFormState(): FormState {
-  return { name: '', shortDescription: '', description: '', price: '0.00', stock: '0', categorySlug: '' };
+  return {
+    name: '',
+    shortDescription: '',
+    description: '',
+    price: '0.00',
+    stock: '0',
+    categorySlug: '',
+  };
 }
 
 function computeCanSubmit(form: FormState) {
@@ -227,10 +308,14 @@ function computeFieldErrors(form: FormState, submitAttempted: boolean) {
   const stock = Number(form.stock);
   const errors: Record<string, string> = {};
   if (!form.name.trim()) errors.name = 'Name is required.';
-  if (!form.shortDescription.trim()) errors.shortDescription = 'Short description is required.';
-  if (!form.description.trim()) errors.description = 'Full description is required.';
-  if (!Number.isFinite(price) || price < 0) errors.price = 'Enter a valid price.';
-  if (!Number.isInteger(stock) || stock < 0) errors.stock = 'Quantity must be a whole number.';
+  if (!form.shortDescription.trim())
+    errors.shortDescription = 'Short description is required.';
+  if (!form.description.trim())
+    errors.description = 'Full description is required.';
+  if (!Number.isFinite(price) || price < 0)
+    errors.price = 'Enter a valid price.';
+  if (!Number.isInteger(stock) || stock < 0)
+    errors.stock = 'Quantity must be a whole number.';
   if (!form.categorySlug.trim()) errors.categorySlug = 'Category is required.';
   return errors;
 }
@@ -249,10 +334,19 @@ async function fetchProductDetails(id: string): Promise<ProductDetails | null> {
   return data ? (data as ProductDetails) : null;
 }
 
-async function createOrUpdateProduct(opts: { mode: 'create' | 'edit'; productId?: string; form: FormState; imageFiles: File[] }) {
+async function createOrUpdateProduct(opts: {
+  mode: 'create' | 'edit';
+  productId?: string;
+  form: FormState;
+  imageFiles: File[];
+}) {
   const { mode, productId, form, imageFiles } = opts;
-  const images = imageFiles.length > 0 ? await Promise.all(imageFiles.map(fileToDataUrl)) : null;
-  const endpoint = mode === 'edit' ? `/api/products/${productId}` : '/api/products';
+  const images =
+    imageFiles.length > 0
+      ? await Promise.all(imageFiles.map(fileToDataUrl))
+      : null;
+  const endpoint =
+    mode === 'edit' ? `/api/products/${productId}` : '/api/products';
   const method = mode === 'edit' ? 'PATCH' : 'POST';
   const payload: any = {
     name: form.name,
@@ -263,10 +357,17 @@ async function createOrUpdateProduct(opts: { mode: 'create' | 'edit'; productId?
     categorySlug: form.categorySlug,
   };
   if (images) payload.images = images;
-  return fetch(endpoint, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+  return fetch(endpoint, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
 }
 
-export function ProductForm({ mode, productId }: Readonly<{ mode: 'create' | 'edit'; productId?: string }>) {
+export function ProductForm({
+  mode,
+  productId,
+}: Readonly<{ mode: 'create' | 'edit'; productId?: string }>) {
   const router = useRouter();
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -288,7 +389,10 @@ export function ProductForm({ mode, productId }: Readonly<{ mode: 'create' | 'ed
   }, [imageFiles]);
 
   const canSubmit = useMemo(() => computeCanSubmit(form), [form]);
-  const fieldErrors = useMemo(() => computeFieldErrors(form, submitAttempted), [form, submitAttempted]);
+  const fieldErrors = useMemo(
+    () => computeFieldErrors(form, submitAttempted),
+    [form, submitAttempted],
+  );
 
   useEffect(() => {
     async function load() {
@@ -309,7 +413,9 @@ export function ProductForm({ mode, productId }: Readonly<{ mode: 'create' | 'ed
             router.push('/admin/products');
             return;
           }
-          setExistingImagesCount(Array.isArray(data.images) ? data.images.length : 0);
+          setExistingImagesCount(
+            Array.isArray(data.images) ? data.images.length : 0,
+          );
           setForm({
             name: data.name ?? '',
             shortDescription: data.shortDescription ?? '',
@@ -323,7 +429,10 @@ export function ProductForm({ mode, productId }: Readonly<{ mode: 'create' | 'ed
           return;
         }
 
-        setForm((f) => ({ ...f, categorySlug: f.categorySlug || cats?.[0]?.slug || '' }));
+        setForm((f) => ({
+          ...f,
+          categorySlug: f.categorySlug || cats?.[0]?.slug || '',
+        }));
       } finally {
         setLoading(false);
       }
@@ -359,14 +468,23 @@ export function ProductForm({ mode, productId }: Readonly<{ mode: 'create' | 'ed
 
     setSubmitting(true);
     try {
-      const res = await createOrUpdateProduct({ mode, productId, form, imageFiles });
+      const res = await createOrUpdateProduct({
+        mode,
+        productId,
+        form,
+        imageFiles,
+      });
       if (res.status === 401) {
         toast.error('Please sign in as an admin to manage products');
-        router.push('/login?next=' + encodeURIComponent(getNextAfterUnauthorized(mode, productId)));
+        router.push(
+          '/login?next=' +
+            encodeURIComponent(getNextAfterUnauthorized(mode, productId)),
+        );
         return;
       }
       if (!res.ok) {
-        const msg = (await res.json().catch(() => null))?.error ?? 'Save failed';
+        const msg =
+          (await res.json().catch(() => null))?.error ?? 'Save failed';
         toast.error(msg);
         return;
       }
@@ -381,8 +499,16 @@ export function ProductForm({ mode, productId }: Readonly<{ mode: 'create' | 'ed
     <div>
       <AdminHeader
         title={mode === 'edit' ? 'Edit product' : 'New product'}
-        description={mode === 'edit' ? 'Update the details and save your changes.' : 'Add the details and a few photos, then create.'}
-        actions={<Button asChild variant="outline"><Link href="/admin/products">Cancel</Link></Button>}
+        description={
+          mode === 'edit'
+            ? 'Update the details and save your changes.'
+            : 'Add the details and a few photos, then create.'
+        }
+        actions={
+          <Button asChild variant="outline">
+            <Link href="/admin/products">Cancel</Link>
+          </Button>
+        }
       />
 
       <div className="mt-8 max-w-2xl">
@@ -391,7 +517,12 @@ export function ProductForm({ mode, productId }: Readonly<{ mode: 'create' | 'ed
             <p className="py-6 text-sm text-muted-foreground">Loading…</p>
           ) : (
             <div className="grid gap-5">
-              <FieldsSection form={form} setForm={setForm} categories={categories} fieldErrors={fieldErrors} />
+              <FieldsSection
+                form={form}
+                setForm={setForm}
+                categories={categories}
+                fieldErrors={fieldErrors}
+              />
               <ImagesSection
                 mode={mode}
                 existingImagesCount={existingImagesCount}
@@ -402,9 +533,19 @@ export function ProductForm({ mode, productId }: Readonly<{ mode: 'create' | 'ed
                 onRemove={removeImageAtIndex}
               />
               <div className="flex items-center justify-end gap-3 border-t border-line pt-5">
-                <Button asChild variant="ghost"><Link href="/admin/products">Cancel</Link></Button>
-                <Button type="button" disabled={!canSubmit || submitting} onClick={submit}>
-                  {submitting ? 'Saving…' : mode === 'edit' ? 'Save changes' : 'Create product'}
+                <Button asChild variant="ghost">
+                  <Link href="/admin/products">Cancel</Link>
+                </Button>
+                <Button
+                  type="button"
+                  disabled={!canSubmit || submitting}
+                  onClick={submit}
+                >
+                  {submitting
+                    ? 'Saving…'
+                    : mode === 'edit'
+                      ? 'Save changes'
+                      : 'Create product'}
                 </Button>
               </div>
             </div>

@@ -15,7 +15,7 @@ const createPackageSchema = z.object({
       z.object({
         productId: z.string().min(1),
         quantity: z.number().int().min(1),
-      })
+      }),
     )
     .max(50)
     .optional()
@@ -59,13 +59,14 @@ export async function GET(req: Request) {
       slug: p.slug,
       image: p.image,
       items: (p.items ?? []).map((it: any) => ({
-        productId: it.productId?._id?.toString?.() ?? it.productId?.toString?.() ?? '',
+        productId:
+          it.productId?._id?.toString?.() ?? it.productId?.toString?.() ?? '',
         name: it.productId?.name ?? null,
         quantity: it.quantity,
       })),
       price: p.price,
       discountPercent: p.discountPercent ?? null,
-    }))
+    })),
   );
 }
 
@@ -87,10 +88,15 @@ export async function POST(req: Request) {
   const dbError = await ensureDatabase();
   if (dbError) return dbError;
 
-  const slug = parsed.data.slug ? slugify(parsed.data.slug) : slugify(parsed.data.name);
+  const slug = parsed.data.slug
+    ? slugify(parsed.data.slug)
+    : slugify(parsed.data.name);
   const exists = await GiftPackage.findOne({ slug }).lean();
   if (exists) {
-    return NextResponse.json({ error: 'Package slug already exists' }, { status: 409 });
+    return NextResponse.json(
+      { error: 'Package slug already exists' },
+      { status: 409 },
+    );
   }
 
   const created = await GiftPackage.create({

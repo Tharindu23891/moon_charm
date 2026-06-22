@@ -8,7 +8,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
-import { AuthShell, AuthField, GoogleButton } from '@/components/auth/auth-shell';
+import {
+  AuthShell,
+  AuthField,
+  GoogleButton,
+} from '@/components/auth/auth-shell';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -27,7 +31,9 @@ export default function RegisterPage() {
   useEffect(() => {
     let alive = true;
     getProviders()
-      .then((providers) => alive && setGoogleEnabled(Boolean(providers?.google)))
+      .then(
+        (providers) => alive && setGoogleEnabled(Boolean(providers?.google)),
+      )
       .catch(() => alive && setGoogleEnabled(false));
     return () => {
       alive = false;
@@ -47,12 +53,17 @@ export default function RegisterPage() {
     });
 
     if (!res.ok) {
-      const msg = (await res.json().catch(() => null))?.error ?? 'Registration failed';
+      const msg =
+        (await res.json().catch(() => null))?.error ?? 'Registration failed';
       toast.error(msg);
       return;
     }
 
-    const login = await signIn('credentials', { email: values.email, password: values.password, redirect: false });
+    const login = await signIn('credentials', {
+      email: values.email,
+      password: values.password,
+      redirect: false,
+    });
     if (!login || login.error) {
       toast.success('Account created');
       router.push('/login');
@@ -69,7 +80,10 @@ export default function RegisterPage() {
       footer={
         <>
           Already have an account?{' '}
-          <Link href="/login" className="font-semibold text-primary hover:text-primary-hover">
+          <Link
+            href="/login"
+            className="font-semibold text-primary hover:text-primary-hover"
+          >
             Sign in
           </Link>
         </>
@@ -80,12 +94,28 @@ export default function RegisterPage() {
           <Input autoComplete="name" {...form.register('name')} />
         </AuthField>
         <AuthField label="Email" error={form.formState.errors.email?.message}>
-          <Input type="email" autoComplete="email" {...form.register('email')} />
+          <Input
+            type="email"
+            autoComplete="email"
+            {...form.register('email')}
+          />
         </AuthField>
-        <AuthField label="Password" error={form.formState.errors.password?.message}>
-          <Input type="password" autoComplete="new-password" {...form.register('password')} />
+        <AuthField
+          label="Password"
+          error={form.formState.errors.password?.message}
+        >
+          <Input
+            type="password"
+            autoComplete="new-password"
+            {...form.register('password')}
+          />
         </AuthField>
-        <Button type="submit" size="lg" disabled={form.formState.isSubmitting} className="mt-1 w-full">
+        <Button
+          type="submit"
+          size="lg"
+          disabled={form.formState.isSubmitting}
+          className="mt-1 w-full"
+        >
           {form.formState.isSubmitting ? 'Creating…' : 'Create account'}
         </Button>
       </form>
@@ -97,7 +127,10 @@ export default function RegisterPage() {
             or
             <span className="h-px flex-1 bg-line" />
           </div>
-          <GoogleButton label="Continue with Google" onClick={() => signIn('google', { callbackUrl: '/' })} />
+          <GoogleButton
+            label="Continue with Google"
+            onClick={() => signIn('google', { callbackUrl: '/' })}
+          />
         </>
       ) : null}
     </AuthShell>

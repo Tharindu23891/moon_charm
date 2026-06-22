@@ -1,7 +1,10 @@
 import { Suspense } from 'react';
 import { connectToDatabase } from '@/lib/mongoose';
 import { GiftPackage } from '@/models/GiftPackage';
-import { PackageCard, type PackageListItem } from '@/components/package/package-card';
+import {
+  PackageCard,
+  type PackageListItem,
+} from '@/components/package/package-card';
 import { PageHeader } from '@/components/page-header';
 import { SortSelect } from '@/components/sort-select';
 
@@ -50,7 +53,10 @@ export default async function PackagesPage({
       image: p.image,
       price: p.price,
       discountPercent: p.discountPercent ?? null,
-      items: (p.items ?? []).map((it: any) => ({ name: it.productId?.name ?? null, quantity: it.quantity })),
+      items: (p.items ?? []).map((it: any) => ({
+        name: it.productId?.name ?? null,
+        quantity: it.quantity,
+      })),
     }));
   } catch (error) {
     databaseUnavailable = true;
@@ -66,15 +72,25 @@ export default async function PackagesPage({
           description="Hand-assembled bundles, wrapped as a single gift and priced a little gentler than buying each piece alone."
         />
         <div className="shrink-0">
-          <Suspense fallback={<div className="h-11 w-full rounded-[var(--r)] border border-line bg-surface sm:w-56" />}>
-            <SortSelect options={sortOptions} defaultValue="newest" label="Sort packages" className="w-full sm:w-56" />
+          <Suspense
+            fallback={
+              <div className="h-11 w-full rounded-[var(--r)] border border-line bg-surface sm:w-56" />
+            }
+          >
+            <SortSelect
+              options={sortOptions}
+              defaultValue="newest"
+              label="Sort packages"
+              className="w-full sm:w-56"
+            />
           </Suspense>
         </div>
       </div>
 
       {databaseUnavailable ? (
         <p className="mt-6 rounded-[var(--r)] border border-line bg-surface px-4 py-3 text-sm text-muted-foreground">
-          Packages are briefly unavailable while we reconnect. Please try again in a moment.
+          Packages are briefly unavailable while we reconnect. Please try again
+          in a moment.
         </p>
       ) : null}
 
@@ -87,7 +103,9 @@ export default async function PackagesPage({
       ) : (
         <div className="mt-10 rounded-[var(--r-lg)] border border-dashed border-line-strong bg-surface px-6 py-16 text-center">
           <p className="font-display text-xl text-ink">No packages just yet</p>
-          <p className="mt-2 text-sm text-muted-foreground">New bundles are added often. Check back soon.</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            New bundles are added often. Check back soon.
+          </p>
         </div>
       )}
     </div>

@@ -25,11 +25,17 @@ export function PackagePurchasePanel({
     <div className="rounded-[var(--r-lg)] border border-line bg-surface p-6">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground">Package price</p>
+          <p className="text-xs tracking-[0.1em] text-muted-foreground uppercase">
+            Package price
+          </p>
           <div className="mt-1 flex items-baseline gap-2.5">
-            <p className="font-display text-[2rem] leading-none text-ink">{formatLkr(effectivePrice)}</p>
+            <p className="font-display text-[2rem] leading-none text-ink">
+              {formatLkr(effectivePrice)}
+            </p>
             {pkg.discountPercent ? (
-              <span className="text-sm text-faint line-through">{formatLkr(pkg.price)}</span>
+              <span className="text-sm text-faint line-through">
+                {formatLkr(pkg.price)}
+              </span>
             ) : null}
           </div>
         </div>
@@ -48,20 +54,46 @@ export function PackagePurchasePanel({
           fullWidth
           quantity={qty}
           label="Add package to cart"
-          item={{ itemType: 'package', refId: pkg.id, name: pkg.name, image: pkg.image, unitPrice: effectivePrice }}
+          item={{
+            itemType: 'package',
+            refId: pkg.id,
+            name: pkg.name,
+            image: pkg.image,
+            unitPrice: effectivePrice,
+          }}
         />
       </div>
 
       <ul className="mt-6 space-y-2 border-t border-line pt-5 text-sm text-muted-foreground">
         <li className="flex items-center gap-2.5">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4 shrink-0 text-primary">
-            <path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" />
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            className="h-4 w-4 shrink-0 text-primary"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m5 13 4 4L19 7"
+            />
           </svg>
           Assembled and wrapped as one gift
         </li>
         <li className="flex items-center gap-2.5">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4 shrink-0 text-primary">
-            <path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" />
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            className="h-4 w-4 shrink-0 text-primary"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m5 13 4 4L19 7"
+            />
           </svg>
           Delivered island-wide across Sri Lanka
         </li>

@@ -15,7 +15,11 @@ type ImageLoaderArgs = {
 // URL, and for Unsplash it appends sizing params so the CDN returns a small,
 // already-resized image (driven by the <Image sizes> props) instead of the
 // multi-megabyte original. Non-Unsplash or local sources are returned as-is.
-export default function imageLoader({ src, width, quality }: ImageLoaderArgs): string {
+export default function imageLoader({
+  src,
+  width,
+  quality,
+}: ImageLoaderArgs): string {
   try {
     const url = new URL(src);
     if (url.hostname.endsWith('unsplash.com')) {

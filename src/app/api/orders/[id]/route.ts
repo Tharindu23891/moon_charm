@@ -5,7 +5,7 @@ import { Order } from '@/models/Order';
 
 export async function GET(
   _req: Request,
-  ctx: { params: Promise<{ id: string }> }
+  ctx: { params: Promise<{ id: string }> },
 ) {
   const { userId, role } = await getSessionUser();
   if (!userId) {

@@ -37,7 +37,11 @@ export async function generateMetadata({
   }
 
   const url = absoluteUrl(`/products/${id}`);
-  const description = (product.shortDescription || product.description || siteConfig.description)
+  const description = (
+    product.shortDescription ||
+    product.description ||
+    siteConfig.description
+  )
     .toString()
     .slice(0, 200);
   const image = product.images?.[0];
@@ -73,15 +77,21 @@ export default async function ProductDetailsPage({
     return (
       <div className="mc-container py-20 text-center">
         <h1 className="font-display text-3xl">We can’t find that gift</h1>
-        <p className="mt-3 text-muted-foreground">It may have sold out or been moved.</p>
-        <Button asChild className="mt-6"><Link href="/products">Back to the shop</Link></Button>
+        <p className="mt-3 text-muted-foreground">
+          It may have sold out or been moved.
+        </p>
+        <Button asChild className="mt-6">
+          <Link href="/products">Back to the shop</Link>
+        </Button>
       </div>
     );
   }
 
   const p = product as any;
   const images: string[] = p.images ?? [];
-  const heroImage = images[0] || 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=1200&q=70';
+  const heroImage =
+    images[0] ||
+    'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=1200&q=70';
   const categoryId = p.categoryId?._id?.toString() as string | undefined;
   const productUrl = absoluteUrl(`/products/${id}`);
 
@@ -99,7 +109,9 @@ export default async function ProductDetailsPage({
       priceCurrency: siteConfig.currency,
       price: p.price,
       availability:
-        p.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        p.stock > 0
+          ? 'https://schema.org/InStock'
+          : 'https://schema.org/OutOfStock',
       seller: { '@id': absoluteUrl('/#organization') },
     },
   };
@@ -108,8 +120,18 @@ export default async function ProductDetailsPage({
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: absoluteUrl('/') },
-      { '@type': 'ListItem', position: 2, name: 'Shop', item: absoluteUrl('/products') },
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: absoluteUrl('/'),
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Shop',
+        item: absoluteUrl('/products'),
+      },
       { '@type': 'ListItem', position: 3, name: p.name, item: productUrl },
     ],
   };
@@ -119,7 +141,11 @@ export default async function ProductDetailsPage({
       <JsonLd data={productLd} />
       <JsonLd data={breadcrumbLd} />
       <Breadcrumb
-        items={[{ href: '/', label: 'Home' }, { href: '/products', label: 'Shop' }, { label: p.name }]}
+        items={[
+          { href: '/', label: 'Home' },
+          { href: '/products', label: 'Shop' },
+          { label: p.name },
+        ]}
       />
 
       <div className="mt-7 grid gap-10 lg:grid-cols-2 lg:gap-14">
@@ -127,24 +153,44 @@ export default async function ProductDetailsPage({
 
         <div className="lg:sticky lg:top-28 lg:self-start">
           {p.categoryId?.name ? (
-            <Badge asChild variant="outline" className="transition-colors hover:border-line-strong">
-              <Link href={`/products?category=${encodeURIComponent(p.categoryId.slug)}`}>{p.categoryId.name}</Link>
+            <Badge
+              asChild
+              variant="outline"
+              className="transition-colors hover:border-line-strong"
+            >
+              <Link
+                href={`/products?category=${encodeURIComponent(p.categoryId.slug)}`}
+              >
+                {p.categoryId.name}
+              </Link>
             </Badge>
           ) : null}
 
-          <h1 className="mt-4 font-display text-[clamp(2rem,4vw,3rem)] leading-[1.05]">{p.name}</h1>
+          <h1 className="mt-4 font-display text-[clamp(2rem,4vw,3rem)] leading-[1.05]">
+            {p.name}
+          </h1>
 
           {p.shortDescription ? (
-            <p className="mt-3 text-[1.05rem] leading-relaxed text-muted-foreground">{p.shortDescription}</p>
+            <p className="mt-3 text-[1.05rem] leading-relaxed text-muted-foreground">
+              {p.shortDescription}
+            </p>
           ) : null}
 
           {p.description ? (
-            <p className="mc-prose mt-4 leading-relaxed text-ink/80">{p.description}</p>
+            <p className="mc-prose mt-4 leading-relaxed text-ink/80">
+              {p.description}
+            </p>
           ) : null}
 
           <div className="mt-7">
             <ProductPurchasePanel
-              product={{ id: p._id.toString(), name: p.name, image: heroImage, price: p.price, stock: p.stock }}
+              product={{
+                id: p._id.toString(),
+                name: p.name,
+                image: heroImage,
+                price: p.price,
+                stock: p.stock,
+              }}
             />
           </div>
         </div>
@@ -152,14 +198,20 @@ export default async function ProductDetailsPage({
 
       {categoryId ? (
         <Suspense fallback={<RelatedSkeleton />}>
-          <RelatedProductsSection productId={p._id.toString()} categoryId={categoryId} />
+          <RelatedProductsSection
+            productId={p._id.toString()}
+            categoryId={categoryId}
+          />
         </Suspense>
       ) : null}
     </div>
   );
 }
 
-async function RelatedProductsSection({ productId, categoryId }: Readonly<{ productId: string; categoryId: string }>) {
+async function RelatedProductsSection({
+  productId,
+  categoryId,
+}: Readonly<{ productId: string; categoryId: string }>) {
   const related = await Product.find({ _id: { $ne: productId }, categoryId })
     .select('name shortDescription price images stock categoryId')
     .sort({ popularity: -1 })
@@ -183,7 +235,9 @@ async function RelatedProductsSection({ productId, categoryId }: Readonly<{ prod
               price: p.price,
               images: p.images ?? [],
               stock: p.stock,
-              category: p.categoryId ? { name: p.categoryId.name, slug: p.categoryId.slug } : null,
+              category: p.categoryId
+                ? { name: p.categoryId.name, slug: p.categoryId.slug }
+                : null,
             }}
           />
         ))}

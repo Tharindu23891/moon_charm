@@ -42,7 +42,10 @@ export const authOptions: NextAuthOptions = {
         const user = await User.findOne({ email: parsed.data.email }).lean();
         if (!user) return null;
 
-        const ok = await verifyPassword(parsed.data.password, user.passwordHash);
+        const ok = await verifyPassword(
+          parsed.data.password,
+          user.passwordHash,
+        );
         if (!ok) return null;
 
         return {

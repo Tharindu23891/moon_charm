@@ -30,7 +30,10 @@ export async function GET() {
   if (dbError) return dbError;
 
   const filter = role === 'admin' ? {} : { userId };
-  const orders = await Order.find(filter).sort({ createdAt: -1 }).limit(200).lean();
+  const orders = await Order.find(filter)
+    .sort({ createdAt: -1 })
+    .limit(200)
+    .lean();
 
   return NextResponse.json(
     orders.map((o: any) => ({
@@ -40,7 +43,7 @@ export async function GET() {
       paymentMethod: o.paymentMethod,
       total: o.total,
       createdAt: o.createdAt,
-    }))
+    })),
   );
 }
 
@@ -75,7 +78,10 @@ export async function POST(req: Request) {
     quantity: it.quantity,
   }));
 
-  const subtotal = items.reduce((sum, it) => sum + it.unitPrice * it.quantity, 0);
+  const subtotal = items.reduce(
+    (sum, it) => sum + it.unitPrice * it.quantity,
+    0,
+  );
   const total = subtotal;
 
   const order = await Order.create({
@@ -89,7 +95,11 @@ export async function POST(req: Request) {
     status: 'pending',
   });
 
-  await Cart.findOneAndUpdate({ userId }, { $set: { items: [] } }, { upsert: true });
+  await Cart.findOneAndUpdate(
+    { userId },
+    { $set: { items: [] } },
+    { upsert: true },
+  );
 
   return NextResponse.json({ id: order._id.toString() }, { status: 201 });
 }

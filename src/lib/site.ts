@@ -7,7 +7,10 @@
 export const siteConfig = {
   name: 'The Moon Charm',
   // No trailing slash. URL() further down normalises anything stray.
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://themooncharm.lk').replace(/\/$/, ''),
+  url: (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://themooncharm.lk').replace(
+    /\/$/,
+    '',
+  ),
   description:
     'A curated gift house in Kuliyapitiya, Sri Lanka. Hand-assembled gift packages and individual pieces for birthdays, anniversaries, weddings, and every moment worth marking. Island-wide delivery.',
   locale: 'en_LK',

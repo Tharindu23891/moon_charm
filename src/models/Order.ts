@@ -9,7 +9,7 @@ const OrderItemSchema = new Schema(
     unitPrice: { type: Number, required: true, min: 0 },
     quantity: { type: Number, required: true, min: 1 },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const AddressSchema = new Schema(
@@ -24,7 +24,7 @@ const AddressSchema = new Schema(
     postalCode: { type: String, required: true, trim: true },
     country: { type: String, required: true, trim: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const OrderSchema = new Schema(
@@ -46,11 +46,18 @@ const OrderSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'],
+      enum: [
+        'pending',
+        'confirmed',
+        'processing',
+        'shipped',
+        'delivered',
+        'cancelled',
+      ],
       default: 'pending',
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export type OrderDoc = InferSchemaType<typeof OrderSchema> & {

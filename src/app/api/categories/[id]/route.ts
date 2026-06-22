@@ -14,7 +14,7 @@ const updateCategorySchema = z
 
 export async function PATCH(
   req: Request,
-  ctx: { params: Promise<{ id: string }> }
+  ctx: { params: Promise<{ id: string }> },
 ) {
   try {
     await requireAdmin();
@@ -38,13 +38,21 @@ export async function PATCH(
   if (parsed.data.slug) update.slug = slugify(parsed.data.slug);
 
   if (update.slug) {
-    const exists = await Category.findOne({ slug: update.slug, _id: { $ne: id } }).lean();
+    const exists = await Category.findOne({
+      slug: update.slug,
+      _id: { $ne: id },
+    }).lean();
     if (exists) {
-      return NextResponse.json({ error: 'Category slug already exists' }, { status: 409 });
+      return NextResponse.json(
+        { error: 'Category slug already exists' },
+        { status: 409 },
+      );
     }
   }
 
-  const updated = await Category.findByIdAndUpdate(id, update, { new: true }).lean();
+  const updated = await Category.findByIdAndUpdate(id, update, {
+    new: true,
+  }).lean();
   if (!updated) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
@@ -54,7 +62,7 @@ export async function PATCH(
 
 export async function DELETE(
   _req: Request,
-  ctx: { params: Promise<{ id: string }> }
+  ctx: { params: Promise<{ id: string }> },
 ) {
   try {
     await requireAdmin();

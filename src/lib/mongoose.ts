@@ -9,7 +9,10 @@ declare global {
   var _mongoose: MongooseCache | undefined;
 }
 
-const cached: MongooseCache = globalThis._mongoose ?? { conn: null, promise: null };
+const cached: MongooseCache = globalThis._mongoose ?? {
+  conn: null,
+  promise: null,
+};
 
 if (!globalThis._mongoose) {
   globalThis._mongoose = cached;
@@ -32,18 +35,23 @@ export async function connectToDatabase() {
     serverSelectionTimeoutMS: 10000,
   };
 
-  cached.promise ??= mongoose.connect(mongoUri, {
-    ...connectionOptions,
-  }).catch(async (error) => {
-    if (!mongoUri.startsWith('mongodb+srv://')) {
-      throw error;
-    }
-
-    console.warn('MongoDB Atlas connection failed, falling back to local MongoDB.', error);
-    return mongoose.connect(fallbackUri, {
+  cached.promise ??= mongoose
+    .connect(mongoUri, {
       ...connectionOptions,
+    })
+    .catch(async (error) => {
+      if (!mongoUri.startsWith('mongodb+srv://')) {
+        throw error;
+      }
+
+      console.warn(
+        'MongoDB Atlas connection failed, falling back to local MongoDB.',
+        error,
+      );
+      return mongoose.connect(fallbackUri, {
+        ...connectionOptions,
+      });
     });
-  });
 
   try {
     cached.conn = await cached.promise;

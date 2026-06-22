@@ -13,19 +13,36 @@ type ProductImageGalleryProps = {
 const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=1200&q=70';
 
-export function ProductImageGallery({ images, productName }: Readonly<ProductImageGalleryProps>) {
-  const galleryImages = useMemo(() => (images.length ? images : [FALLBACK_IMAGE]), [images]);
+export function ProductImageGallery({
+  images,
+  productName,
+}: Readonly<ProductImageGalleryProps>) {
+  const galleryImages = useMemo(
+    () => (images.length ? images : [FALLBACK_IMAGE]),
+    [images],
+  );
   const [activeIndex, setActiveIndex] = useState(0);
   const activeImage = galleryImages[activeIndex];
   const hasMultiple = galleryImages.length > 1;
 
-  const prev = () => setActiveIndex((c) => (c - 1 + galleryImages.length) % galleryImages.length);
+  const prev = () =>
+    setActiveIndex(
+      (c) => (c - 1 + galleryImages.length) % galleryImages.length,
+    );
   const next = () => setActiveIndex((c) => (c + 1) % galleryImages.length);
 
   return (
     <div>
       <div className="group relative aspect-[4/5] overflow-hidden rounded-[var(--r-xl)] bg-surface">
-        <Image key={activeIndex} src={activeImage} alt={productName} fill priority sizes="(max-width: 768px) 100vw, 560px" className="mc-image-in object-cover" />
+        <Image
+          key={activeIndex}
+          src={activeImage}
+          alt={productName}
+          fill
+          priority
+          sizes="(max-width: 768px) 100vw, 560px"
+          className="mc-image-in object-cover"
+        />
 
         {hasMultiple ? (
           <>
@@ -35,7 +52,7 @@ export function ProductImageGallery({ images, productName }: Readonly<ProductIma
               size="icon"
               aria-label="Previous image"
               onClick={prev}
-              className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-bg/85 opacity-0 backdrop-blur-sm transition-[opacity,background-color,border-color] focus-visible:opacity-100 group-hover:opacity-100"
+              className="absolute top-1/2 left-3 -translate-y-1/2 rounded-full bg-bg/85 opacity-0 backdrop-blur-sm transition-[opacity,background-color,border-color] group-hover:opacity-100 focus-visible:opacity-100"
             >
               <Chevron dir="left" />
             </Button>
@@ -45,7 +62,7 @@ export function ProductImageGallery({ images, productName }: Readonly<ProductIma
               size="icon"
               aria-label="Next image"
               onClick={next}
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-bg/85 opacity-0 backdrop-blur-sm transition-[opacity,background-color,border-color] focus-visible:opacity-100 group-hover:opacity-100"
+              className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full bg-bg/85 opacity-0 backdrop-blur-sm transition-[opacity,background-color,border-color] group-hover:opacity-100 focus-visible:opacity-100"
             >
               <Chevron dir="right" />
             </Button>
@@ -65,10 +82,18 @@ export function ProductImageGallery({ images, productName }: Readonly<ProductIma
               aria-current={index === activeIndex}
               className={cn(
                 'relative aspect-square h-auto overflow-hidden rounded-[var(--r)] bg-surface p-0 transition-[box-shadow,opacity] duration-200 hover:bg-surface',
-                index === activeIndex ? 'ring-2 ring-primary ring-offset-2 ring-offset-bg' : 'opacity-70 hover:opacity-100',
+                index === activeIndex
+                  ? 'ring-2 ring-primary ring-offset-2 ring-offset-bg'
+                  : 'opacity-70 hover:opacity-100',
               )}
             >
-              <Image src={src} alt={`${productName} ${index + 1}`} fill sizes="120px" className="object-cover" />
+              <Image
+                src={src}
+                alt={`${productName} ${index + 1}`}
+                fill
+                sizes="120px"
+                className="object-cover"
+              />
             </Button>
           ))}
         </div>
@@ -79,8 +104,19 @@ export function ProductImageGallery({ images, productName }: Readonly<ProductIma
 
 function Chevron({ dir }: { dir: 'left' | 'right' }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" d={dir === 'left' ? 'm15 6-6 6 6 6' : 'm9 6 6 6-6 6'} />
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className="h-4 w-4"
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d={dir === 'left' ? 'm15 6-6 6 6 6' : 'm9 6 6 6-6 6'}
+      />
     </svg>
   );
 }

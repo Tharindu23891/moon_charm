@@ -13,7 +13,7 @@ const updatePackageSchema = z
         z.object({
           productId: z.string().min(1),
           quantity: z.number().int().min(1),
-        })
+        }),
       )
       .max(50)
       .optional(),
@@ -26,7 +26,7 @@ const updatePackageSchema = z
 
 export async function GET(
   _req: Request,
-  ctx: { params: Promise<{ id: string }> }
+  ctx: { params: Promise<{ id: string }> },
 ) {
   const { id } = await ctx.params;
   const dbError = await ensureDatabase();
@@ -43,7 +43,8 @@ export async function GET(
     slug: (pkg as any).slug,
     image: (pkg as any).image,
     items: ((pkg as any).items ?? []).map((it: any) => ({
-      productId: it.productId?._id?.toString?.() ?? it.productId?.toString?.() ?? '',
+      productId:
+        it.productId?._id?.toString?.() ?? it.productId?.toString?.() ?? '',
       name: it.productId?.name ?? null,
       quantity: it.quantity,
     })),
@@ -55,7 +56,7 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  ctx: { params: Promise<{ id: string }> }
+  ctx: { params: Promise<{ id: string }> },
 ) {
   try {
     await requireAdmin();
@@ -80,7 +81,9 @@ export async function PATCH(
     update.discountPercent = undefined;
   }
 
-  const updated = await GiftPackage.findByIdAndUpdate(id, update, { new: true }).lean();
+  const updated = await GiftPackage.findByIdAndUpdate(id, update, {
+    new: true,
+  }).lean();
   if (!updated) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
@@ -90,7 +93,7 @@ export async function PATCH(
 
 export async function DELETE(
   _req: Request,
-  ctx: { params: Promise<{ id: string }> }
+  ctx: { params: Promise<{ id: string }> },
 ) {
   try {
     await requireAdmin();

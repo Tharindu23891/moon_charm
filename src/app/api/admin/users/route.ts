@@ -22,6 +22,6 @@ export async function GET() {
       email: u.email,
       role: u.role,
       createdAt: u.createdAt,
-    }))
+    })),
   );
 }

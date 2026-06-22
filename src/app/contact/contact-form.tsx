@@ -41,7 +41,9 @@ export function ContactForm() {
       form.reset();
     } catch (error) {
       setStatus('error');
-      setErrorMessage(error instanceof Error ? error.message : 'Something went wrong.');
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Something went wrong.',
+      );
     }
   };
 
@@ -53,7 +55,9 @@ export function ContactForm() {
           <Input type="text" autoComplete="name" name="name" required />
         </label>
         <label className="block">
-          <span className="mc-label">Phone <span className="font-normal text-faint">(optional)</span></span>
+          <span className="mc-label">
+            Phone <span className="font-normal text-faint">(optional)</span>
+          </span>
           <Input type="tel" autoComplete="tel" name="phone" />
         </label>
       </div>
@@ -62,15 +66,32 @@ export function ContactForm() {
         <Input type="email" autoComplete="email" name="email" required />
       </label>
       <label className="block">
-        <span className="mc-label">Occasion date <span className="font-normal text-faint">(optional)</span></span>
-        <Input type="text" name="eventDate" placeholder="e.g. 14 February, or “next week”" />
+        <span className="mc-label">
+          Occasion date{' '}
+          <span className="font-normal text-faint">(optional)</span>
+        </span>
+        <Input
+          type="text"
+          name="eventDate"
+          placeholder="e.g. 14 February, or “next week”"
+        />
       </label>
       <label className="block">
         <span className="mc-label">Tell us about the occasion</span>
-        <Textarea className="min-h-[130px]" name="message" required placeholder="Who is it for, the feeling you’re after, any budget in mind…" />
+        <Textarea
+          className="min-h-[130px]"
+          name="message"
+          required
+          placeholder="Who is it for, the feeling you’re after, any budget in mind…"
+        />
       </label>
 
-      <Button type="submit" size="lg" className="mt-1 self-start" disabled={status === 'loading'}>
+      <Button
+        type="submit"
+        size="lg"
+        className="mt-1 self-start"
+        disabled={status === 'loading'}
+      >
         {status === 'loading' ? 'Sending…' : 'Send your message'}
       </Button>
 
@@ -82,7 +103,9 @@ export function ContactForm() {
           status === 'error' && 'text-danger',
         )}
       >
-        {status === 'success' ? 'Thank you. We’ll be in touch within a day.' : null}
+        {status === 'success'
+          ? 'Thank you. We’ll be in touch within a day.'
+          : null}
         {status === 'error' ? errorMessage : null}
       </p>
     </form>

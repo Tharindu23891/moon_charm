@@ -22,7 +22,10 @@ export async function POST(req: Request) {
 
   const existing = await User.findOne({ email: parsed.data.email }).lean();
   if (existing) {
-    return NextResponse.json({ error: 'Email already registered' }, { status: 409 });
+    return NextResponse.json(
+      { error: 'Email already registered' },
+      { status: 409 },
+    );
   }
 
   const passwordHash = await hashPassword(parsed.data.password);
@@ -39,6 +42,6 @@ export async function POST(req: Request) {
       email: user.email,
       name: user.name,
     },
-    { status: 201 }
+    { status: 201 },
   );
 }

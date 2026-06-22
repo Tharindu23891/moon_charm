@@ -13,14 +13,33 @@ export function MoonMark({ className }: { className?: string }) {
       aria-hidden="true"
       className={cn('h-full w-full', className)}
     >
-      <circle className="mc-mark-ring" cx="50" cy="50" r="46" stroke="currentColor" strokeWidth="1.8" />
+      <circle
+        className="mc-mark-ring"
+        cx="50"
+        cy="50"
+        r="46"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
       <mask id="moon-charm-crescent">
         <rect width="100" height="100" fill="#000" />
         <circle cx="49" cy="52" r="27" fill="#fff" />
         <circle cx="61" cy="43" r="23" fill="#000" />
       </mask>
-      <rect className="mc-mark-body" width="100" height="100" fill="currentColor" mask="url(#moon-charm-crescent)" />
-      <circle className="mc-mark-body" cx="67" cy="35" r="3.1" fill="currentColor" />
+      <rect
+        className="mc-mark-body"
+        width="100"
+        height="100"
+        fill="currentColor"
+        mask="url(#moon-charm-crescent)"
+      />
+      <circle
+        className="mc-mark-body"
+        cx="67"
+        cy="35"
+        r="3.1"
+        fill="currentColor"
+      />
     </svg>
   );
 }

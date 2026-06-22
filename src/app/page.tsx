@@ -30,17 +30,20 @@ const trustPoints = [
 
 const testimonials = [
   {
-    quote: 'It arrived wrapped so beautifully my sister thought I had it flown in. I did not. It came from Kuliyapitiya.',
+    quote:
+      'It arrived wrapped so beautifully my sister thought I had it flown in. I did not. It came from Kuliyapitiya.',
     name: 'Ayesha K.',
     place: 'Colombo',
   },
   {
-    quote: 'I ordered from abroad for my parents’ anniversary. They sent me photos the moment it landed. Perfect.',
+    quote:
+      'I ordered from abroad for my parents’ anniversary. They sent me photos the moment it landed. Perfect.',
     name: 'Mark L.',
     place: 'London',
   },
   {
-    quote: 'Every detail was considered, down to the note card. This is now my go-to for the people I care about.',
+    quote:
+      'Every detail was considered, down to the note card. This is now my go-to for the people I care about.',
     name: 'Priya S.',
     place: 'Kandy',
   },
@@ -54,8 +57,16 @@ export default async function HomePage() {
   try {
     await connectToDatabase();
     [featuredProducts, featuredPackages, categories] = await Promise.all([
-      Product.find({ isFeatured: true }).sort({ popularity: -1 }).limit(6).populate('categoryId').lean(),
-      GiftPackage.find({ isFeatured: true }).sort({ popularity: -1 }).limit(6).populate('items.productId').lean(),
+      Product.find({ isFeatured: true })
+        .sort({ popularity: -1 })
+        .limit(6)
+        .populate('categoryId')
+        .lean(),
+      GiftPackage.find({ isFeatured: true })
+        .sort({ popularity: -1 })
+        .limit(6)
+        .populate('items.productId')
+        .lean(),
       Category.find({}).sort({ name: 1 }).limit(8).lean(),
     ]);
   } catch (error) {
@@ -66,26 +77,38 @@ export default async function HomePage() {
     <div>
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="mc-container grid items-center gap-12 pb-14 pt-8 md:pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:pb-24">
+        <div className="mc-container grid items-center gap-12 pt-8 pb-14 md:pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:pb-24">
           <div className="max-w-xl">
             <span className="mc-eyebrow">A gift house · Sri Lanka</span>
-            <h1 className="mc-display mt-5 text-[clamp(2.75rem,6vw,5rem)] mc-animate-rise">
-              Gifts made to be <span className="italic text-primary">remembered</span>.
+            <h1 className="mc-display mc-animate-rise mt-5 text-[clamp(2.75rem,6vw,5rem)]">
+              Gifts made to be{' '}
+              <span className="text-primary italic">remembered</span>.
             </h1>
-            <p className="mc-prose mt-6 text-[1.15rem] leading-relaxed text-muted-foreground mc-animate-rise" style={{ animationDelay: '70ms' }}>
-              We assemble each package by hand and send it island-wide, so the thought you
-              put in is exactly what arrives at the door.
+            <p
+              className="mc-prose mc-animate-rise mt-6 text-[1.15rem] leading-relaxed text-muted-foreground"
+              style={{ animationDelay: '70ms' }}
+            >
+              We assemble each package by hand and send it island-wide, so the
+              thought you put in is exactly what arrives at the door.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
-              <Button asChild size="lg"><Link href="/products">Shop gifts</Link></Button>
-              <Button asChild size="lg" variant="outline"><Link href="/packages">Explore gift packages</Link></Button>
+              <Button asChild size="lg">
+                <Link href="/products">Shop gifts</Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link href="/packages">Explore gift packages</Link>
+              </Button>
             </div>
             <p className="mt-7 text-sm text-faint">
-              Hand-wrapped · Gift note included · Delivered anywhere in Sri Lanka
+              Hand-wrapped · Gift note included · Delivered anywhere in Sri
+              Lanka
             </p>
           </div>
 
-          <div className="relative mc-animate-rise" style={{ animationDelay: '120ms' }}>
+          <div
+            className="mc-animate-rise relative"
+            style={{ animationDelay: '120ms' }}
+          >
             <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--r-xl)] bg-surface shadow-[var(--shadow-lg)]">
               <Image
                 src={HERO_IMAGE}
@@ -97,10 +120,16 @@ export default async function HomePage() {
               />
             </div>
             <div className="absolute -bottom-5 left-5 hidden items-center gap-3 rounded-[var(--r)] border border-line bg-bg px-4 py-3 shadow-[var(--shadow)] sm:flex">
-              <span className="h-7 w-7 text-primary"><MoonMark /></span>
+              <span className="h-7 w-7 text-primary">
+                <MoonMark />
+              </span>
               <div className="leading-tight">
-                <p className="text-sm font-semibold text-ink">Wrapped by hand</p>
-                <p className="text-xs text-muted-foreground">Every single order</p>
+                <p className="text-sm font-semibold text-ink">
+                  Wrapped by hand
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Every single order
+                </p>
               </div>
             </div>
           </div>
@@ -112,7 +141,11 @@ export default async function HomePage() {
             {trustPoints.map((point, i) => (
               <span key={point} className="flex items-center gap-x-8">
                 {point}
-                {i < trustPoints.length - 1 ? <span aria-hidden className="text-line-strong">·</span> : null}
+                {i < trustPoints.length - 1 ? (
+                  <span aria-hidden className="text-line-strong">
+                    ·
+                  </span>
+                ) : null}
               </span>
             ))}
           </div>
@@ -141,14 +174,18 @@ export default async function HomePage() {
                     price: p.price,
                     images: p.images ?? [],
                     stock: p.stock,
-                    category: p.categoryId ? { name: p.categoryId.name, slug: p.categoryId.slug } : null,
+                    category: p.categoryId
+                      ? { name: p.categoryId.name, slug: p.categoryId.slug }
+                      : null,
                   }}
                 />
               </Reveal>
             ))}
           </div>
         ) : (
-          <EmptyNote>No featured gifts yet. Run the seed script to populate the catalog.</EmptyNote>
+          <EmptyNote>
+            No featured gifts yet. Run the seed script to populate the catalog.
+          </EmptyNote>
         )}
       </section>
 
@@ -185,7 +222,9 @@ export default async function HomePage() {
               ))}
             </div>
           ) : (
-            <EmptyNote>No featured packages yet. Run the seed script to add bundles.</EmptyNote>
+            <EmptyNote>
+              No featured packages yet. Run the seed script to add bundles.
+            </EmptyNote>
           )}
         </div>
       </section>
@@ -209,7 +248,9 @@ export default async function HomePage() {
             ))}
           </div>
         ) : (
-          <EmptyNote>No occasions yet. Run the seed script to add categories.</EmptyNote>
+          <EmptyNote>
+            No occasions yet. Run the seed script to add categories.
+          </EmptyNote>
         )}
       </section>
 
@@ -223,13 +264,14 @@ export default async function HomePage() {
             </h2>
             <div className="mc-prose mt-5 space-y-4 text-[1.05rem] leading-relaxed text-muted-foreground">
               <p>
-                The Moon Charm began at a kitchen table in Kuliyapitiya, wrapping chocolate
-                bouquets for friends. We still work the same way: a person chooses the pieces,
-                folds the paper, ties the ribbon, and writes your note by hand.
+                The Moon Charm began at a kitchen table in Kuliyapitiya,
+                wrapping chocolate bouquets for friends. We still work the same
+                way: a person chooses the pieces, folds the paper, ties the
+                ribbon, and writes your note by hand.
               </p>
               <p>
-                Nothing is mass-produced and nothing is rushed. When it leaves us, it looks
-                like someone cared, because someone did.
+                Nothing is mass-produced and nothing is rushed. When it leaves
+                us, it looks like someone cared, because someone did.
               </p>
             </div>
             <Link
@@ -237,8 +279,18 @@ export default async function HomePage() {
               className="group mt-7 inline-flex items-center gap-1.5 text-sm font-semibold text-ink transition-colors hover:text-primary"
             >
               Read our story
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 12h14m-6-6 6 6-6 6"
+                />
               </svg>
             </Link>
           </Reveal>
@@ -263,19 +315,29 @@ export default async function HomePage() {
           <Reveal>
             <SectionHeading
               title={<span className="text-on-dark">Kind words</span>}
-              description={<span className="text-on-dark/70">From people who sent something that mattered.</span>}
+              description={
+                <span className="text-on-dark/70">
+                  From people who sent something that mattered.
+                </span>
+              }
             />
           </Reveal>
           <div className="mt-12 grid gap-8 md:grid-cols-3">
             {testimonials.map((t, i) => (
               <Reveal key={t.name} delay={i * 90}>
                 <figure className="flex h-full flex-col">
-                  <span aria-hidden className="font-display text-5xl leading-none text-honey">“</span>
+                  <span
+                    aria-hidden
+                    className="font-display text-5xl leading-none text-honey"
+                  >
+                    “
+                  </span>
                   <blockquote className="mt-3 flex-1 font-display text-[1.3rem] leading-snug text-on-dark">
                     {t.quote}
                   </blockquote>
                   <figcaption className="mt-6 text-sm text-on-dark/65">
-                    <span className="font-semibold text-on-dark">{t.name}</span> · {t.place}
+                    <span className="font-semibold text-on-dark">{t.name}</span>{' '}
+                    · {t.place}
                   </figcaption>
                 </figure>
               </Reveal>
@@ -288,16 +350,23 @@ export default async function HomePage() {
       <section className="mc-container mc-section">
         <Reveal>
           <div className="flex flex-col items-center gap-6 rounded-[var(--r-xl)] border border-line bg-surface px-6 py-14 text-center">
-            <span className="h-9 w-9 text-primary"><MoonMark /></span>
+            <span className="h-9 w-9 text-primary">
+              <MoonMark />
+            </span>
             <h2 className="max-w-xl text-[clamp(1.7rem,3vw,2.4rem)] leading-tight">
               Not sure what to give? Tell us about them.
             </h2>
             <p className="mc-prose text-muted-foreground">
-              Send us the occasion and the person, and we will put together something that suits.
+              Send us the occasion and the person, and we will put together
+              something that suits.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
-              <Button asChild><Link href="/contact">Ask for a recommendation</Link></Button>
-              <Button asChild variant="outline"><Link href="/packages">Browse packages</Link></Button>
+              <Button asChild>
+                <Link href="/contact">Ask for a recommendation</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/packages">Browse packages</Link>
+              </Button>
             </div>
           </div>
         </Reveal>

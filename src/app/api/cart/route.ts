@@ -13,7 +13,7 @@ const cartUpsertSchema = z.object({
       itemType: z.enum(['product', 'package']),
       refId: z.string().min(1),
       quantity: z.number().int().min(1).max(99),
-    })
+    }),
   ),
 });
 
@@ -106,7 +106,7 @@ export async function PUT(req: Request) {
   const cart = await Cart.findOneAndUpdate(
     { userId },
     { $set: { userId, items } },
-    { upsert: true, new: true }
+    { upsert: true, new: true },
   ).lean();
 
   return NextResponse.json({
@@ -132,6 +132,10 @@ export async function DELETE() {
 
   const dbError = await ensureDatabase();
   if (dbError) return dbError;
-  await Cart.findOneAndUpdate({ userId }, { $set: { items: [] } }, { upsert: true });
+  await Cart.findOneAndUpdate(
+    { userId },
+    { $set: { items: [] } },
+    { upsert: true },
+  );
   return NextResponse.json({ ok: true });
 }

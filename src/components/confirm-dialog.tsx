@@ -33,11 +33,16 @@ export function ConfirmDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
-          {description ? <AlertDialogDescription>{description}</AlertDialogDescription> : null}
+          {description ? (
+            <AlertDialogDescription>{description}</AlertDialogDescription>
+          ) : null}
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm} className={cn(buttonVariants({ variant: 'destructive' }))}>
+          <AlertDialogAction
+            onClick={onConfirm}
+            className={cn(buttonVariants({ variant: 'destructive' }))}
+          >
             {confirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>

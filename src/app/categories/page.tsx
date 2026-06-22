@@ -32,9 +32,17 @@ export default async function CategoriesPage() {
 
   const existingSlugs = new Set(categories.map((c: any) => c.slug));
   const merged = [
-    ...categories.map((c: any) => ({ id: c._id.toString(), name: c.name, slug: c.slug })),
+    ...categories.map((c: any) => ({
+      id: c._id.toString(),
+      name: c.name,
+      slug: c.slug,
+    })),
     ...defaults
-      .map((name) => ({ id: `default-${name}`, name, slug: name.toLowerCase().replace(/\s+/g, '-') }))
+      .map((name) => ({
+        id: `default-${name}`,
+        name,
+        slug: name.toLowerCase().replace(/\s+/g, '-'),
+      }))
       .filter((c) => !existingSlugs.has(c.slug)),
   ];
 

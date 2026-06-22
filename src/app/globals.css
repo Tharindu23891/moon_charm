@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 /* =========================================================================
    The Moon Charm — design tokens
@@ -52,10 +52,11 @@
   --color-ring: oklch(0.5 0.115 54);
 
   /* Type families (wired to next/font variables in layout.tsx) */
-  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, -apple-system,
-    "Segoe UI", sans-serif;
-  --font-display: var(--font-spectral), ui-serif, Georgia, "Times New Roman",
-    serif;
+  --font-sans:
+    var(--font-hanken), ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    sans-serif;
+  --font-display:
+    var(--font-spectral), ui-serif, Georgia, 'Times New Roman', serif;
 }
 
 /* shadcn radius scale, derived from --radius */
@@ -195,7 +196,7 @@
   }
 
   .mc-eyebrow::before {
-    content: "";
+    content: '';
     width: 1.75rem;
     height: 1px;
     background: var(--color-primary);
@@ -236,7 +237,7 @@
   }
 
   .mc-navlink::after {
-    content: "";
+    content: '';
     position: absolute;
     left: 0;
     bottom: -0.4rem;
@@ -247,12 +248,12 @@
   }
 
   .mc-navlink:hover,
-  .mc-navlink[data-active="true"] {
+  .mc-navlink[data-active='true'] {
     color: var(--color-ink);
   }
 
   .mc-navlink:hover::after,
-  .mc-navlink[data-active="true"]::after {
+  .mc-navlink[data-active='true']::after {
     width: 100%;
   }
 }

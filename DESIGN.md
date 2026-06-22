@@ -5,8 +5,8 @@ bright canvas; warmth carried by a honeyed-sienna primary, a romantic claret
 accent, real gift photography, and a serif/sans type pairing. No gradients, no
 glass, no SaaS chrome.
 
-Mood, in one phrase: *late-summer honey hour, a wax-sealed letter and pressed
-petals on a sunlit table, warm light on bright linen.*
+Mood, in one phrase: _late-summer honey hour, a wax-sealed letter and pressed
+petals on a sunlit table, warm light on bright linen._
 
 ## Theme
 
@@ -20,22 +20,22 @@ Strategy: **Committed** with a romantic second voice. The honeyed-sienna primary
 carries identity across CTAs and marks; the claret accent appears sparingly for
 romance and emphasis; rich photography supplies the rest of the warmth.
 
-| Token | OKLCH | Role |
-|---|---|---|
-| `--color-bg` | `oklch(1 0 0)` | Page canvas, pure white |
-| `--color-surface` | `oklch(0.975 0.008 75)` | Cards, panels, subtle warm off-white |
-| `--color-sand` | `oklch(0.955 0.013 70)` | Occasional full-bleed warm sections (used sparingly) |
-| `--color-ink` | `oklch(0.22 0.012 60)` | Body + headings, warm near-black espresso |
-| `--color-muted` | `oklch(0.44 0.016 55)` | Secondary text (>=4.5:1 on bg/surface) |
-| `--color-line` | `oklch(0.90 0.008 70)` | Hairline borders |
-| `--color-line-strong` | `oklch(0.84 0.01 65)` | Stronger dividers |
-| `--color-primary` | `oklch(0.50 0.115 54)` | Deep honeyed sienna. CTAs, primary buttons, brand marks. White text. |
-| `--color-primary-hover` | `oklch(0.44 0.115 52)` | Primary hover/active |
-| `--color-honey` | `oklch(0.80 0.14 72)` | Bright honey for decoration only (rules, icon fills, glow). Never bears small text. |
-| `--color-accent` | `oklch(0.40 0.125 16)` | Romantic claret. Sparing emphasis, wishlist, special tags. White text. |
-| `--color-blush` | `oklch(0.945 0.022 24)` | Pale romantic tint for pills/panels. Dark text. |
-| `--color-success` | `oklch(0.50 0.09 140)` | In stock, delivered |
-| `--color-danger` | `oklch(0.52 0.17 25)` | Out of stock, destructive, errors |
+| Token                   | OKLCH                   | Role                                                                                |
+| ----------------------- | ----------------------- | ----------------------------------------------------------------------------------- |
+| `--color-bg`            | `oklch(1 0 0)`          | Page canvas, pure white                                                             |
+| `--color-surface`       | `oklch(0.975 0.008 75)` | Cards, panels, subtle warm off-white                                                |
+| `--color-sand`          | `oklch(0.955 0.013 70)` | Occasional full-bleed warm sections (used sparingly)                                |
+| `--color-ink`           | `oklch(0.22 0.012 60)`  | Body + headings, warm near-black espresso                                           |
+| `--color-muted`         | `oklch(0.44 0.016 55)`  | Secondary text (>=4.5:1 on bg/surface)                                              |
+| `--color-line`          | `oklch(0.90 0.008 70)`  | Hairline borders                                                                    |
+| `--color-line-strong`   | `oklch(0.84 0.01 65)`   | Stronger dividers                                                                   |
+| `--color-primary`       | `oklch(0.50 0.115 54)`  | Deep honeyed sienna. CTAs, primary buttons, brand marks. White text.                |
+| `--color-primary-hover` | `oklch(0.44 0.115 52)`  | Primary hover/active                                                                |
+| `--color-honey`         | `oklch(0.80 0.14 72)`   | Bright honey for decoration only (rules, icon fills, glow). Never bears small text. |
+| `--color-accent`        | `oklch(0.40 0.125 16)`  | Romantic claret. Sparing emphasis, wishlist, special tags. White text.              |
+| `--color-blush`         | `oklch(0.945 0.022 24)` | Pale romantic tint for pills/panels. Dark text.                                     |
+| `--color-success`       | `oklch(0.50 0.09 140)`  | In stock, delivered                                                                 |
+| `--color-danger`        | `oklch(0.52 0.17 25)`   | Out of stock, destructive, errors                                                   |
 
 **Text-on-fill rule:** white text on `--color-primary`, `--color-accent`,
 `--color-danger`, `--color-success` (saturated mid fills). Dark `--color-ink`
@@ -60,16 +60,16 @@ Neither was in the prior identity; both deliberately avoid the Playfair / Cormor
 
 Fluid scale, ratio ~1.25, `clamp()` on headings (display ceiling <= 5.5rem):
 
-| Step | Size |
-|---|---|
-| display | `clamp(2.75rem, 6vw, 5.25rem)` Spectral 400 |
-| h1 | `clamp(2.1rem, 4vw, 3.4rem)` Spectral 400 |
-| h2 | `clamp(1.65rem, 3vw, 2.4rem)` Spectral 500 |
-| h3 | `clamp(1.25rem, 2vw, 1.55rem)` Spectral 500 |
-| body-lg | `1.125rem` Hanken 400 |
-| body | `1rem` Hanken 400 |
-| small | `0.875rem` Hanken 500 |
-| label | `0.75rem` Hanken 600, uppercase, tracking `0.08em`, used sparingly |
+| Step    | Size                                                               |
+| ------- | ------------------------------------------------------------------ |
+| display | `clamp(2.75rem, 6vw, 5.25rem)` Spectral 400                        |
+| h1      | `clamp(2.1rem, 4vw, 3.4rem)` Spectral 400                          |
+| h2      | `clamp(1.65rem, 3vw, 2.4rem)` Spectral 500                         |
+| h3      | `clamp(1.25rem, 2vw, 1.55rem)` Spectral 500                        |
+| body-lg | `1.125rem` Hanken 400                                              |
+| body    | `1rem` Hanken 400                                                  |
+| small   | `0.875rem` Hanken 500                                              |
+| label   | `0.75rem` Hanken 600, uppercase, tracking `0.08em`, used sparingly |
 
 Rules: display tracking `-0.02em` (never tighter than -0.04em); `text-wrap:balance`
 on h1-h3, `text-wrap:pretty` on prose; prose column capped at ~68ch; no all-caps

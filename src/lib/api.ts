@@ -12,7 +12,7 @@ export function dbUnavailableResponse() {
       error: 'The database is currently unavailable. Please try again shortly.',
       code: 'DB_UNAVAILABLE',
     },
-    { status: 503 }
+    { status: 503 },
   );
 }
 

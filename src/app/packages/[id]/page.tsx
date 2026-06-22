@@ -32,7 +32,10 @@ export async function generateMetadata({
   const pkg = (await getPackage(id)) as any;
 
   if (!pkg) {
-    return { title: 'Package not found', robots: { index: false, follow: true } };
+    return {
+      title: 'Package not found',
+      robots: { index: false, follow: true },
+    };
   }
 
   const url = absoluteUrl(`/packages/${id}`);
@@ -59,7 +62,11 @@ export async function generateMetadata({
   };
 }
 
-export default async function PackageDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PackageDetailsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
 
   const pkg = await getPackage(id);
@@ -68,14 +75,20 @@ export default async function PackageDetailsPage({ params }: { params: Promise<{
     return (
       <div className="mc-container py-20 text-center">
         <h1 className="font-display text-3xl">We can’t find that package</h1>
-        <p className="mt-3 text-muted-foreground">It may have sold out or been moved.</p>
-        <Button asChild className="mt-6"><Link href="/packages">Back to packages</Link></Button>
+        <p className="mt-3 text-muted-foreground">
+          It may have sold out or been moved.
+        </p>
+        <Button asChild className="mt-6">
+          <Link href="/packages">Back to packages</Link>
+        </Button>
       </div>
     );
   }
 
   const p = pkg as any;
-  const image = p.image || 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=1200&q=70';
+  const image =
+    p.image ||
+    'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=1200&q=70';
   const items: any[] = p.items ?? [];
   const packageUrl = absoluteUrl(`/packages/${id}`);
   const effectivePrice = applyDiscount(p.price, p.discountPercent);
@@ -102,8 +115,18 @@ export default async function PackageDetailsPage({ params }: { params: Promise<{
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: absoluteUrl('/') },
-      { '@type': 'ListItem', position: 2, name: 'Gift packages', item: absoluteUrl('/packages') },
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: absoluteUrl('/'),
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Gift packages',
+        item: absoluteUrl('/packages'),
+      },
       { '@type': 'ListItem', position: 3, name: p.name, item: packageUrl },
     ],
   };
@@ -113,29 +136,52 @@ export default async function PackageDetailsPage({ params }: { params: Promise<{
       <JsonLd data={packageLd} />
       <JsonLd data={breadcrumbLd} />
       <Breadcrumb
-        items={[{ href: '/', label: 'Home' }, { href: '/packages', label: 'Gift packages' }, { label: p.name }]}
+        items={[
+          { href: '/', label: 'Home' },
+          { href: '/packages', label: 'Gift packages' },
+          { label: p.name },
+        ]}
       />
 
       <div className="mt-7 grid gap-10 lg:grid-cols-2 lg:gap-14">
         <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--r-xl)] bg-surface">
-          <Image src={image} alt={p.name} fill priority sizes="(max-width: 768px) 100vw, 560px" className="object-cover" />
+          <Image
+            src={image}
+            alt={p.name}
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, 560px"
+            className="object-cover"
+          />
         </div>
 
         <div className="lg:sticky lg:top-28 lg:self-start">
           <Badge variant="blush">Gift package</Badge>
-          <h1 className="mt-4 font-display text-[clamp(2rem,4vw,3rem)] leading-[1.05]">{p.name}</h1>
+          <h1 className="mt-4 font-display text-[clamp(2rem,4vw,3rem)] leading-[1.05]">
+            {p.name}
+          </h1>
           <p className="mt-3 text-[1.05rem] leading-relaxed text-muted-foreground">
-            A curated bundle, assembled and wrapped by hand as one considered gift.
+            A curated bundle, assembled and wrapped by hand as one considered
+            gift.
           </p>
 
           {items.length > 0 ? (
             <div className="mt-6 rounded-[var(--r-lg)] border border-line bg-bg p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">What’s inside</p>
+              <p className="text-xs font-semibold tracking-[0.1em] text-muted-foreground uppercase">
+                What’s inside
+              </p>
               <ul className="mt-3 divide-y divide-line">
                 {items.map((it, idx) => (
-                  <li key={idx} className="flex items-center justify-between gap-3 py-2.5 text-sm">
-                    <span className="text-ink">{it.productId?.name ?? 'Gift item'}</span>
-                    <span className="text-muted-foreground">×{it.quantity}</span>
+                  <li
+                    key={idx}
+                    className="flex items-center justify-between gap-3 py-2.5 text-sm"
+                  >
+                    <span className="text-ink">
+                      {it.productId?.name ?? 'Gift item'}
+                    </span>
+                    <span className="text-muted-foreground">
+                      ×{it.quantity}
+                    </span>
                   </li>
                 ))}
               </ul>

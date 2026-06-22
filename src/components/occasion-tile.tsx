@@ -14,8 +14,18 @@ export function OccasionTile({ name, slug }: { name: string; slug: string }) {
         <h3 className="font-display text-xl leading-tight">{name}</h3>
         <span className="mt-1 inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors group-hover:text-primary">
           Browse gifts
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 12h14m-6-6 6 6-6 6"
+            />
           </svg>
         </span>
       </div>

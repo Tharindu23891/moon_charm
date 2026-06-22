@@ -7,7 +7,14 @@ import { Order } from '@/models/Order';
 const updateOrderSchema = z
   .object({
     status: z
-      .enum(['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'])
+      .enum([
+        'pending',
+        'confirmed',
+        'processing',
+        'shipped',
+        'delivered',
+        'cancelled',
+      ])
       .optional(),
     paymentStatus: z.enum(['unpaid', 'paid', 'refunded']).optional(),
   })
@@ -15,7 +22,7 @@ const updateOrderSchema = z
 
 export async function PATCH(
   req: Request,
-  ctx: { params: Promise<{ id: string }> }
+  ctx: { params: Promise<{ id: string }> },
 ) {
   try {
     await requireAdmin();
@@ -33,7 +40,9 @@ export async function PATCH(
 
   const dbError = await ensureDatabase();
   if (dbError) return dbError;
-  const updated = await Order.findByIdAndUpdate(id, parsed.data, { new: true }).lean();
+  const updated = await Order.findByIdAndUpdate(id, parsed.data, {
+    new: true,
+  }).lean();
   if (!updated) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }

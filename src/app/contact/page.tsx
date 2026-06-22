@@ -3,13 +3,22 @@ import { PageHeader } from '@/components/page-header';
 
 export const metadata = {
   title: 'Contact',
-  description: 'Talk to The Moon Charm about custom gifts, packages, and occasions.',
+  description:
+    'Talk to The Moon Charm about custom gifts, packages, and occasions.',
   alternates: { canonical: '/contact' },
 };
 
 const details = [
-  { label: 'Call or WhatsApp', value: '+94 78 176 95 68', href: 'tel:+94781769568' },
-  { label: 'Email', value: 'info.themooncharm@gmail.com', href: 'mailto:info.themooncharm@gmail.com' },
+  {
+    label: 'Call or WhatsApp',
+    value: '+94 78 176 95 68',
+    href: 'tel:+94781769568',
+  },
+  {
+    label: 'Email',
+    value: 'info.themooncharm@gmail.com',
+    href: 'mailto:info.themooncharm@gmail.com',
+  },
   { label: 'Where we are', value: 'Kuliyapitiya, Sri Lanka' },
   { label: 'Hours', value: 'Mon – Sat · 9am – 7pm' },
 ];
@@ -28,10 +37,17 @@ export default function ContactPage() {
           <dl className="space-y-6">
             {details.map((d) => (
               <div key={d.label}>
-                <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-faint">{d.label}</dt>
+                <dt className="text-xs font-semibold tracking-[0.12em] text-faint uppercase">
+                  {d.label}
+                </dt>
                 <dd className="mt-1.5 text-[1.05rem] text-ink">
                   {d.href ? (
-                    <a href={d.href} className="transition-colors hover:text-primary">{d.value}</a>
+                    <a
+                      href={d.href}
+                      className="transition-colors hover:text-primary"
+                    >
+                      {d.value}
+                    </a>
                   ) : (
                     d.value
                   )}
@@ -43,8 +59,9 @@ export default function ContactPage() {
           <div className="mt-8 rounded-[var(--r)] border border-line bg-bg p-5">
             <p className="text-sm font-semibold text-ink">A note on timing</p>
             <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-              For custom orders, three days’ notice lets us source, design, and wrap without rushing.
-              Tell us your date and we’ll let you know what’s possible.
+              For custom orders, three days’ notice lets us source, design, and
+              wrap without rushing. Tell us your date and we’ll let you know
+              what’s possible.
             </p>
           </div>
         </aside>

@@ -546,7 +546,7 @@ async function main() {
   ];
 
   const categories = await Category.insertMany(
-    categoryNames.map((name) => ({ name, slug: slugify(name) }))
+    categoryNames.map((name) => ({ name, slug: slugify(name) })),
   );
   const categoryBySlug = new Map(categories.map((c) => [c.slug, c]));
 
@@ -569,7 +569,7 @@ async function main() {
         isFeatured: p.isFeatured ?? false,
         popularity: p.popularity ?? 0,
       };
-    })
+    }),
   );
   const productBySlug = new Map(products.map((p) => [p.slug, p]));
 
@@ -582,7 +582,9 @@ async function main() {
       items: pkg.itemSlugs.map(({ slug, quantity }) => {
         const product = productBySlug.get(slug);
         if (!product) {
-          throw new Error(`Unknown product slug in package "${pkg.name}": ${slug}`);
+          throw new Error(
+            `Unknown product slug in package "${pkg.name}": ${slug}`,
+          );
         }
         return { productId: product._id, quantity };
       }),
@@ -590,7 +592,7 @@ async function main() {
       discountPercent: pkg.discountPercent,
       isFeatured: pkg.isFeatured ?? false,
       popularity: pkg.popularity ?? 0,
-    }))
+    })),
   );
   const packageBySlug = new Map(packages.map((p) => [p.slug, p]));
 
@@ -661,7 +663,7 @@ async function main() {
       email: c.email,
       passwordHash: customerPasswordHash,
       role: 'user',
-    }))
+    })),
   );
   const customerByEmail = new Map(customers.map((c) => [c.email, c]));
   const addressByEmail = new Map(customerSeed.map((c) => [c.email, c.address]));
@@ -695,7 +697,13 @@ async function main() {
     items: (ReturnType<typeof productItem> | ReturnType<typeof packageItem>)[];
     paymentMethod: 'cod' | 'card' | 'bank';
     paymentStatus: 'unpaid' | 'paid' | 'refunded';
-    status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+    status:
+      | 'pending'
+      | 'confirmed'
+      | 'processing'
+      | 'shipped'
+      | 'delivered'
+      | 'cancelled';
     createdAt: Date;
   };
 
@@ -768,7 +776,10 @@ async function main() {
   ];
 
   const orderDocs = orderSeed.map((o) => {
-    const subtotal = o.items.reduce((sum, it) => sum + it.unitPrice * it.quantity, 0);
+    const subtotal = o.items.reduce(
+      (sum, it) => sum + it.unitPrice * it.quantity,
+      0,
+    );
     return {
       userId: customerByEmail.get(o.email)!._id,
       items: o.items,
@@ -794,7 +805,9 @@ async function main() {
   console.log(`  Orders:     ${orderDocs.length}`);
   console.log('');
   console.log(`Admin login:    ${adminEmail} / ${adminPassword}`);
-  console.log(`Customer login: nimal@example.com / ${customerPassword} (also tharushi@, kasun@)`);
+  console.log(
+    `Customer login: nimal@example.com / ${customerPassword} (also tharushi@, kasun@)`,
+  );
 }
 
 try {

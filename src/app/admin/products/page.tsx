@@ -28,7 +28,9 @@ export default function AdminProductsListPage() {
       const res = await fetch('/api/products');
       if (!res.ok) {
         setProducts([]);
-        const msg = (await res.json().catch(() => null))?.error ?? 'Failed to load products';
+        const msg =
+          (await res.json().catch(() => null))?.error ??
+          'Failed to load products';
         toast.error(msg);
         return;
       }
@@ -56,7 +58,8 @@ export default function AdminProductsListPage() {
       return;
     }
     if (!res.ok) {
-      const msg = (await res.json().catch(() => null))?.error ?? 'Delete failed';
+      const msg =
+        (await res.json().catch(() => null))?.error ?? 'Delete failed';
       toast.error(msg);
       return;
     }
@@ -71,15 +74,19 @@ export default function AdminProductsListPage() {
     body = (
       <div className="px-5 py-12 text-center">
         <p className="font-display text-lg text-ink">No products yet</p>
-        <p className="mt-1 text-sm text-muted-foreground">Add your first gift to get started.</p>
-        <Button asChild className="mt-5"><Link href="/admin/products/new">Add product</Link></Button>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Add your first gift to get started.
+        </p>
+        <Button asChild className="mt-5">
+          <Link href="/admin/products/new">Add product</Link>
+        </Button>
       </div>
     );
   } else {
     body = (
       <div className="overflow-x-auto">
         <table className="w-full min-w-[600px] text-left text-sm">
-          <thead className="border-b border-line bg-surface text-xs uppercase tracking-wide text-muted-foreground">
+          <thead className="border-b border-line bg-surface text-xs tracking-wide text-muted-foreground uppercase">
             <tr>
               <th className="px-5 py-3 font-semibold">Name</th>
               <th className="px-5 py-3 font-semibold">Category</th>
@@ -92,19 +99,33 @@ export default function AdminProductsListPage() {
             {products.map((p) => (
               <tr key={p.id} className="transition-colors hover:bg-surface/60">
                 <td className="px-5 py-3.5 font-medium text-ink">{p.name}</td>
-                <td className="px-5 py-3.5 text-muted-foreground">{p.category?.name ?? '—'}</td>
-                <td className="px-5 py-3.5 text-right tabular-nums text-ink">{formatLkr(p.price)}</td>
-                <td className="px-5 py-3.5 text-right tabular-nums text-muted-foreground">{p.stock}</td>
+                <td className="px-5 py-3.5 text-muted-foreground">
+                  {p.category?.name ?? '—'}
+                </td>
+                <td className="px-5 py-3.5 text-right text-ink tabular-nums">
+                  {formatLkr(p.price)}
+                </td>
+                <td className="px-5 py-3.5 text-right text-muted-foreground tabular-nums">
+                  {p.stock}
+                </td>
                 <td className="px-5 py-3.5">
                   <div className="flex items-center justify-end gap-1">
-                    <Button asChild variant="ghost" size="sm"><Link href={`/admin/products/${p.id}`}>Edit</Link></Button>
+                    <Button asChild variant="ghost" size="sm">
+                      <Link href={`/admin/products/${p.id}`}>Edit</Link>
+                    </Button>
                     <ConfirmDialog
                       title="Delete this product?"
                       description={`“${p.name}” will be removed. This cannot be undone.`}
                       confirmLabel="Delete product"
                       onConfirm={() => deleteProduct(p.id)}
                       trigger={
-                        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-claret">Delete</Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-muted-foreground hover:text-claret"
+                        >
+                          Delete
+                        </Button>
                       }
                     />
                   </div>
@@ -122,7 +143,11 @@ export default function AdminProductsListPage() {
       <AdminHeader
         title="Products"
         description="Create, edit, and remove individual gift items."
-        actions={<Button asChild><Link href="/admin/products/new">Add product</Link></Button>}
+        actions={
+          <Button asChild>
+            <Link href="/admin/products/new">Add product</Link>
+          </Button>
+        }
       />
       <div className="mt-8">
         <AdminPanel>{body}</AdminPanel>

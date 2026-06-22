@@ -6,7 +6,13 @@ import { toast } from 'sonner';
 import { formatLkr } from '@/lib/money';
 import { AdminHeader, AdminPanel } from '@/components/admin/admin-ui';
 import { OrderStatusBadge } from '@/components/order-status-badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 type Order = {
   id: string;
@@ -17,7 +23,14 @@ type Order = {
   createdAt: string;
 };
 
-const statuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'] as const;
+const statuses = [
+  'pending',
+  'confirmed',
+  'processing',
+  'shipped',
+  'delivered',
+  'cancelled',
+] as const;
 
 export default function AdminOrdersPage() {
   const router = useRouter();
@@ -36,7 +49,9 @@ export default function AdminOrdersPage() {
       }
       if (!res.ok) {
         setOrders([]);
-        const msg = (await res.json().catch(() => null))?.error ?? 'Failed to load orders';
+        const msg =
+          (await res.json().catch(() => null))?.error ??
+          'Failed to load orders';
         toast.error(msg);
         return;
       }
@@ -72,43 +87,80 @@ export default function AdminOrdersPage() {
 
   return (
     <div>
-      <AdminHeader title="Orders" description="Review orders and move them through fulfilment." />
+      <AdminHeader
+        title="Orders"
+        description="Review orders and move them through fulfilment."
+      />
 
       <div className="mt-8">
         <AdminPanel>
           {loading ? (
             <p className="px-5 py-8 text-sm text-muted-foreground">Loading…</p>
           ) : orders.length === 0 ? (
-            <p className="px-5 py-12 text-center text-sm text-muted-foreground">No orders yet.</p>
+            <p className="px-5 py-12 text-center text-sm text-muted-foreground">
+              No orders yet.
+            </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[720px] text-left text-sm">
-                <thead className="border-b border-line bg-surface text-xs uppercase tracking-wide text-muted-foreground">
+                <thead className="border-b border-line bg-surface text-xs tracking-wide text-muted-foreground uppercase">
                   <tr>
                     <th className="px-5 py-3 font-semibold">Order</th>
                     <th className="px-5 py-3 font-semibold">Status</th>
                     <th className="px-5 py-3 font-semibold">Payment</th>
-                    <th className="px-5 py-3 text-right font-semibold">Total</th>
+                    <th className="px-5 py-3 text-right font-semibold">
+                      Total
+                    </th>
                     <th className="px-5 py-3 font-semibold">Placed</th>
                     <th className="px-5 py-3 font-semibold">Update status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line">
                   {orders.map((o) => (
-                    <tr key={o.id} className="transition-colors hover:bg-surface/60">
-                      <td className="px-5 py-3.5 font-medium text-ink">#{o.id.slice(-8)}</td>
-                      <td className="px-5 py-3.5"><OrderStatusBadge status={o.status} /></td>
-                      <td className="px-5 py-3.5 capitalize text-muted-foreground">{o.paymentStatus}</td>
-                      <td className="px-5 py-3.5 text-right tabular-nums text-ink">{formatLkr(Number(o.total))}</td>
-                      <td className="px-5 py-3.5 text-muted-foreground">{new Date(o.createdAt).toLocaleDateString('en-LK', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                    <tr
+                      key={o.id}
+                      className="transition-colors hover:bg-surface/60"
+                    >
+                      <td className="px-5 py-3.5 font-medium text-ink">
+                        #{o.id.slice(-8)}
+                      </td>
                       <td className="px-5 py-3.5">
-                        <Select defaultValue={o.status} onValueChange={(v) => updateStatus(o.id, v)}>
-                          <SelectTrigger size="sm" aria-label={`Update status for order ${o.id.slice(-8)}`} className="w-40 capitalize">
+                        <OrderStatusBadge status={o.status} />
+                      </td>
+                      <td className="px-5 py-3.5 text-muted-foreground capitalize">
+                        {o.paymentStatus}
+                      </td>
+                      <td className="px-5 py-3.5 text-right text-ink tabular-nums">
+                        {formatLkr(Number(o.total))}
+                      </td>
+                      <td className="px-5 py-3.5 text-muted-foreground">
+                        {new Date(o.createdAt).toLocaleDateString('en-LK', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </td>
+                      <td className="px-5 py-3.5">
+                        <Select
+                          defaultValue={o.status}
+                          onValueChange={(v) => updateStatus(o.id, v)}
+                        >
+                          <SelectTrigger
+                            size="sm"
+                            aria-label={`Update status for order ${o.id.slice(-8)}`}
+                            className="w-40 capitalize"
+                          >
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
                             {statuses.map((s) => (
-                              <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
+                              <SelectItem
+                                key={s}
+                                value={s}
+                                className="capitalize"
+                              >
+                                {s}
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>

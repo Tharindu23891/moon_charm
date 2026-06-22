@@ -4,7 +4,13 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 type Category = { id: string; name: string; slug: string };
 
@@ -26,7 +32,9 @@ export function ProductFilters({ categories }: { categories: Category[] }) {
   const category = searchParams.get('category') ?? '';
   const sort = searchParams.get('sort') ?? 'newest';
 
-  const hasFilters = Boolean(q || category || minPrice || maxPrice || (sort && sort !== 'newest'));
+  const hasFilters = Boolean(
+    q || category || minPrice || maxPrice || (sort && sort !== 'newest'),
+  );
 
   function go(next: { category?: string; sort?: string }) {
     const params = new URLSearchParams();
@@ -57,22 +65,44 @@ export function ProductFilters({ categories }: { categories: Category[] }) {
         }}
         className="grid gap-3 md:grid-cols-[1.6fr_1fr_0.8fr_0.8fr_1fr]"
       >
-        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search gifts…" aria-label="Search gifts" />
+        <Input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Search gifts…"
+          aria-label="Search gifts"
+        />
 
-        <Select value={category || 'all'} onValueChange={(v) => go({ category: v })}>
+        <Select
+          value={category || 'all'}
+          onValueChange={(v) => go({ category: v })}
+        >
           <SelectTrigger aria-label="Occasion" className="w-full">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All occasions</SelectItem>
             {categories.map((c) => (
-              <SelectItem key={c.id} value={c.slug}>{c.name}</SelectItem>
+              <SelectItem key={c.id} value={c.slug}>
+                {c.name}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
-        <Input value={minPrice} onChange={(e) => setMinPrice(e.target.value)} placeholder="Min" inputMode="decimal" aria-label="Minimum price" />
-        <Input value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} placeholder="Max" inputMode="decimal" aria-label="Maximum price" />
+        <Input
+          value={minPrice}
+          onChange={(e) => setMinPrice(e.target.value)}
+          placeholder="Min"
+          inputMode="decimal"
+          aria-label="Minimum price"
+        />
+        <Input
+          value={maxPrice}
+          onChange={(e) => setMaxPrice(e.target.value)}
+          placeholder="Max"
+          inputMode="decimal"
+          aria-label="Maximum price"
+        />
 
         <Select value={sort} onValueChange={(v) => go({ sort: v })}>
           <SelectTrigger aria-label="Sort by" className="w-full">
@@ -80,14 +110,18 @@ export function ProductFilters({ categories }: { categories: Category[] }) {
           </SelectTrigger>
           <SelectContent>
             {sortOptions.map((o) => (
-              <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+              <SelectItem key={o.value} value={o.value}>
+                {o.label}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
         <div className="flex items-center justify-end gap-2 md:col-span-5">
           {hasFilters ? (
-            <Button type="button" variant="ghost" onClick={reset}>Reset</Button>
+            <Button type="button" variant="ghost" onClick={reset}>
+              Reset
+            </Button>
           ) : null}
           <Button type="submit">Apply filters</Button>
         </div>

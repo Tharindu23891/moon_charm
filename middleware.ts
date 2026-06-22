@@ -8,7 +8,9 @@ export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
   const isProtectedUserRoute =
-    pathname === '/profile' || pathname === '/orders' || pathname === '/checkout';
+    pathname === '/profile' ||
+    pathname === '/orders' ||
+    pathname === '/checkout';
   const isAdminRoute = pathname.startsWith('/admin');
 
   if (isAdminRoute) {

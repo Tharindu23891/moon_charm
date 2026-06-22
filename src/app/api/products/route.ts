@@ -75,10 +75,12 @@ export async function GET(req: Request) {
       price: p.price,
       images: p.images,
       stock: p.stock,
-      category: p.categoryId ? { name: p.categoryId.name, slug: p.categoryId.slug } : null,
+      category: p.categoryId
+        ? { name: p.categoryId.name, slug: p.categoryId.slug }
+        : null,
       isFeatured: p.isFeatured,
       popularity: p.popularity,
-    }))
+    })),
   );
 }
 
@@ -100,15 +102,22 @@ export async function POST(req: Request) {
   const dbError = await ensureDatabase();
   if (dbError) return dbError;
 
-  const category = await Category.findOne({ slug: parsed.data.categorySlug }).lean();
+  const category = await Category.findOne({
+    slug: parsed.data.categorySlug,
+  }).lean();
   if (!category) {
     return NextResponse.json({ error: 'Invalid category' }, { status: 400 });
   }
 
-  const slug = parsed.data.slug ? slugify(parsed.data.slug) : slugify(parsed.data.name);
+  const slug = parsed.data.slug
+    ? slugify(parsed.data.slug)
+    : slugify(parsed.data.name);
   const exists = await Product.findOne({ slug }).lean();
   if (exists) {
-    return NextResponse.json({ error: 'Product slug already exists' }, { status: 409 });
+    return NextResponse.json(
+      { error: 'Product slug already exists' },
+      { status: 409 },
+    );
   }
 
   const created = await Product.create({

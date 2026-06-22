@@ -1,6 +1,13 @@
 'use client';
 
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 
@@ -37,7 +44,8 @@ function showLoginRequiredToast() {
   loginToastCounter += 1;
   toast.error('Sign in required', {
     id: `login-required-${loginToastCounter}`,
-    description: 'Please log in to add items to your cart and continue checkout.',
+    description:
+      'Please log in to add items to your cart and continue checkout.',
     duration: 7000,
     action: {
       label: 'Log in',
@@ -63,7 +71,9 @@ function readStoredCart(): CartItem[] {
   }
 }
 
-export function CartProvider({ children }: Readonly<{ children: React.ReactNode }>) {
+export function CartProvider({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   const [items, setItems] = useState<CartItem[]>([]);
   const { data: session, status } = useSession();
   const canAddToCart = status !== 'loading' && Boolean(session?.user);
@@ -73,7 +83,10 @@ export function CartProvider({ children }: Readonly<{ children: React.ReactNode 
   }, []);
 
   useEffect(() => {
-    globalThis.window?.localStorage?.setItem(STORAGE_KEY, JSON.stringify(items));
+    globalThis.window?.localStorage?.setItem(
+      STORAGE_KEY,
+      JSON.stringify(items),
+    );
   }, [items]);
 
   const addItem = useCallback(
@@ -100,11 +113,14 @@ export function CartProvider({ children }: Readonly<{ children: React.ReactNode 
         toast.success('Updated cart quantity');
         const next = prev.slice();
         const existing = next[foundIndex];
-        next[foundIndex] = { ...existing, quantity: existing.quantity + quantity };
+        next[foundIndex] = {
+          ...existing,
+          quantity: existing.quantity + quantity,
+        };
         return next;
       });
     },
-    [canAddToCart]
+    [canAddToCart],
   );
 
   const updateQuantity = useCallback((refId: string, quantity: number) => {
@@ -139,13 +155,24 @@ export function CartProvider({ children }: Readonly<{ children: React.ReactNode 
 
   const subtotal = useMemo(
     () => items.reduce((sum, it) => sum + it.unitPrice * it.quantity, 0),
-    [items]
+    [items],
   );
-  const count = useMemo(() => items.reduce((sum, it) => sum + it.quantity, 0), [items]);
+  const count = useMemo(
+    () => items.reduce((sum, it) => sum + it.quantity, 0),
+    [items],
+  );
 
   const value = useMemo<CartContextValue>(
-    () => ({ items, addItem, updateQuantity, removeItem, clear, subtotal, count }),
-    [addItem, clear, count, items, removeItem, subtotal, updateQuantity]
+    () => ({
+      items,
+      addItem,
+      updateQuantity,
+      removeItem,
+      clear,
+      subtotal,
+      count,
+    }),
+    [addItem, clear, count, items, removeItem, subtotal, updateQuantity],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

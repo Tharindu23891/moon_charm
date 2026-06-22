@@ -28,7 +28,11 @@ export function PackageCard({ pkg }: { pkg: PackageListItem }) {
   return (
     <article className="group flex flex-col">
       <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--r-lg)] bg-surface">
-        <Link href={`/packages/${pkg.id}`} aria-label={`View ${pkg.name}`} className="absolute inset-0">
+        <Link
+          href={`/packages/${pkg.id}`}
+          aria-label={`View ${pkg.name}`}
+          className="absolute inset-0"
+        >
           <Image
             src={image}
             alt={pkg.name}
@@ -38,35 +42,56 @@ export function PackageCard({ pkg }: { pkg: PackageListItem }) {
           />
         </Link>
 
-        <Badge variant="blush" className="absolute left-3 top-3">Gift package</Badge>
+        <Badge variant="blush" className="absolute top-3 left-3">
+          Gift package
+        </Badge>
 
         {pkg.discountPercent ? (
-          <Badge variant="claret" className="absolute right-3 top-3">Save {pkg.discountPercent}%</Badge>
+          <Badge variant="claret" className="absolute top-3 right-3">
+            Save {pkg.discountPercent}%
+          </Badge>
         ) : null}
 
-        <div className="absolute bottom-3 right-3 translate-y-1 opacity-0 transition-[opacity,transform] duration-300 ease-[var(--ease-out)] group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100">
+        <div className="absolute right-3 bottom-3 translate-y-1 opacity-0 transition-[opacity,transform] duration-300 ease-[var(--ease-out)] group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100">
           <AddToCartButton
             variant="icon"
-            item={{ itemType: 'package', refId: pkg.id, name: pkg.name, image, unitPrice: effectivePrice }}
+            item={{
+              itemType: 'package',
+              refId: pkg.id,
+              name: pkg.name,
+              image,
+              unitPrice: effectivePrice,
+            }}
           />
         </div>
       </div>
 
       <div className="mt-3.5 flex flex-1 flex-col">
         <h3 className="font-display text-[1.15rem] leading-snug">
-          <Link href={`/packages/${pkg.id}`} className="transition-colors hover:text-primary">
+          <Link
+            href={`/packages/${pkg.id}`}
+            className="transition-colors hover:text-primary"
+          >
             {pkg.name}
           </Link>
         </h3>
         <span className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <span className="text-[0.95rem] font-semibold text-ink">{formatLkr(effectivePrice)}</span>
+          <span className="text-[0.95rem] font-semibold text-ink">
+            {formatLkr(effectivePrice)}
+          </span>
           {pkg.discountPercent ? (
-            <span className="text-xs text-faint line-through">{formatLkr(pkg.price)}</span>
+            <span className="text-xs text-faint line-through">
+              {formatLkr(pkg.price)}
+            </span>
           ) : null}
         </span>
 
         <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">
-          {includes ? <>Includes {includes}</> : 'A curated bundle, ready to gift.'}
+          {includes ? (
+            <>Includes {includes}</>
+          ) : (
+            'A curated bundle, ready to gift.'
+          )}
         </p>
       </div>
     </article>

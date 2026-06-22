@@ -9,7 +9,8 @@ import {
 
 export const metadata = {
   title: 'Our story',
-  description: 'The Moon Charm is a small, handmade gift house in Kuliyapitiya, Sri Lanka.',
+  description:
+    'The Moon Charm is a small, handmade gift house in Kuliyapitiya, Sri Lanka.',
   alternates: { canonical: '/about' },
 };
 

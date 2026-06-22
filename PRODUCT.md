@@ -4,7 +4,7 @@
 
 brand
 
-The storefront is the primary surface and is brand-led: the design *is* the
+The storefront is the primary surface and is brand-led: the design _is_ the
 product experience. The admin dashboard (`/admin/*`) is a secondary, product-register
 surface; treat it with product thinking (clarity, density, task speed) while
 keeping the same brand foundations (type, color, voice).
@@ -17,8 +17,8 @@ person in mind and a feeling they want to deliver, often a little time-pressured
 and wanting reassurance that the gift will look and feel considered when it
 lands. Many are buying from or for Sri Lanka (pricing is in LKR; the brand is
 based in Kuliyapitiya). They care about presentation, trust (will it arrive, will
-it look premium), and ease of choosing. The job to be done: *find and send a gift
-that feels personal and beautifully made, without second-guessing it.*
+it look premium), and ease of choosing. The job to be done: _find and send a gift
+that feels personal and beautifully made, without second-guessing it._
 
 Secondary user: the **shop owner / admin**, managing products, gift packages,
 categories, and orders. Their job is fast, confident catalog and order
@@ -43,7 +43,7 @@ the warmth of a hand-written note, the restraint of a fine boutique. Hermes is
 the nearest touchstone (warm color, white space, craft, rich imagery, a little
 wit), reinterpreted softer and more romantic for gifting.
 
-Emotional goal: a visitor should feel *cared for* and slightly moved, the way
+Emotional goal: a visitor should feel _cared for_ and slightly moved, the way
 you feel choosing a gift for someone you love.
 
 ## Anti-references
@@ -79,8 +79,9 @@ you feel choosing a gift for someone you love.
 ## Accessibility & Inclusion
 
 Target **WCAG 2.1 AA**. Body text >=4.5:1 against its background; large/bold text
->=3:1; placeholder text held to the same 4.5:1. White text on the saturated
-honey/claret fills must clear AA for the text size used. Full keyboard operability
-with visible focus states, semantic landmarks, and labelled controls. Honor
-`prefers-reduced-motion` with a crossfade or instant alternative for every
-animation. Currency, dates, and copy default to a Sri Lankan English context.
+
+> =3:1; placeholder text held to the same 4.5:1. White text on the saturated
+> honey/claret fills must clear AA for the text size used. Full keyboard operability
+> with visible focus states, semantic landmarks, and labelled controls. Honor
+> `prefers-reduced-motion` with a crossfade or instant alternative for every
+> animation. Currency, dates, and copy default to a Sri Lankan English context.

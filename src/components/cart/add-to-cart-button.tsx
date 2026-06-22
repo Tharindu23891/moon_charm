@@ -35,7 +35,9 @@ export function AddToCartButton({
         size="icon"
         disabled={disabled}
         onClick={onClick}
-        aria-label={disabled ? `${item.name} is sold out` : `Add ${item.name} to cart`}
+        aria-label={
+          disabled ? `${item.name} is sold out` : `Add ${item.name} to cart`
+        }
         className={cn(
           'rounded-full bg-bg/90 shadow-[var(--shadow-sm)] backdrop-blur-sm hover:border-primary hover:bg-primary hover:text-primary-foreground',
           className,
@@ -62,7 +64,13 @@ export function AddToCartButton({
 
 function PlusIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-[1.05rem] w-[1.05rem]">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className="h-[1.05rem] w-[1.05rem]"
+    >
       <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m7-7H5" />
     </svg>
   );

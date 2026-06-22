@@ -22,7 +22,10 @@ export async function POST(req: Request) {
   const toEmail = process.env.RESEND_TO_EMAIL;
 
   if (!apiKey || !fromEmail || !toEmail) {
-    return NextResponse.json({ error: 'Email service is not configured' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Email service is not configured' },
+      { status: 500 },
+    );
   }
 
   const resend = new Resend(apiKey);
@@ -47,7 +50,10 @@ export async function POST(req: Request) {
       text,
     });
   } catch {
-    return NextResponse.json({ error: 'Email delivery failed' }, { status: 502 });
+    return NextResponse.json(
+      { error: 'Email delivery failed' },
+      { status: 502 },
+    );
   }
 
   return NextResponse.json({ ok: true }, { status: 200 });

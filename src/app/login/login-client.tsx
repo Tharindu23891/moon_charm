@@ -8,7 +8,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
-import { AuthShell, AuthField, GoogleButton } from '@/components/auth/auth-shell';
+import {
+  AuthShell,
+  AuthField,
+  GoogleButton,
+} from '@/components/auth/auth-shell';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -26,7 +30,9 @@ export function LoginClient({ next }: Readonly<{ next: string }>) {
   useEffect(() => {
     let alive = true;
     getProviders()
-      .then((providers) => alive && setGoogleEnabled(Boolean(providers?.google)))
+      .then(
+        (providers) => alive && setGoogleEnabled(Boolean(providers?.google)),
+      )
       .catch(() => alive && setGoogleEnabled(false));
     return () => {
       alive = false;
@@ -39,7 +45,11 @@ export function LoginClient({ next }: Readonly<{ next: string }>) {
   });
 
   async function onSubmit(values: LoginValues) {
-    const res = await signIn('credentials', { email: values.email, password: values.password, redirect: false });
+    const res = await signIn('credentials', {
+      email: values.email,
+      password: values.password,
+      redirect: false,
+    });
     if (!res || res.error) {
       toast.error('Invalid email or password');
       return;
@@ -55,7 +65,10 @@ export function LoginClient({ next }: Readonly<{ next: string }>) {
       footer={
         <>
           New here?{' '}
-          <Link href="/register" className="font-semibold text-primary hover:text-primary-hover">
+          <Link
+            href="/register"
+            className="font-semibold text-primary hover:text-primary-hover"
+          >
             Create an account
           </Link>
         </>
@@ -63,12 +76,28 @@ export function LoginClient({ next }: Readonly<{ next: string }>) {
     >
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
         <AuthField label="Email" error={form.formState.errors.email?.message}>
-          <Input type="email" autoComplete="email" {...form.register('email')} />
+          <Input
+            type="email"
+            autoComplete="email"
+            {...form.register('email')}
+          />
         </AuthField>
-        <AuthField label="Password" error={form.formState.errors.password?.message}>
-          <Input type="password" autoComplete="current-password" {...form.register('password')} />
+        <AuthField
+          label="Password"
+          error={form.formState.errors.password?.message}
+        >
+          <Input
+            type="password"
+            autoComplete="current-password"
+            {...form.register('password')}
+          />
         </AuthField>
-        <Button type="submit" size="lg" disabled={form.formState.isSubmitting} className="mt-1 w-full">
+        <Button
+          type="submit"
+          size="lg"
+          disabled={form.formState.isSubmitting}
+          className="mt-1 w-full"
+        >
           {form.formState.isSubmitting ? 'Signing in…' : 'Sign in'}
         </Button>
       </form>
@@ -80,7 +109,10 @@ export function LoginClient({ next }: Readonly<{ next: string }>) {
             or
             <span className="h-px flex-1 bg-line" />
           </div>
-          <GoogleButton label="Continue with Google" onClick={() => signIn('google', { callbackUrl: next || '/' })} />
+          <GoogleButton
+            label="Continue with Google"
+            onClick={() => signIn('google', { callbackUrl: next || '/' })}
+          />
         </>
       ) : null}
     </AuthShell>

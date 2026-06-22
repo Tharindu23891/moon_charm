@@ -3,7 +3,10 @@ import { connectToDatabase } from '@/lib/mongoose';
 import { Category } from '@/models/Category';
 import { Product } from '@/models/Product';
 import { Suspense } from 'react';
-import { ProductCard, type ProductListItem } from '@/components/product/product-card';
+import {
+  ProductCard,
+  type ProductListItem,
+} from '@/components/product/product-card';
 import { PageHeader } from '@/components/page-header';
 import { ProductFilters } from '@/components/product-filters';
 import { Button } from '@/components/ui/button';
@@ -17,14 +20,19 @@ export const metadata = {
   alternates: { canonical: '/products' },
 };
 
-function getParam(searchParams: Record<string, string | string[] | undefined>, key: string) {
+function getParam(
+  searchParams: Record<string, string | string[] | undefined>,
+  key: string,
+) {
   const v = searchParams[key];
   return Array.isArray(v) ? v[0] : v;
 }
 
 export default async function ProductsPage({
   searchParams,
-}: Readonly<{ searchParams: Promise<Record<string, string | string[] | undefined>> }>) {
+}: Readonly<{
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}>) {
   const sp = await searchParams;
   const q = getParam(sp, 'q') ?? '';
   const category = getParam(sp, 'category') ?? '';
@@ -72,7 +80,9 @@ export default async function ProductsPage({
       price: p.price,
       images: p.images ?? [],
       stock: p.stock,
-      category: p.categoryId ? { name: p.categoryId.name, slug: p.categoryId.slug } : null,
+      category: p.categoryId
+        ? { name: p.categoryId.name, slug: p.categoryId.slug }
+        : null,
     }));
   } catch (error) {
     databaseUnavailable = true;
@@ -80,8 +90,14 @@ export default async function ProductsPage({
   }
 
   const activeCategory = categories.find((c: any) => c.slug === category);
-  const hasFilters = Boolean(q || category || minPrice || maxPrice || sort !== 'newest');
-  const filterCategories = categories.map((c: any) => ({ id: c._id.toString(), name: c.name, slug: c.slug }));
+  const hasFilters = Boolean(
+    q || category || minPrice || maxPrice || sort !== 'newest',
+  );
+  const filterCategories = categories.map((c: any) => ({
+    id: c._id.toString(),
+    name: c.name,
+    slug: c.slug,
+  }));
 
   return (
     <div className="mc-container py-12 md:py-16">
@@ -92,21 +108,31 @@ export default async function ProductsPage({
       />
 
       <div className="mt-8">
-        <Suspense fallback={<div className="h-36 animate-pulse rounded-[var(--r-lg)] border border-line bg-surface" />}>
+        <Suspense
+          fallback={
+            <div className="h-36 animate-pulse rounded-[var(--r-lg)] border border-line bg-surface" />
+          }
+        >
           <ProductFilters categories={filterCategories} />
         </Suspense>
       </div>
 
       {databaseUnavailable ? (
         <p className="mt-6 rounded-[var(--r)] border border-line bg-surface px-4 py-3 text-sm text-muted-foreground">
-          Our catalog is briefly unavailable while we reconnect. Please try again in a moment.
+          Our catalog is briefly unavailable while we reconnect. Please try
+          again in a moment.
         </p>
       ) : null}
 
       <div className="mt-8 flex items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">
           {list.length} {list.length === 1 ? 'gift' : 'gifts'}
-          {activeCategory ? <> in <span className="text-ink">{activeCategory.name}</span></> : null}
+          {activeCategory ? (
+            <>
+              {' '}
+              in <span className="text-ink">{activeCategory.name}</span>
+            </>
+          ) : null}
         </p>
       </div>
 
@@ -119,9 +145,13 @@ export default async function ProductsPage({
       ) : (
         <div className="mt-6 rounded-[var(--r-lg)] border border-dashed border-line-strong bg-surface px-6 py-16 text-center">
           <p className="font-display text-xl text-ink">Nothing matches yet</p>
-          <p className="mt-2 text-sm text-muted-foreground">Try a broader search, or clear the filters to see everything.</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Try a broader search, or clear the filters to see everything.
+          </p>
           {hasFilters ? (
-            <Button asChild variant="outline" className="mt-5"><Link href="/products">Clear filters</Link></Button>
+            <Button asChild variant="outline" className="mt-5">
+              <Link href="/products">Clear filters</Link>
+            </Button>
           ) : null}
         </div>
       )}

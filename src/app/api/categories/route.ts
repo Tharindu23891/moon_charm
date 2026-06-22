@@ -19,7 +19,7 @@ export async function GET() {
       id: c._id.toString(),
       name: c.name,
       slug: c.slug,
-    }))
+    })),
   );
 }
 
@@ -41,15 +41,20 @@ export async function POST(req: Request) {
   const dbError = await ensureDatabase();
   if (dbError) return dbError;
 
-  const slug = parsed.data.slug ? slugify(parsed.data.slug) : slugify(parsed.data.name);
+  const slug = parsed.data.slug
+    ? slugify(parsed.data.slug)
+    : slugify(parsed.data.name);
   const exists = await Category.findOne({ slug }).lean();
   if (exists) {
-    return NextResponse.json({ error: 'Category slug already exists' }, { status: 409 });
+    return NextResponse.json(
+      { error: 'Category slug already exists' },
+      { status: 409 },
+    );
   }
 
   const created = await Category.create({ name: parsed.data.name, slug });
   return NextResponse.json(
     { id: created._id.toString(), name: created.name, slug: created.slug },
-    { status: 201 }
+    { status: 201 },
   );
 }
