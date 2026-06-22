@@ -4,13 +4,35 @@
  * single source of truth. Override the domain per environment with
  * NEXT_PUBLIC_SITE_URL (e.g. preview deploys); falls back to production.
  */
+/**
+ * Resolve the canonical site origin used for every absolute URL (OpenGraph
+ * images, canonical tags, sitemap, robots, JSON-LD). Returns no trailing slash.
+ *
+ * Priority:
+ *  1. NEXT_PUBLIC_SITE_URL — explicit override; wins everywhere (incl. client).
+ *  2. VERCEL_PROJECT_PRODUCTION_URL — Vercel's canonical production domain.
+ *     Today that's the live `*.vercel.app` URL and it automatically becomes the
+ *     custom domain (e.g. themooncharm.lk) the moment that domain is attached
+ *     in Vercel, so og:image always points at a host that actually serves it.
+ *  3. https://themooncharm.lk — final fallback for local / non-Vercel builds.
+ *
+ * Note: VERCEL_PROJECT_PRODUCTION_URL is server-only, which is fine — the URL
+ * is only read in server contexts. Client code only reads siteConfig.whatsapp.
+ */
+function resolveSiteUrl(): string {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (explicit) return explicit.replace(/\/$/, '');
+
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  if (vercel) return `https://${vercel}`.replace(/\/$/, '');
+
+  return 'https://themooncharm.lk';
+}
+
 export const siteConfig = {
   name: 'The Moon Charm',
   // No trailing slash. URL() further down normalises anything stray.
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://themooncharm.lk').replace(
-    /\/$/,
-    '',
-  ),
+  url: resolveSiteUrl(),
   description:
     'A curated gift house in Kuliyapitiya, Sri Lanka. Hand-assembled gift packages and individual pieces for birthdays, anniversaries, weddings, and every moment worth marking. Island-wide delivery.',
   locale: 'en_LK',

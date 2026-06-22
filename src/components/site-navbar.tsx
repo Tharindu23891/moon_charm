@@ -212,14 +212,6 @@ export function SiteNavbar() {
                 </SheetTitle>
               </SheetHeader>
               <nav className="grid gap-1 p-4">
-                <SheetClose asChild>
-                  <Link
-                    href="/"
-                    className="rounded-[var(--r)] px-3 py-2.5 text-[0.95rem] font-medium text-ink hover:bg-surface"
-                  >
-                    Home
-                  </Link>
-                </SheetClose>
                 {links.map((l) => (
                   <SheetClose key={l.href} asChild>
                     <Link
