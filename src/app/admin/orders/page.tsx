@@ -144,9 +144,7 @@ export default function AdminOrdersPage() {
                     >
                       <td className="px-5 py-3.5 font-medium text-ink">
                         <a
-                          href={`/orders/${o.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          href={`/admin/orders/${o.id}`}
                           className="hover:text-primary hover:underline"
                         >
                           #{o.id.slice(-8).toUpperCase()}

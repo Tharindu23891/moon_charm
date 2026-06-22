@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { connectToDatabase } from '@/lib/mongoose';
 import { User } from '@/models/User';
 import { hashPassword, verifyPassword } from '@/lib/password';
+import { isAdminEmail } from '@/lib/admin-emails';
 
 const credentialsSchema = z.object({
   email: z.email(),
@@ -48,11 +49,19 @@ export const authOptions: NextAuthOptions = {
         );
         if (!ok) return null;
 
+        // Allowlisted emails are always admins, even if their stored role is
+        // still 'user' (e.g. they registered before being added). Keep the DB
+        // in sync so the role is correct everywhere it's read.
+        const role = isAdminEmail(user.email) ? 'admin' : user.role;
+        if (role !== user.role) {
+          await User.updateOne({ _id: user._id }, { role });
+        }
+
         return {
           id: user._id.toString(),
           name: user.name || user.email,
           email: user.email,
-          role: user.role,
+          role,
         } as any;
       },
     }),
@@ -66,15 +75,19 @@ export const authOptions: NextAuthOptions = {
 
       await connectToDatabase();
 
-      const existing = await User.findOne({ email }).lean();
+      const existing = await User.findOne({ email });
       if (!existing) {
         const passwordHash = await hashPassword(randomUUID());
         await User.create({
           email,
           name: user.name ?? email,
           passwordHash,
-          role: 'user',
+          role: isAdminEmail(email) ? 'admin' : 'user',
         });
+      } else if (isAdminEmail(email) && existing.role !== 'admin') {
+        // Promote an allowlisted account that signed up earlier as a customer.
+        existing.role = 'admin';
+        await existing.save();
       }
 
       return true;
@@ -95,12 +108,21 @@ export const authOptions: NextAuthOptions = {
           token.role = dbUser.role as any;
         }
       }
+
+      // Final word: allowlisted emails are always admin, whatever the DB says.
+      if (isAdminEmail(token.email)) {
+        token.role = 'admin';
+      }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         (session.user as any).id = token.sub;
         (session.user as any).role = (token as any).role;
+        // token.picture holds the Google profile photo (set by NextAuth on
+        // OAuth sign-in). Credentials users have none, so this stays null and
+        // the navbar falls back to the initial.
+        (session.user as any).image = (token as any).picture ?? null;
       }
       return session;
     },

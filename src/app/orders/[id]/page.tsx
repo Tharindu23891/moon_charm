@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { connectToDatabase } from '@/lib/mongoose';
 import { getSessionUser } from '@/lib/server-auth';
 import { Order } from '@/models/Order';
@@ -48,10 +48,13 @@ export default async function OrderDetailPage({
   const { id } = await params;
   const { placed } = await searchParams;
 
+  // Admins get the full operational view, not the customer-facing one.
+  if (role === 'admin') redirect(`/admin/orders/${id}`);
+
   await connectToDatabase();
   const order = (await Order.findById(id).lean()) as any;
   if (!order) notFound();
-  if (role !== 'admin' && order.userId.toString() !== userId) notFound();
+  if (order.userId.toString() !== userId) notFound();
 
   const ref = `#${order._id.toString().slice(-8).toUpperCase()}`;
   const paid = order.paymentStatus === 'paid';

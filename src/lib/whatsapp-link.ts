@@ -32,7 +32,7 @@ const paymentLabels: Record<string, string> = {
 
 export function buildOrderWhatsAppMessage(order: OrderForWhatsApp): string {
   const { address: addr } = order;
-  const lines = ['Hi The Moon Charm! I’d like to confirm my order 🌙', ''];
+  const lines = ['Hi The Moon Charm! I’d like to confirm my order.', ''];
   if (order.reference) lines.push(`Order: ${order.reference}`);
   lines.push(`Name: ${order.fullName}`, `Phone: ${order.phone}`);
   if (order.email) lines.push(`Email: ${order.email}`);

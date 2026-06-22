@@ -45,6 +45,7 @@ export function SiteNavbar() {
   const { count } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [avatarBroken, setAvatarBroken] = useState(false);
 
   useEffect(() => {
     router.prefetch('/products');
@@ -64,6 +65,7 @@ export function SiteNavbar() {
   const firstName = session?.user?.name?.split(' ')[0] ?? 'Account';
   const isAdmin =
     (session?.user as { role?: string } | undefined)?.role === 'admin';
+  const avatarUrl = session?.user?.image ?? null;
 
   return (
     <header
@@ -151,9 +153,20 @@ export function SiteNavbar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-10 gap-2">
-                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[0.7rem] font-bold text-primary-foreground">
-                    {firstName.charAt(0).toUpperCase()}
-                  </span>
+                  {avatarUrl && !avatarBroken ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={avatarUrl}
+                      alt=""
+                      referrerPolicy="no-referrer"
+                      onError={() => setAvatarBroken(true)}
+                      className="h-6 w-6 rounded-full object-cover"
+                    />
+                  ) : (
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[0.7rem] font-bold text-primary-foreground">
+                      {firstName.charAt(0).toUpperCase()}
+                    </span>
+                  )}
                   <span className="hidden max-w-[7rem] truncate sm:inline">
                     {firstName}
                   </span>
@@ -163,14 +176,15 @@ export function SiteNavbar() {
                 <DropdownMenuItem asChild>
                   <Link href="/profile">Profile</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/orders">My orders</Link>
-                </DropdownMenuItem>
                 {isAdmin ? (
                   <DropdownMenuItem asChild>
-                    <Link href="/admin">Admin</Link>
+                    <Link href="/admin">Dashboard</Link>
                   </DropdownMenuItem>
-                ) : null}
+                ) : (
+                  <DropdownMenuItem asChild>
+                    <Link href="/orders">My orders</Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onSelect={() => signOut({ callbackUrl: '/' })}
@@ -246,24 +260,25 @@ export function SiteNavbar() {
                         Profile
                       </Link>
                     </SheetClose>
-                    <SheetClose asChild>
-                      <Link
-                        href="/orders"
-                        className="rounded-[var(--r)] px-3 py-2.5 text-[0.95rem] font-medium text-ink hover:bg-surface"
-                      >
-                        My orders
-                      </Link>
-                    </SheetClose>
                     {isAdmin ? (
                       <SheetClose asChild>
                         <Link
                           href="/admin"
                           className="rounded-[var(--r)] px-3 py-2.5 text-[0.95rem] font-medium text-ink hover:bg-surface"
                         >
-                          Admin
+                          Dashboard
                         </Link>
                       </SheetClose>
-                    ) : null}
+                    ) : (
+                      <SheetClose asChild>
+                        <Link
+                          href="/orders"
+                          className="rounded-[var(--r)] px-3 py-2.5 text-[0.95rem] font-medium text-ink hover:bg-surface"
+                        >
+                          My orders
+                        </Link>
+                      </SheetClose>
+                    )}
                     <Button
                       type="button"
                       variant="ghost"

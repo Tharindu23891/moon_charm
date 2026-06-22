@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { connectToDatabase } from '@/lib/mongoose';
 import { getSessionUser } from '@/lib/server-auth';
 import { Order } from '@/models/Order';
@@ -26,9 +27,11 @@ export default async function OrdersPage() {
     );
   }
 
+  // Admins manage orders from the admin dashboard, not the customer view.
+  if (role === 'admin') redirect('/admin/orders');
+
   await connectToDatabase();
-  const filter = role === 'admin' ? {} : { userId };
-  const orders = await Order.find(filter)
+  const orders = await Order.find({ userId })
     .sort({ createdAt: -1 })
     .limit(200)
     .lean();
@@ -38,12 +41,10 @@ export default async function OrdersPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-display text-[clamp(2rem,4vw,2.8rem)]">
-            {role === 'admin' ? 'All orders' : 'Your orders'}
+            Your orders
           </h1>
           <p className="mt-2 text-muted-foreground">
-            {role === 'admin'
-              ? 'Every order placed across the shop.'
-              : 'Everything you’ve sent, and where it is now.'}
+            Everything you’ve sent, and where it is now.
           </p>
         </div>
         <Button asChild variant="outline">
