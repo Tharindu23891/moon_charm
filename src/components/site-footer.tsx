@@ -24,13 +24,13 @@ export function SiteFooter() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2.5">
-              <span className="h-7 w-7 text-primary">
+              <span className="h-7 w-7 text-white">
                 <MoonMark />
               </span>
               <BrandName noWrap className="text-[1.2rem]" />
             </div>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-on-dark/70">
-              A small gift house in Kuliyapitiya. We assemble each package by
+              A curated gift boutique in Kuliyapitiya. We assemble each package by
               hand, so the thought arrives intact.
             </p>
             <div className="mt-6 flex items-center gap-2">
@@ -127,7 +127,7 @@ function FooterColumn({
 }) {
   return (
     <div>
-      <h3 className="text-xs font-semibold tracking-[0.14em] text-on-dark/50 uppercase">
+      <h3 className="text-sm font-bold tracking-[0.14em] text-on-dark uppercase">
         {title}
       </h3>
       <ul className="mt-4 grid gap-2.5 text-sm">
