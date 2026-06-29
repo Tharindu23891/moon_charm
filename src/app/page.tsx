@@ -11,6 +11,7 @@ import { Stagger, StaggerItem } from '@/components/motion/stagger';
 import { MoonMark } from '@/components/moon-mark';
 import { OccasionTile } from '@/components/occasion-tile';
 import { CharmArt } from '@/components/art/charm-art';
+import { HeroCarousel } from '@/components/hero-carousel';
 import { Button } from '@/components/ui/button';
 
 export const metadata = {
@@ -108,23 +109,8 @@ export default async function HomePage() {
             </StaggerItem>
           </Stagger>
 
-          <Reveal className="relative" delay={200}>
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--r-xl)] bg-espresso shadow-[var(--shadow-lg)]">
-              <CharmArt variant="hero" className="absolute inset-0" />
-            </div>
-            <div className="absolute -bottom-5 left-5 hidden items-center gap-3 rounded-[var(--r)] border border-line bg-bg px-4 py-3 shadow-[var(--shadow)] sm:flex">
-              <span className="h-7 w-7 text-primary">
-                <MoonMark />
-              </span>
-              <div className="leading-tight">
-                <p className="text-sm font-semibold text-ink">
-                  Wrapped by hand
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Every single order
-                </p>
-              </div>
-            </div>
+          <Reveal className="w-full" delay={200}>
+            <HeroCarousel />
           </Reveal>
         </div>
 
