@@ -32,19 +32,21 @@ export function AuthShell({
         </div>
 
         <div className="bg-bg px-6 py-10 sm:px-10 md:py-14">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <span className="h-7 w-7 text-primary">
-              <MoonMark />
-            </span>
-            <BrandName className="text-lg" noWrap />
-          </Link>
-          <h1 className="mt-8 font-display text-3xl">{title}</h1>
-          {subtitle ? (
-            <p className="mt-2 text-muted-foreground">{subtitle}</p>
-          ) : null}
+          <div className="flex flex-col items-center text-center">
+            <Link href="/" className="inline-flex items-center gap-2">
+              <span className="h-7 w-7 text-primary">
+                <MoonMark />
+              </span>
+              <BrandName className="text-lg" noWrap />
+            </Link>
+            <h1 className="mt-8 font-display text-3xl">{title}</h1>
+            {subtitle ? (
+              <p className="mt-2 text-muted-foreground">{subtitle}</p>
+            ) : null}
+          </div>
           <div className="mt-7">{children}</div>
           {footer ? (
-            <div className="mt-6 text-sm text-muted-foreground">{footer}</div>
+            <div className="mt-6 text-center text-sm text-muted-foreground">{footer}</div>
           ) : null}
         </div>
       </div>

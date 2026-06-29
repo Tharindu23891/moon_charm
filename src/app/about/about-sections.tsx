@@ -44,7 +44,7 @@ export function AboutHero() {
             as="p"
             className="mt-5 max-w-xl text-[1.1rem] leading-relaxed text-on-dark/80"
           >
-            The Moon Charm is a small gift house with an old-fashioned belief: a
+            THE MOON CHARM is a small gift house with an old-fashioned belief: a
             gift should feel like the person who sent it was thinking of you.
           </StaggerItem>
         </Stagger>

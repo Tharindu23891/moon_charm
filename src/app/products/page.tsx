@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 export const metadata = {
   title: 'Shop all gifts',
   description:
-    'Browse every gift from The Moon Charm. Filter individual pieces by occasion, price, or search for something specific. Island-wide delivery across Sri Lanka.',
+    'Browse every gift from THE MOON CHARM. Filter individual pieces by occasion, price, or search for something specific. Island-wide delivery across Sri Lanka.',
   // Self-referencing canonical without query params so filtered/sorted views
   // collapse to one indexable page.
   alternates: { canonical: '/products' },

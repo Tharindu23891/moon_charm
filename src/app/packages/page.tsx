@@ -18,7 +18,7 @@ const sortOptions = [
 export const metadata = {
   title: 'Gift packages',
   description:
-    'Curated gift packages from The Moon Charm, hand-assembled and wrapped as one considered gift for birthdays, anniversaries, weddings, and more.',
+    'Curated gift packages from THE MOON CHARM, hand-assembled and wrapped as one considered gift for birthdays, anniversaries, weddings, and more.',
   alternates: { canonical: '/packages' },
 };
 

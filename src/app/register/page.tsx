@@ -69,7 +69,7 @@ export default function RegisterPage() {
       router.push('/login');
       return;
     }
-    toast.success('Welcome to The Moon Charm');
+    toast.success('Welcome to THE MOON CHARM');
     router.push('/');
   }
 

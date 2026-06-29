@@ -80,7 +80,7 @@ export function SiteNavbar() {
         <Link
           href="/"
           className="group flex shrink-0 items-center gap-2.5"
-          aria-label="The Moon Charm home"
+          aria-label="THE MOON CHARM home"
         >
           <span className="h-8 w-8 text-primary transition-transform duration-500 group-hover:-rotate-12">
             <motion.span

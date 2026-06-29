@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     await transporter.sendMail({
       // Gmail forces the From to the authenticated account, so we keep the
       // address as gmailUser and only set a friendly display name.
-      from: `The Moon Charm <${gmailUser}>`,
+      from: `THE MOON CHARM <${gmailUser}>`,
       to: toEmail,
       replyTo: email,
       subject: `New contact request from ${name}`,

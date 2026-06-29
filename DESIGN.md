@@ -1,6 +1,6 @@
 # Design
 
-The visual system for The Moon Charm. Deep-indigo, romantic, editorial luxury. A
+The visual system for THE MOON CHARM. Deep-indigo, romantic, editorial luxury. A
 clean, bright white canvas; the identity is carried by a deep-indigo ground (the
 logo's `#190D61`), a vivid-blue primary, a royal-indigo accent, real gift
 photography, and a serif/sans type pairing. No gradients, no glass, no SaaS chrome.

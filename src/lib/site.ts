@@ -30,7 +30,7 @@ function resolveSiteUrl(): string {
 }
 
 export const siteConfig = {
-  name: 'The Moon Charm',
+  name: 'THE MOON CHARM',
   // No trailing slash. URL() further down normalises anything stray.
   url: resolveSiteUrl(),
   description:
@@ -51,7 +51,7 @@ export const siteConfig = {
     'handmade gifts',
     'gift delivery Sri Lanka',
     'Kuliyapitiya',
-    'The Moon Charm',
+    'THE MOON CHARM',
   ],
 } as const;
 
@@ -59,7 +59,7 @@ export const siteConfig = {
 // placeholders with the real account before going live.
 export const bankDetails = {
   bankName: 'Bank of Ceylon',
-  accountName: 'The Moon Charm',
+  accountName: 'THE MOON CHARM',
   accountNumber: '0000 0000 0000',
   branch: 'Kuliyapitiya',
 } as const;

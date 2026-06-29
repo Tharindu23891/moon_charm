@@ -1,5 +1,5 @@
 /**
- * Shared Motion tokens for The Moon Charm.
+ * Shared Motion tokens for THE MOON CHARM.
  *
  * One source of truth for easing and spring feel so every animation across the
  * site reads as the same hand. The brand is warm, editorial, unhurried, so the

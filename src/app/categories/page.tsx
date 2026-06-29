@@ -6,7 +6,7 @@ import { PageHeader } from '@/components/page-header';
 export const metadata = {
   title: 'Shop by occasion',
   description:
-    'Find the right gift by occasion: birthdays, anniversaries, weddings, Valentine, baby, and more, curated by The Moon Charm.',
+    'Find the right gift by occasion: birthdays, anniversaries, weddings, Valentine, baby, and more, curated by THE MOON CHARM.',
   alternates: { canonical: '/categories' },
 };
 

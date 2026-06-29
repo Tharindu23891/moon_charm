@@ -80,29 +80,31 @@ export default async function HomePage() {
             </StaggerItem>
             <StaggerItem
               as="h1"
-              className="mc-display mt-5 text-[clamp(2.75rem,6vw,5rem)]"
+              className="mc-display mt-5 text-[clamp(2.65rem,5.5vw,4.25rem)]"
             >
-              Gifts made to be{' '}
-              <span className="text-primary italic">remembered</span>.
+              Thoughtful Gifts Creates Lasting{' '}
+              <span className="text-primary italic">Memories</span>.
             </StaggerItem>
             <StaggerItem
               as="p"
               className="mc-prose mt-6 text-[1.15rem] leading-relaxed text-muted-foreground"
             >
-              We assemble each package by hand and send it island-wide, so the
-              thought you put in is exactly what arrives at the door.
+              Handcrafted with care, personalized with your heartfelt message, and delivered across the world.
+
+              Remember ....
+
+              Every meaningful moment deserves an unforgettable gift.
             </StaggerItem>
-            <StaggerItem className="mt-9 flex flex-wrap items-center gap-3">
+            <StaggerItem className="mt-9 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <Button asChild size="lg">
-                <Link href="/products">Shop gifts</Link>
+                <Link href="/products">SHOP NOW</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <Link href="/packages">Explore gift packages</Link>
+                <Link href="/packages">GIFT HAMPERS</Link>
               </Button>
             </StaggerItem>
             <StaggerItem as="p" className="mt-7 text-sm text-faint">
-              Hand-wrapped · Gift note included · Delivered anywhere in Sri
-              Lanka
+              Handmade . Personalized . Worldwide Delivery
             </StaggerItem>
           </Stagger>
 
@@ -255,7 +257,7 @@ export default async function HomePage() {
             </h2>
             <div className="mc-prose mt-5 space-y-4 text-[1.05rem] leading-relaxed text-muted-foreground">
               <p>
-                The Moon Charm began at a kitchen table in Kuliyapitiya,
+                THE MOON CHARM began at a kitchen table in Kuliyapitiya,
                 wrapping chocolate bouquets for friends. We still work the same
                 way: a person chooses the pieces, folds the paper, ties the
                 ribbon, and writes your note by hand.

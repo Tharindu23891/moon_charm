@@ -54,7 +54,7 @@ export default async function AdminOrderDetailPage({
   const waNumber = toWaNumber(addr.phone ?? '');
   const customerWaUrl = waNumber
     ? `https://wa.me/${waNumber}?text=${encodeURIComponent(
-        `Hi ${addr.fullName?.split(' ')[0] ?? ''}, this is The Moon Charm about your order ${ref}.`,
+        `Hi ${addr.fullName?.split(' ')[0] ?? ''}, this is THE MOON CHARM about your order ${ref}.`,
       )}`
     : null;
 

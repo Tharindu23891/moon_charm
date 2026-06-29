@@ -39,7 +39,7 @@ export async function generateMetadata({
   }
 
   const url = absoluteUrl(`/packages/${id}`);
-  const description = `${pkg.name}: a curated gift package, hand-assembled and wrapped as one considered gift by The Moon Charm.`;
+  const description = `${pkg.name}: a curated gift package, hand-assembled and wrapped as one considered gift by THE MOON CHARM.`;
   const image = pkg.image || undefined;
 
   return {

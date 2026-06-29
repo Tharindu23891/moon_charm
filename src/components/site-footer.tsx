@@ -92,7 +92,7 @@ export function SiteFooter() {
 
         <div className="mt-14 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-on-dark/55 sm:flex-row sm:items-center sm:justify-between">
           <p>
-            © {new Date().getFullYear()} The Moon Charm. Made by hand in Sri
+            © {new Date().getFullYear()} THE MOON CHARM. Made by hand in Sri
             Lanka.
           </p>
           <div className="flex items-center gap-5">

@@ -1,7 +1,7 @@
 import { cn } from '@/lib/cn';
 
 /**
- * The Moon Charm brand mark — the butterfly + calligraphic "T" monogram lifted
+ * THE MOON CHARM brand mark — the butterfly + calligraphic "T" monogram lifted
  * from the master logo (vectorised from public/logo.jpeg). Inherits
  * currentColor: use text-primary on light surfaces, text-on-dark / white on the
  * deep-indigo grounds. Kept a pure (server) SVG so it stays cheap to reuse

@@ -26,7 +26,7 @@ management, not browsing.
 
 ## Product Purpose
 
-The Moon Charm is a curated gift house: individual products and hand-assembled
+THE MOON CHARM is a curated gift house: individual products and hand-assembled
 gift packages for occasions, sold online with cart, checkout, accounts, and order
 tracking. It exists to make giving feel intentional, the opposite of a generic
 marketplace. Success looks like a visitor trusting the brand enough to buy a gift

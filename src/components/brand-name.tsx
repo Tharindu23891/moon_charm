@@ -15,7 +15,7 @@ export function BrandName({ className = '', noWrap = false }: BrandNameProps) {
         className,
       )}
     >
-      The Moon Charm
+      THE MOON CHARM
     </span>
   );
 }

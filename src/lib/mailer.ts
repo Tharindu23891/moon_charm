@@ -25,7 +25,7 @@ export async function sendOwnerEmail(
   });
 
   await transporter.sendMail({
-    from: `The Moon Charm <${user}>`,
+    from: `THE MOON CHARM <${user}>`,
     to,
     subject,
     text,

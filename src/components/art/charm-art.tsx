@@ -1,14 +1,14 @@
 import { cn } from '@/lib/cn';
 
 /**
- * The Moon Charm house artwork.
+ * THE MOON CHARM house artwork.
  *
  * A small family of hand-built, on-brand SVG "scenes" used in place of stock
  * photography for hero / editorial slots. Everything is inline vector — no
  * network request, a few KB each, rendered with the HTML so it paints
  * instantly. The palette is the deep-indigo brand identity (no gold), and the
  * motif language (crescent moon, scattered stars, a 4-point sparkle, a faint
- * butterfly, a thin botanical sprig) ties back to the Moon Charm mark.
+ * butterfly, a thin botanical sprig) ties back to THE MOON CHARM mark.
  *
  * Each variant fills its container like `object-cover` via
  * preserveAspectRatio="xMidYMid slice"; the caller positions it
