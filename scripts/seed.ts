@@ -534,19 +534,23 @@ async function main() {
   ]);
 
   // Categories
-  const categoryNames = [
-    'Birthday gifts',
-    'Anniversary gifts',
-    'Wedding gifts',
-    'Valentine gifts',
-    'Baby gifts',
-    'Corporate gifts',
-    'Custom gifts',
-    'Other',
+  const categorySeeds = [
+    { name: 'Birthday gifts', image: '/occasions/birthday_gifts.jpg' },
+    { name: 'Anniversary gifts', image: '/occasions/Anniversary gifts.jpg' },
+    { name: 'Wedding gifts', image: '/occasions/wedding_gifts.jpg' },
+    { name: 'Valentine gifts', image: '/occasions/Valentine gifts.jpg' },
+    { name: 'Baby gifts', image: '/occasions/baby_gifts.jpg' },
+    { name: 'Corporate gifts', image: '/occasions/Corporate gifts.jpg' },
+    { name: 'Custom gifts', image: '/occasions/customs gifts.jpg' },
+    { name: 'Other', image: '/occasions/others.jpg' },
   ];
 
   const categories = await Category.insertMany(
-    categoryNames.map((name) => ({ name, slug: slugify(name) })),
+    categorySeeds.map((c) => ({
+      name: c.name,
+      slug: slugify(c.name),
+      image: c.image,
+    })),
   );
   const categoryBySlug = new Map(categories.map((c) => [c.slug, c]));
 

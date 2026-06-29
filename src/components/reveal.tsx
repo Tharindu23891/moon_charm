@@ -15,9 +15,8 @@ type RevealProps = {
 };
 
 /**
- * Reveals its children with a gentle fade-rise-and-focus as they scroll into
- * view: opacity + translateY + a small blur that resolves, so content
- * "materialises" rather than just fading. Plays once.
+ * Reveals its children with a gentle fade-rise as they scroll into
+ * view: opacity + translateY, so content materialises gracefully. Plays once.
  *
  * Reduced-motion users get the final state immediately with no animation (the
  * content renders in place), so nothing is ever hidden behind motion they have

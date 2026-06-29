@@ -10,6 +10,7 @@ const CategorySchema = new Schema(
       lowercase: true,
       trim: true,
     },
+    image: { type: String },
   },
   { timestamps: true },
 );

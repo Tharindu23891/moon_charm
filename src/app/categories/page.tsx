@@ -36,12 +36,14 @@ export default async function CategoriesPage() {
       id: c._id.toString(),
       name: c.name,
       slug: c.slug,
+      image: c.image,
     })),
     ...defaults
       .map((name) => ({
         id: `default-${name}`,
         name,
         slug: name.toLowerCase().replace(/\s+/g, '-'),
+        image: undefined,
       }))
       .filter((c) => !existingSlugs.has(c.slug)),
   ];
@@ -54,9 +56,9 @@ export default async function CategoriesPage() {
         description="Whatever you’re marking, begin here. Each occasion leads to gifts chosen to suit it."
       />
 
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {merged.map((c) => (
-          <OccasionTile key={c.id} name={c.name} slug={c.slug} />
+          <OccasionTile key={c.id} name={c.name} slug={c.slug} image={c.image} />
         ))}
       </div>
     </div>

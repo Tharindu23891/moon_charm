@@ -219,10 +219,10 @@ export default async function HomePage() {
         </Reveal>
 
         {categories.length > 0 ? (
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {categories.map((c, i) => (
               <Reveal key={c._id.toString()} delay={(i % 4) * 70}>
-                <OccasionTile name={c.name} slug={c.slug} />
+                <OccasionTile name={c.name} slug={c.slug} image={c.image} />
               </Reveal>
             ))}
           </div>

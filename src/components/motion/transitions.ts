@@ -33,6 +33,6 @@ export const imageSettle = {
   ease: easeOut,
 } as const;
 
-/** The fade/rise/blur an element enters with. Shared by Reveal + Stagger. */
-export const enterHidden = { opacity: 0, y: 16, filter: 'blur(6px)' } as const;
-export const enterShown = { opacity: 1, y: 0, filter: 'blur(0px)' } as const;
+/** The fade/rise an element enters with. Shared by Reveal + Stagger. */
+export const enterHidden = { opacity: 0, y: 16 } as const;
+export const enterShown = { opacity: 1, y: 0 } as const;
